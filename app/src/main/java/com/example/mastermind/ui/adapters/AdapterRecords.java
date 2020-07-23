@@ -25,6 +25,7 @@ public class AdapterRecords extends RecyclerView.Adapter<AdapterRecords.ViewHold
     public LinearLayout record;
 
     public AdapterRecords(ArrayList<Record> records,Context context, RecyclerView recyclerView) {
+        //isdyfgosmadi
         this.records = records;
         this.context = context;
     }
