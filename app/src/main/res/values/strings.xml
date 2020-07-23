@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Master Mind</string>
+    <string name="example"><u>For example:</u></string>
+    <string name="facebook_app_id">528889727993941</string>
+    <string name="fb_login_protocol_scheme">fb528889727993941</string>
+
+    <string name="red">"red"</string>
+    <string name="green">"green"</string>
+    <string name="blue">"blue"</string>
+    <string name="orange">"orange"</string>
+    <string name="yellow">"yellow"</string>
+    <string name="light">"light"</string>
+    <string name="about">About</string>
+    <string name="rules">Rules</string>
+    <string name="goal">Goal</string>
+</resources>

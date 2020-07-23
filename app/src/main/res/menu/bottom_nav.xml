@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/nav_about"
+        android:icon="@drawable/about"
+        app:cnb_iconColor="@color/colorRed"
+        android:title="@string/about"/>
+
+    <item
+        android:id="@+id/nav_rules"
+        android:icon="@drawable/rules"
+        app:cnb_iconColor="#008115"
+        android:title="@string/rules"/>
+
+    <item
+        android:id="@+id/nav_goal"
+        android:icon="@drawable/target"
+        app:cnb_iconColor="@color/colorBlue"
+        android:title="@string/goal"/>
+
+</menu>

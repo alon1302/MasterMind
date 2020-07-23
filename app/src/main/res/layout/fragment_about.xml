@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Welcome to Master Mind:"
+        android:textColor="@color/colorBlack"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="In this game there are 6 different colors:"
+        android:textColor="@color/colorBlack"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="63dp"
+            android:layout_height="63dp"
+            android:layout_margin="3dp"
+            android:src="@color/colorRed" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="63dp"
+            android:layout_height="63dp"
+            android:layout_margin="3dp"
+            android:src="@color/colorGreen" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="63dp"
+            android:layout_height="63dp"
+            android:layout_margin="3dp"
+            android:src="@color/colorBlue" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="63dp"
+            android:layout_height="63dp"
+            android:layout_margin="3dp"
+            android:src="@color/colorOrange" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="63dp"
+            android:layout_height="63dp"
+            android:layout_margin="3dp"
+            android:src="@color/colorYellow" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="63dp"
+            android:layout_height="63dp"
+            android:layout_margin="3dp"
+            android:src="@color/colorLight" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="When you start the game a series of 4 different colors randomly selected,\n and it stay covered until you success to guess it perfectly or you lose after 10 tries. "
+        android:textColor="@color/colorBlack"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
