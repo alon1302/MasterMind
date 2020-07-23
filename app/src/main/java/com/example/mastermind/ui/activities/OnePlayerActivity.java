@@ -59,7 +59,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         recyclerView.setLayoutManager(layoutManager);
         gameRows = gameManager.getGameRows();
         checkRows = gameManager.getCheckRows();
-        adapterRows = new AdapterRows(gameRows, checkRows, this, recyclerView);
+        adapterRows = new AdapterRows(gameRows, checkRows, this);
         recyclerView.setAdapter(adapterRows);
         current = findViewById(R.id.currentSelection);
         startTimeRunning();
@@ -166,6 +166,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         Intent intent = new Intent(this, WinActivity.class);
         intent.putExtra("minutes", minutes);
         intent.putExtra("seconds", seconds);
+        intent.putExtra("time", timeInMillis);
         startActivity(intent);
         finish();
     }

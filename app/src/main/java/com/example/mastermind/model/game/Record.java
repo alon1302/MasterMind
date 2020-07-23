@@ -4,16 +4,14 @@ import android.net.Uri;
 
 public class Record {
     private long time;
-    private String name;
-    private Uri imgUri;
+    private String id;
 
     public Record() {
     }
 
-    public Record(long time, String name, Uri imgUri) {
+    public Record(long time, String id) {
         this.time = time;
-        this.name = name;
-        this.imgUri = imgUri;
+        this.id = id;
     }
 
     public long getTime() {
@@ -24,19 +22,11 @@ public class Record {
         this.time = time;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Uri getImgUri() {
-        return imgUri;
-    }
-
-    public void setImgUri(Uri imgUri) {
-        this.imgUri = imgUri;
+    public void setId(String id) {
+        this.id = id;
     }
 }

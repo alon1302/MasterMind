@@ -11,7 +11,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
+import com.example.mastermind.model.firebase.RecordPerUser;
+import com.example.mastermind.model.firebase.RecordsRepo;
 import com.example.mastermind.model.game.Record;
+import com.example.mastermind.model.listeners.DataChangedListener;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.adapters.AdapterRecords;
@@ -21,16 +24,17 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class WinActivity extends AppCompatActivity {
+public class WinActivity extends AppCompatActivity implements DataChangedListener {
 
     User currentUser;
     TextView tv_name;
     TextView tv_time;
     CircleImageView profileImage;
     long minutes, seconds;
+    long time;
 
     AdapterRecords adapterRecords;
-    ArrayList<Record> records;
+    ArrayList<RecordPerUser> records;
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
 
@@ -50,10 +54,14 @@ public class WinActivity extends AppCompatActivity {
         records = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView_records);
         recyclerView.setLayoutManager(layoutManager);
-        adapterRecords = new AdapterRecords(records, this, recyclerView);
-        recyclerView.setAdapter(adapterRecords);
 
+        RecordsRepo.addRecord(new Record(time, CurrentUser.getInstance().getId()), this);
+        records = RecordsRepo.getRecords(this);
+
+        adapterRecords = new AdapterRecords(records, this);
+        recyclerView.setAdapter(adapterRecords);
     }
+
 
     public void onClickRestart(View view) {
         Intent intent = new Intent(this, OnePlayerActivity.class);
@@ -70,8 +78,14 @@ public class WinActivity extends AppCompatActivity {
         Intent intent = getIntent();
         minutes = intent.getLongExtra("minutes", 0);
         seconds = intent.getLongExtra("seconds", 0);
+        time = intent.getLongExtra("time", 0);
         tv_name.setText(currentUser.getName());
         tv_time.setText(String.format(Locale.getDefault(),"%02d:%02d",minutes, seconds));
         Glide.with(this).load(currentUser.getImgUrl()).into(profileImage);
+    }
+
+    @Override
+    public void onDataChanged() {
+        adapterRecords.notifyDataSetChanged();
     }
 }

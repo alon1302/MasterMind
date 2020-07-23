@@ -25,7 +25,7 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
     private Context context;
     public LinearLayout fullRow;
 
-    public AdapterRows(ArrayList<GameRow> gameRows, ArrayList<CheckRow> checkRows, Context context, RecyclerView recyclerView) {
+    public AdapterRows(ArrayList<GameRow> gameRows, ArrayList<CheckRow> checkRows, Context context) {
         this.gameRows = gameRows;
         this.checkRows = checkRows;
         this.context = context;
