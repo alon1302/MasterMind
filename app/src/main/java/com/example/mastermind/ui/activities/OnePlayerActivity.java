@@ -206,7 +206,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         GameRow hiddenRow = gameManager.getHidden();
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenColors.length; i++) {
-            hiddenRowImages[i].setVisibility(View.INVISIBLE);
+            //hiddenRowImages[i].setVisibility(View.INVISIBLE);
             switch (hiddenColors[i]) {
                 case "null":
                     this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);

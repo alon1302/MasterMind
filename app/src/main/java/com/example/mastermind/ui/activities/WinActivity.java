@@ -1,6 +1,8 @@
 package com.example.mastermind.ui.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +46,8 @@ public class WinActivity extends AppCompatActivity implements DataChangedListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_win);
 
+        records = RecordsRepo.getRecords(this);
+
         currentUser = CurrentUser.getInstance();
         tv_name = findViewById(R.id.winner_name);
         tv_time = findViewById(R.id.winner_Time);
@@ -51,13 +55,12 @@ public class WinActivity extends AppCompatActivity implements DataChangedListene
         getData();
 
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        records = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView_records);
         recyclerView.setLayoutManager(layoutManager);
 
-        RecordsRepo.addRecord(new Record(time, CurrentUser.getInstance().getId()), this);
-        records = RecordsRepo.getRecords(this);
 
+
+        RecordsRepo.addRecord(time, CurrentUser.getInstance().getId(), this);
         adapterRecords = new AdapterRecords(records, this);
         recyclerView.setAdapter(adapterRecords);
     }

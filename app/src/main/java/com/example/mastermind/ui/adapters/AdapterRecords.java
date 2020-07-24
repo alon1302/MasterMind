@@ -41,12 +41,14 @@ public class AdapterRecords extends RecyclerView.Adapter<AdapterRecords.ViewHold
     @Override
     public void onBindViewHolder(@NonNull AdapterRecords.ViewHolder holder, int position) {
         RecordPerUser currRecord = records.get(position);
-        Glide.with(context).load(currRecord.getUser().getValue().getImgUrl()).into(holder.img);
-        holder.name.setText(currRecord.getUser().getValue().getName());
-        long minutes = (currRecord.getTime() / 1000) / 60;
-        long seconds = (currRecord.getTime() / 1000) % 60;
-        holder.time.setText(String.format(Locale.getDefault(),"%02d:%02d",minutes, seconds));
-        holder.sn.setText(String.format("%d", position + 1));
+        if (currRecord.getUser().getValue() != null) {
+            Glide.with(context).load(currRecord.getUser().getValue().getImgUrl()).into(holder.img);
+            holder.name.setText(currRecord.getUser().getValue().getName());
+            long minutes = (currRecord.getTime() / 1000) / 60;
+            long seconds = (currRecord.getTime() / 1000) % 60;
+            holder.time.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
+            holder.sn.setText(String.format("%d", position + 1));
+        }
     }
 
     @Override

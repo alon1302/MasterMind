@@ -1,16 +1,16 @@
 package com.example.mastermind.model.game;
 
-import android.net.Uri;
-
 public class Record {
     private long time;
+    private String userId;
     private String id;
 
     public Record() {
     }
 
-    public Record(long time, String id) {
+    public Record(long time, String userId, String id) {
         this.time = time;
+        this.userId = userId;
         this.id = id;
     }
 
@@ -20,6 +20,14 @@ public class Record {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getId() {

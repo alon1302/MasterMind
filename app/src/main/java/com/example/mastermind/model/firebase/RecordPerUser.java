@@ -8,10 +8,23 @@ public class RecordPerUser {
 
     private long time;
     private MutableLiveData<User> user;
+    private String id;
 
-    public RecordPerUser(long time, MutableLiveData<User> user) {
+    public RecordPerUser() {
+    }
+
+    public RecordPerUser(long time, MutableLiveData<User> user, String id) {
         this.time = time;
         this.user = user;
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public long getTime() {

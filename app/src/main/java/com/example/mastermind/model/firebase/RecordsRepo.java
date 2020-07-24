@@ -1,17 +1,17 @@
 package com.example.mastermind.model.firebase;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.mastermind.model.game.Record;
 import com.example.mastermind.model.listeners.DataChangedListener;
 import com.example.mastermind.model.user.User;
-import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,20 +20,23 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Queue;
+import java.util.HashMap;
 
 public class RecordsRepo {
 
-    public interface GetRecordsListener{
-        void OnGetRecords();
-    }
+//    public interface GetRecordsListener{
+//        void OnGetRecords();
+//    }
 
     private static ArrayList<RecordPerUser> records = null;
+    private static HashMap<String, String> recordsId = new HashMap<>();
     private static DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Records");
     private static final String TAG = "RecordsRepo";
 
-    public static void addRecord(Record record, Context context){
-        databaseReference.child(record.getTime() + record.getId()).setValue(record).addOnSuccessListener(new OnSuccessListener<Void>() {
+    public static void addRecord(long time, String id, Context context){
+        DatabaseReference ref = databaseReference.push();
+        Record record = new Record(time, id, ref.getKey());
+        ref.setValue(record).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: successful");
@@ -42,35 +45,40 @@ public class RecordsRepo {
     }
 
     private static void addSorted(RecordPerUser record) {
-        boolean isIn = false;
-        String key = "";
-        if (records.isEmpty() || record.getTime()<records.get(0).getTime()) {
-            records.add(0, record);
-            Log.d(TAG, "ADD SORTED: ajk,shvfijsAGVFOUASDVFOUASDVFOUASDFVOAUFGOUASDFGV" + records);
-            isIn = true;
-        }
-        else {
-            for (int i = 1; i < records.size(); i++) {
+        if (!recordsId.containsKey(record.getId())) {
+            boolean isIn = false;
+            String key = "";
+//        if (records.isEmpty() || record.getTime()<records.get(0).getTime()) {
+//            records.add(0, record);
+//            Log.d(TAG, "ADD SORTED: ajk,shvfijsAGVFOUASDVFOUASDVFOUASDFVOAUFGOUASDFGV" + records);
+//            isIn = true;
+//        }
+//        else {
+            for (int i = 0; i < records.size(); i++) {
                 if (record.getTime() < records.get(i).getTime()) {
-                    records.add(i - 1, record);
+                    records.add(i, record);
+                    recordsId.put(record.getId(), record.getId());
                     Log.d(TAG, "ADD SORTEDs: ajk,shvfijsAGVFOUASDVFOUASDVFOUASDFVOAUFGOUASDFGV" + records);
                     isIn = true;
+                    break;
                 }
             }
-        }
-        if (!isIn){
-            records.add(records.size()-1, record);
-        }
-        if (isIn && records.size()>10){
-            key = records.get(10).getTime() + records.get(10).getUser().getValue().getId();
-        }
-        if (!key.equals("")){
-            databaseReference.child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "onSuccess: successful");
-                }
-            });
+            //}
+            if (!isIn) {
+                records.add(records.size(), record);
+            }
+            if (records.size() > 10) {
+                key = records.get(10).getId();
+                records.remove(10);
+            }
+            if (!key.equals("")) {
+                databaseReference.child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: successful");
+                    }
+                });
+            }
         }
     }
 
@@ -95,26 +103,56 @@ public class RecordsRepo {
     }
 
     private static void loadRecords(final Context context){
-        Query query = databaseReference.limitToFirst(10).orderByValue();
-        query.addValueEventListener(new ValueEventListener() {
+            databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot s: snapshot.getChildren()) {
-                    Record r = s.getValue(Record.class);
-                    RecordPerUser record = new RecordPerUser(r.getTime(), getUserInfo(r.getId(), context));
-                    addSorted(record);
-//                    DataChangedListener dataChangedListener = (DataChangedListener) context;
-//                    dataChangedListener.onDataChanged();
-                    Log.d(TAG, "onDataChange: " + record);
-                }
-                Log.d(TAG, "getRecords: ajk,shvfijsAGVFOUASDVFOUASDVFOUASDFVOAUFGOUASDFGV" + records);
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Record r = snapshot.getValue(Record.class);
+                RecordPerUser record = new RecordPerUser(r.getTime(), getUserInfo(r.getUserId(), context), snapshot.getKey());
+                addSorted(record);
+                DataChangedListener dataChangedListener = (DataChangedListener) context;
+                dataChangedListener.onDataChanged();
+                Log.d(TAG, "onDataChange: " + record);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.d(TAG, "onCancelled: ERROR");
+
             }
         });
+//        query.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                for (DataSnapshot s: snapshot.getChildren()) {
+//                    Record r = s.getValue(Record.class);
+//                    RecordPerUser record = new RecordPerUser(r.getTime(), getUserInfo(r.getUserId(), context), s.getKey());
+//                    addSorted(record);
+////                    DataChangedListener dataChangedListener = (DataChangedListener) context;
+////                    dataChangedListener.onDataChanged();
+//                    Log.d(TAG, "onDataChange: " + record);
+//                }
+//                Log.d(TAG, "getRecords: ajk,shvfijsAGVFOUASDVFOUASDVFOUASDFVOAUFGOUASDFGV" + records);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Log.d(TAG, "onCancelled: ERROR");
+//            }
+//        });
     }
 
     private static MutableLiveData<User> getUserInfo(String id, final Context context) {
