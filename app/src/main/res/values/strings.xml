@@ -13,4 +13,5 @@
     <string name="about">About</string>
     <string name="rules">Rules</string>
     <string name="goal">Goal</string>
+    <string name="choose_your_hidden_row">choose your hidden row</string>
 </resources>

@@ -17,6 +17,7 @@ import com.example.mastermind.R;
 import com.example.mastermind.model.game.*;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.ui.adapters.AdapterRows;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -69,7 +70,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
     //_______________Timer_______________//
     public void startTimeRunning() {
-        if(!running) {
+        if (!running) {
             chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
             chronometer.start();
             running = true;
@@ -116,7 +117,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
     @Override
     public void onPositionClicked(int position) {
-        String lastSelection = gameRows.get(gameManager.getTurn()-1).getColorByPosition(position);
+        String lastSelection = gameRows.get(gameManager.getTurn() - 1).getColorByPosition(position);
         gameManager.pegToGameRow(currentSelection, position);
         currentSelection = lastSelection;
         updateCurrImg();
@@ -147,89 +148,134 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     }
 
     public void onClickSubmit(View view) {
-        if (gameRows.get(gameManager.getTurn()-1).isFull()) {
+        if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
             if (!gameManager.nextTurn()) {
-                for (int i =0; i<hiddenRowImages.length; i++) {
+                for (int i = 0; i < hiddenRowImages.length; i++) {
                     hiddenRowImages[i].setVisibility(View.VISIBLE);
                 }
+                String s = convertGameRowToString();
+                FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
                 Toast.makeText(this, "You Win", Toast.LENGTH_LONG).show();
                 pauseTimeRunning();
                 checkTime();
                 openWinnerActivity();
             }
-            recyclerView.smoothScrollToPosition(adapterRows.getItemCount()-1);
+            recyclerView.smoothScrollToPosition(adapterRows.getItemCount() - 1);
             adapterRows.notifyDataSetChanged();
+            String s = convertGameRowToString();
+            FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
         }
     }
 
-    private void openWinnerActivity() {
-        Intent intent = new Intent(this, WinActivity.class);
-        intent.putExtra("minutes", minutes);
-        intent.putExtra("seconds", seconds);
-        intent.putExtra("time", timeInMillis);
-        startActivity(intent);
-        finish();
-    }
-
-    public void updateCurrImg(){
-        switch (currentSelection) {
-            case "null":
-                current.setImageResource(R.color.colorTWhite);
-                break;
-            case "red":
-                current.setImageResource(R.color.colorRed);
-                break;
-            case "blue":
-                current.setImageResource(R.color.colorBlue);
-                break;
-            case "green":
-                current.setImageResource(R.color.colorGreen);
-                break;
-            case "orange":
-                current.setImageResource(R.color.colorOrange);
-                break;
-            case "yellow":
-                current.setImageResource(R.color.colorYellow);
-                break;
-            case "light":
-                current.setImageResource(R.color.colorLight);
-                break;
-        }
-    }
-
-    public void createHidden() {
-        hiddenRowImages = new CircleImageView[4];
-        hiddenRowImages[0] = findViewById(R.id.hidden0);
-        hiddenRowImages[1] = findViewById(R.id.hidden1);
-        hiddenRowImages[2] = findViewById(R.id.hidden2);
-        hiddenRowImages[3] = findViewById(R.id.hidden3);
-        GameRow hiddenRow = gameManager.getHidden();
-        String[] hiddenColors = hiddenRow.getStringRow();
-        for (int i = 0; i < hiddenColors.length; i++) {
-            //hiddenRowImages[i].setVisibility(View.INVISIBLE);
-            switch (hiddenColors[i]) {
-                case "null":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);
-                    break;
+    private String convertGameRowToString() {
+        GameRow currG = gameRows.get(gameManager.getTurn() - 2);
+        String[] currGstrings = currG.getStringRow();
+        CheckRow currC = checkRows.get(gameManager.getTurn() - 2);
+        String[] currCstrings = currC.getStringRow();
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < 4; i++) {
+            switch (currGstrings[i]) {
                 case "red":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorRed);
+                    s.append("0");
                     break;
                 case "green":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorGreen);
+                    s.append("1");
                     break;
                 case "blue":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorBlue);
+                    s.append("2");
                     break;
                 case "orange":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorOrange);
+                    s.append("3");
                     break;
                 case "yellow":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorYellow);
+                    s.append("4");
                     break;
                 case "light":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorLight);
+                    s.append("5");
                     break;
             }
         }
+        for (int i = 0; i < 4; i++) {
+            switch (currCstrings[i]) {
+                case "black":
+                    s.append("&");
+                    break;
+                case "white":
+                    s.append("|");
+                    break;
+            }
+        }
+        return s.toString();
     }
-}
+
+        private void openWinnerActivity () {
+            Intent intent = new Intent(this, WinActivity.class);
+            intent.putExtra("minutes", minutes);
+            intent.putExtra("seconds", seconds);
+            intent.putExtra("time", timeInMillis);
+            startActivity(intent);
+            finish();
+        }
+
+        public void updateCurrImg () {
+            switch (currentSelection) {
+                case "null":
+                    current.setImageResource(R.color.colorTWhite);
+                    break;
+                case "red":
+                    current.setImageResource(R.color.colorRed);
+                    break;
+                case "blue":
+                    current.setImageResource(R.color.colorBlue);
+                    break;
+                case "green":
+                    current.setImageResource(R.color.colorGreen);
+                    break;
+                case "orange":
+                    current.setImageResource(R.color.colorOrange);
+                    break;
+                case "yellow":
+                    current.setImageResource(R.color.colorYellow);
+                    break;
+                case "light":
+                    current.setImageResource(R.color.colorLight);
+                    break;
+            }
+        }
+
+        public void createHidden () {
+            hiddenRowImages = new CircleImageView[4];
+            hiddenRowImages[0] = findViewById(R.id.hidden0);
+            hiddenRowImages[1] = findViewById(R.id.hidden1);
+            hiddenRowImages[2] = findViewById(R.id.hidden2);
+            hiddenRowImages[3] = findViewById(R.id.hidden3);
+            GameRow hiddenRow = gameManager.getHidden();
+            String[] hiddenColors = hiddenRow.getStringRow();
+            for (int i = 0; i < hiddenColors.length; i++) {
+                hiddenRowImages[i].setVisibility(View.INVISIBLE);
+                switch (hiddenColors[i]) {
+                    case "null":
+                        this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);
+                        break;
+                    case "red":
+                        this.hiddenRowImages[i].setImageResource(R.color.colorRed);
+                        break;
+                    case "green":
+                        this.hiddenRowImages[i].setImageResource(R.color.colorGreen);
+                        break;
+                    case "blue":
+                        this.hiddenRowImages[i].setImageResource(R.color.colorBlue);
+                        break;
+                    case "orange":
+                        this.hiddenRowImages[i].setImageResource(R.color.colorOrange);
+                        break;
+                    case "yellow":
+                        this.hiddenRowImages[i].setImageResource(R.color.colorYellow);
+                        break;
+                    case "light":
+                        this.hiddenRowImages[i].setImageResource(R.color.colorLight);
+                        break;
+                }
+            }
+        }
+    }
