@@ -83,6 +83,7 @@
         android:layout_margin="4dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/main_design"
+        android:onClick="onClickTwoPlayer"
         android:text="Two Players"
         android:textAllCaps="false"
         android:textSize="30sp"

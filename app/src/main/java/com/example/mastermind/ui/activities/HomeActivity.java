@@ -61,6 +61,11 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onClickTwoPlayer(View view){
+        Intent intent = new Intent(this, MultiplayerActivity.class);
+        startActivity(intent);
+    }
+
     public void onClickLogOut(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         mAuth.signOut();

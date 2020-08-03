@@ -14,6 +14,7 @@ import com.example.mastermind.MainActivity;
 import com.example.mastermind.R;
 import com.example.mastermind.ui.adapters.ViewPagerAdapter;
 import com.example.mastermind.ui.fragments.AboutFragment;
+import com.example.mastermind.ui.fragments.ChooseHiddenFragment;
 import com.example.mastermind.ui.fragments.GoalFragment;
 import com.example.mastermind.ui.fragments.RulesFragment;
 import com.google.firebase.auth.FirebaseAuth;
