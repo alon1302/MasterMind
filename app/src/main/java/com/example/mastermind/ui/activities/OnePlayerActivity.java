@@ -45,8 +45,6 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private long timeInMillis;
     private long minutes, seconds;
 
-    private LinearLayoutManager layoutManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +53,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
         chronometer = findViewById(R.id.chronometer);
         gameManager = new GameManager();
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(layoutManager);
         gameRows = gameManager.getGameRows();
@@ -208,74 +206,74 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         return s.toString();
     }
 
-        private void openWinnerActivity () {
-            Intent intent = new Intent(this, WinActivity.class);
-            intent.putExtra("minutes", minutes);
-            intent.putExtra("seconds", seconds);
-            intent.putExtra("time", timeInMillis);
-            startActivity(intent);
-            finish();
-        }
+    private void openWinnerActivity() {
+        Intent intent = new Intent(this, WinActivity.class);
+        intent.putExtra("minutes", minutes);
+        intent.putExtra("seconds", seconds);
+        intent.putExtra("time", timeInMillis);
+        startActivity(intent);
+        finish();
+    }
 
-        public void updateCurrImg () {
-            switch (currentSelection) {
+    public void updateCurrImg() {
+        switch (currentSelection) {
+            case "null":
+                current.setImageResource(R.color.colorTWhite);
+                break;
+            case "red":
+                current.setImageResource(R.color.colorRed);
+                break;
+            case "blue":
+                current.setImageResource(R.color.colorBlue);
+                break;
+            case "green":
+                current.setImageResource(R.color.colorGreen);
+                break;
+            case "orange":
+                current.setImageResource(R.color.colorOrange);
+                break;
+            case "yellow":
+                current.setImageResource(R.color.colorYellow);
+                break;
+            case "light":
+                current.setImageResource(R.color.colorLight);
+                break;
+        }
+    }
+
+    public void createHidden() {
+        hiddenRowImages = new CircleImageView[4];
+        hiddenRowImages[0] = findViewById(R.id.hidden0);
+        hiddenRowImages[1] = findViewById(R.id.hidden1);
+        hiddenRowImages[2] = findViewById(R.id.hidden2);
+        hiddenRowImages[3] = findViewById(R.id.hidden3);
+        GameRow hiddenRow = gameManager.getHidden();
+        String[] hiddenColors = hiddenRow.getStringRow();
+        for (int i = 0; i < hiddenColors.length; i++) {
+            hiddenRowImages[i].setVisibility(View.INVISIBLE);
+            switch (hiddenColors[i]) {
                 case "null":
-                    current.setImageResource(R.color.colorTWhite);
+                    this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);
                     break;
                 case "red":
-                    current.setImageResource(R.color.colorRed);
-                    break;
-                case "blue":
-                    current.setImageResource(R.color.colorBlue);
+                    this.hiddenRowImages[i].setImageResource(R.color.colorRed);
                     break;
                 case "green":
-                    current.setImageResource(R.color.colorGreen);
+                    this.hiddenRowImages[i].setImageResource(R.color.colorGreen);
+                    break;
+                case "blue":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorBlue);
                     break;
                 case "orange":
-                    current.setImageResource(R.color.colorOrange);
+                    this.hiddenRowImages[i].setImageResource(R.color.colorOrange);
                     break;
                 case "yellow":
-                    current.setImageResource(R.color.colorYellow);
+                    this.hiddenRowImages[i].setImageResource(R.color.colorYellow);
                     break;
                 case "light":
-                    current.setImageResource(R.color.colorLight);
+                    this.hiddenRowImages[i].setImageResource(R.color.colorLight);
                     break;
-            }
-        }
-
-        public void createHidden () {
-            hiddenRowImages = new CircleImageView[4];
-            hiddenRowImages[0] = findViewById(R.id.hidden0);
-            hiddenRowImages[1] = findViewById(R.id.hidden1);
-            hiddenRowImages[2] = findViewById(R.id.hidden2);
-            hiddenRowImages[3] = findViewById(R.id.hidden3);
-            GameRow hiddenRow = gameManager.getHidden();
-            String[] hiddenColors = hiddenRow.getStringRow();
-            for (int i = 0; i < hiddenColors.length; i++) {
-                hiddenRowImages[i].setVisibility(View.INVISIBLE);
-                switch (hiddenColors[i]) {
-                    case "null":
-                        this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);
-                        break;
-                    case "red":
-                        this.hiddenRowImages[i].setImageResource(R.color.colorRed);
-                        break;
-                    case "green":
-                        this.hiddenRowImages[i].setImageResource(R.color.colorGreen);
-                        break;
-                    case "blue":
-                        this.hiddenRowImages[i].setImageResource(R.color.colorBlue);
-                        break;
-                    case "orange":
-                        this.hiddenRowImages[i].setImageResource(R.color.colorOrange);
-                        break;
-                    case "yellow":
-                        this.hiddenRowImages[i].setImageResource(R.color.colorYellow);
-                        break;
-                    case "light":
-                        this.hiddenRowImages[i].setImageResource(R.color.colorLight);
-                        break;
-                }
             }
         }
     }
+}

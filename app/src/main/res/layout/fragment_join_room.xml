@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".ui.fragments.JoinRoomFragment">
+
+    <EditText
+        android:id="@+id/roomCodeEt"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_room_code"
+        android:inputType="number" />
+
+
+    <Button
+        android:id="@+id/joinRoomBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/join_room"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/createRoomBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_room"
+        android:textSize="30sp" />
+
+</LinearLayout>

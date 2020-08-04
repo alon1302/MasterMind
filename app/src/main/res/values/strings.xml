@@ -16,4 +16,7 @@
     <string name="choose_your_hidden_row">choose your hidden row</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="join_room">join room</string>
+    <string name="create_room">create room</string>
+    <string name="enter_room_code">Enter Room Code</string>
 </resources>
