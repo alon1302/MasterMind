@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.mastermind.MainActivity;
 import com.example.mastermind.R;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;

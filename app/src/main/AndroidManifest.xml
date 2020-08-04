@@ -13,7 +13,7 @@
         <activity android:name=".ui.activities.WinActivity" />
         <activity android:name=".ui.activities.OnePlayerActivity" />
         <activity android:name=".ui.activities.HomeActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

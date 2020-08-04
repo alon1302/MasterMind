@@ -1,15 +1,19 @@
 package com.example.mastermind.model.firebase;
 
+import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.core.Context;
 
 import java.util.Random;
 
@@ -21,17 +25,19 @@ public class MultiPlayerManager {
     private boolean codeCreated = false;
     private String TAG = "MultiPlayerManager";
 
-    public void createRoom(){
+    public void createRoom(final Activity context){
         final String currCode = createStringCode();
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists() && !codeCreated){
-                    createRoom();
+                    createRoom(context);
                 }
                 else{
                     code = currCode;
-                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Player1").setValue(CurrentUser.getInstance().getId());
+                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Player1").setValue(CurrentUser.getInstance());
+                    MethodCallBack methodCallBack = (MethodCallBack)context;
+                    methodCallBack.onCallBack(2, null);
                     codeCreated = true;
                 }
             }
@@ -55,15 +61,18 @@ public class MultiPlayerManager {
         return code.toString();
     }
 
-    public void joinRoom(final String code){
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).addValueEventListener(new ValueEventListener() {
+    public void joinRoom(final String currCode, final Activity context){
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()){
-                    // TODO toast (code not exist)
+                    Toast.makeText(context, "Please Type a Valid Game Code", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Player2").setValue(CurrentUser.getInstance().getId());
+                    code =currCode;
+                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Player2").setValue(CurrentUser.getInstance());
+                    MethodCallBack methodCallBack = (MethodCallBack)context;
+                    methodCallBack.onCallBack(2, null);
                 }
 
             }
@@ -73,5 +82,13 @@ public class MultiPlayerManager {
 
             }
         });
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
