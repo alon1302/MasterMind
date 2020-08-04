@@ -9,11 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activities.MultiplayerActivity"></activity>
-        <activity android:name=".ui.activities.WinActivity" />
-        <activity android:name=".ui.activities.OnePlayerActivity" />
-        <activity android:name=".ui.activities.HomeActivity" />
-        <activity android:name=".ui.activities.MainActivity">
+        <activity android:name=".ui.activities.MultiplayerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activities.WinActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activities.OnePlayerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activities.HomeActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activities.MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
