@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
@@ -34,12 +35,14 @@ public class WaitingForOpponentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         code = bundle.getString("code");
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_waiting_for_opponent, container, false);
+        ((TextView)(view.findViewById(R.id.codeTv))).setText("Game Code: " + code);
         this.thisActivity = requireActivity();
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Player1").addValueEventListener(new ValueEventListener() {
             @Override
@@ -48,6 +51,9 @@ public class WaitingForOpponentFragment extends Fragment {
                     try {
                         user1 = snapshot.getValue(User.class);
                         Glide.with(thisActivity).load(user1.getImgUrl()).into((CircleImageView) (view.findViewById(R.id.PlayerOne_image)));
+                        if (user1 != null && user2 != null){
+                            ((TextView)(view.findViewById(R.id.codeTv))).setText("Starting Game");
+                        }
                     } catch (Exception ignored) {
                     }
                 }
@@ -63,6 +69,9 @@ public class WaitingForOpponentFragment extends Fragment {
                     try {
                         user2 = snapshot.getValue(User.class);
                         Glide.with(thisActivity).load(user2.getImgUrl()).into((CircleImageView)(view.findViewById(R.id.PlayerTwo_image)));
+                        if (user1 != null && user2 != null){
+                            ((TextView)(view.findViewById(R.id.codeTv))).setText("Starting Game");
+                        }
                     }catch (Exception ignored){}
                 }
             }
