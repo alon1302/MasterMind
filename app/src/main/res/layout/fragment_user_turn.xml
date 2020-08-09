@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/master_mind_back"
+    tools:context=".ui.activities.OnePlayerActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/user_multi_img"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@color/colorWhite"
+        app:civ_border_color="@color/colorBlack"
+        app:civ_border_width="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/user_multi_chronometer"
+        app:layout_constraintEnd_toStartOf="@+id/user_multi_chronometer"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/user_multi_chronometer"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <LinearLayout
+        android:id="@+id/user_multi_linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/game_design"
+        android:orientation="horizontal"
+        android:padding="1.5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_multi_chronometer">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_hidden0"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="2.5dp"
+            android:src="@color/colorWhite"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="2dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_hidden1"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="2.5dp"
+            android:src="@color/colorWhite"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="2dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_hidden2"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="2.5dp"
+            android:src="@color/colorWhite"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="2dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_hidden3"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="2.5dp"
+            android:src="@color/colorWhite"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="2dp" />
+    </LinearLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/user_multi_currentSelection"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:src="@color/colorTWhite"
+        app:civ_border_color="@color/colorBlack"
+        app:civ_border_width="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/user_multi_linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/user_multi_linearLayout2"
+        app:layout_constraintTop_toTopOf="@+id/user_multi_linearLayout2" />
+
+    <Chronometer
+        android:id="@+id/user_multi_chronometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="45sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="@+id/user_multi_linearLayout2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/user_multi_recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/user_multi_linearLayout4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_multi_linearLayout2"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <LinearLayout
+        android:id="@+id/user_multi_linearLayout4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/game_design"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="2.5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_red"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_margin="1.5dp"
+            android:src="@color/colorRed"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="1dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_green"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_margin="1.5dp"
+            android:src="@color/colorGreen"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="1dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_blue"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_margin="1.5dp"
+            android:src="@color/colorBlue"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="1dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_orange"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_margin="1.5dp"
+            android:src="@color/colorOrange"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="1dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_yellow"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_margin="1.5dp"
+            android:src="@color/colorYellow"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="1dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_multi_light"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_margin="1.5dp"
+            android:src="@color/colorLight"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="1dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/user_multi_btn_submit"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="2.5dp"
+        android:layout_marginStart="2dp"
+        android:background="@drawable/game_design"
+        android:backgroundTint="@color/colorWhite"
+        android:onClick="onClickSubmit"
+        android:text="Submit"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/user_multi_linearLayout4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/user_multi_linearLayout4"
+        app:layout_constraintTop_toTopOf="@+id/user_multi_linearLayout4" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/master_mind_back"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".OpponentTurnFragment">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/opponent_multi_img"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@color/colorWhite"
+        app:civ_border_color="@color/colorBlack"
+        app:civ_border_width="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/opponent_multi_chronometer"
+        app:layout_constraintEnd_toStartOf="@+id/opponent_multi_chronometer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/opponent_multi_chronometer" />
+
+    <Chronometer
+        android:id="@+id/opponent_multi_chronometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="45sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/opponent_multi_recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/opponent_multi_linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/opponent_multi_chronometer"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <LinearLayout
+        android:id="@+id/opponent_multi_linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/game_design"
+        android:orientation="horizontal"
+        android:padding="1.5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/opponent_multi_hidden0"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="2.5dp"
+            android:src="@color/colorWhite"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="2dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/opponent_multi_hidden1"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="2.5dp"
+            android:src="@color/colorWhite"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="2dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/opponent_multi_hidden2"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="2.5dp"
+            android:src="@color/colorWhite"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="2dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/opponent_multi_hidden3"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="2.5dp"
+            android:src="@color/colorWhite"
+            app:civ_border_color="@color/colorBlack"
+            app:civ_border_width="2dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

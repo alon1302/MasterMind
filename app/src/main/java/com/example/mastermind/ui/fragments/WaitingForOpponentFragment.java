@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
+import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.google.firebase.database.DataSnapshot;
@@ -53,6 +55,9 @@ public class WaitingForOpponentFragment extends Fragment {
                         Glide.with(thisActivity).load(user1.getImgUrl()).into((CircleImageView) (view.findViewById(R.id.PlayerOne_image)));
                         if (user1 != null && user2 != null){
                             ((TextView)(view.findViewById(R.id.codeTv))).setText("Starting Game");
+                            Log.d("!!!!!!!!!!", "onDataChange: " + requireActivity().toString()+ " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                            MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+                            methodCallBack.onCallBack(3, null);
                         }
                     } catch (Exception ignored) {
                     }
@@ -71,6 +76,8 @@ public class WaitingForOpponentFragment extends Fragment {
                         Glide.with(thisActivity).load(user2.getImgUrl()).into((CircleImageView)(view.findViewById(R.id.PlayerTwo_image)));
                         if (user1 != null && user2 != null){
                             ((TextView)(view.findViewById(R.id.codeTv))).setText("Starting Game");
+                            MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+                            methodCallBack.onCallBack(3, null);
                         }
                     }catch (Exception ignored){}
                 }

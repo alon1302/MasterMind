@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -24,6 +25,8 @@ public class MultiPlayerManager {
     private String code;
     private boolean codeCreated = false;
     private String TAG = "MultiPlayerManager";
+    private String player;
+    private String playerTurn = "Player1";
 
     public void createRoom(final Activity context){
         final String currCode = createStringCode();
@@ -35,7 +38,8 @@ public class MultiPlayerManager {
                 }
                 else{
                     code = currCode;
-                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Player1").setValue(CurrentUser.getInstance());
+                    player = "Player1";
+                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());
                     MethodCallBack methodCallBack = (MethodCallBack)context;
                     methodCallBack.onCallBack(2, null);
                     codeCreated = true;
@@ -47,6 +51,10 @@ public class MultiPlayerManager {
 
             }
         });
+    }
+
+    public void setHiddenInFirebase(String hidden){
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player + "Hidden").setValue(hidden);
     }
 
     private String createStringCode(){
@@ -70,13 +78,12 @@ public class MultiPlayerManager {
                 }
                 else{
                     code =currCode;
-                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Player2").setValue(CurrentUser.getInstance());
+                    player = "Player2";
+                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());
                     MethodCallBack methodCallBack = (MethodCallBack)context;
                     methodCallBack.onCallBack(2, null);
                 }
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -90,5 +97,22 @@ public class MultiPlayerManager {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public void addUserPeg(String row,String turn){
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(turn).child(player).setValue(row);
+    }
+    public void turnRotation(){
+        if (playerTurn.equals("Player1")){
+            playerTurn = "Player2";
+        }
+        if (playerTurn.equals("Player2")){
+            playerTurn = "Player1";
+        }
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("Turn").setValue(playerTurn);
+    }
+
+    public String getPlayer() {
+        return player;
     }
 }

@@ -86,6 +86,37 @@ public class GameRow {
         return s;
     }
 
+    public String getNumStringRow() {
+        String[] stringRow = new String[4];
+        for (int i=0; i<stringRow.length; i++) {
+            stringRow[i] = this.row[i].getColor();
+        }
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < 4; i++) {
+            switch (stringRow[i]) {
+                case "red":
+                    s.append("0");
+                    break;
+                case "green":
+                    s.append("1");
+                    break;
+                case "blue":
+                    s.append("2");
+                    break;
+                case "orange":
+                    s.append("3");
+                    break;
+                case "yellow":
+                    s.append("4");
+                    break;
+                case "light":
+                    s.append("5");
+                    break;
+            }
+        }
+        return s.toString();
+    }
+
     @Override
     public String toString() {
         return "GameRow{" +

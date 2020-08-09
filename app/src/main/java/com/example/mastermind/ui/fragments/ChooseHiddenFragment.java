@@ -10,10 +10,14 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.mastermind.R;
+import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
+import com.example.mastermind.model.listeners.MethodCallBack;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -45,8 +49,22 @@ public class ChooseHiddenFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_choose_hidden, container, false);
         createButtons();
         createRow();
+        view.findViewById(R.id.btn_submit_choose).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (hidden.isFull()){
+                    String row = hidden.getNumStringRow();
+                    MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+                    methodCallBack.onCallBack(4, row);
+                }
+                else{
+                    Toast.makeText(requireActivity(), "choose your hidden row", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         return view;
     }
+
 
 
     public void createRow() {
