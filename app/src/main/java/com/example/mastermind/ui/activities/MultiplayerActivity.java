@@ -44,7 +44,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         userTurnFragment = new UserTurnFragment();
         opponentTurnFragment = new OpponentTurnFragment();
 
-        multiPlayerManager = new MultiPlayerManager();
+        multiPlayerManager = new MultiPlayerManager(this);
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, new JoinRoomFragment()).commit();
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("Game").child("Turn").addValueEventListener(new ValueEventListener() {
             @Override
@@ -110,13 +110,14 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         // 6 - opponent
         // 7 - upload row changes
         // 8 - start game after choosing
+        // 9 - turn rotation
         if (action == 0) {
-            multiPlayerManager.createRoom(this);
+            multiPlayerManager.createRoom();
             return;
         }
         if (action == 1 ){
             Log.d(TAG, "onCallBack: 1---------------------------");
-            multiPlayerManager.joinRoom(value,this);
+            multiPlayerManager.joinRoom(value);
         }
         if (action == 2){
             if (!entered2) {
@@ -134,6 +135,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             Log.d(TAG, "onCallBack: 4---------------------------");
             multiPlayerManager.setHiddenInFirebase(value);
             multiPlayerManager.retriveHiddens();
+            multiPlayerManager.howsTurn();
         }
         if (action == 5){
             Log.d(TAG, "onCallBack: 5---------------------------");
@@ -156,6 +158,9 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             else
                 toOpponentFragment();
             d.dismiss();
+        }
+        if (action == 9){
+            multiPlayerManager.turnRotation();
         }
 
     }

@@ -102,29 +102,31 @@ public class OpponentTurnFragment extends Fragment {
 
     public GameRow convertStringToGameRow(String row) {
         GameRow gameRow = new GameRow();
-        for (int i = 0; i < 4; i++) {
-            switch (row.charAt(i)) {
-                case 'n':
-                    gameRow.addPeg(new GamePeg("null", i));
-                    break;
-                case '0':
-                    gameRow.addPeg(new GamePeg("red", i));
-                    break;
-                case '1':
-                    gameRow.addPeg(new GamePeg("green", i));
-                    break;
-                case '2':
-                    gameRow.addPeg(new GamePeg("blue", i));
-                    break;
-                case '3':
-                    gameRow.addPeg(new GamePeg("orange", i));
-                    break;
-                case '4':
-                    gameRow.addPeg(new GamePeg("yellow", i));
-                    break;
-                case '5':
-                    gameRow.addPeg(new GamePeg("light", i));
-                    break;
+        if (row != null) {
+            for (int i = 0; i < 4; i++) {
+                switch (row.charAt(i)) {
+                    case 'n':
+                        gameRow.addPeg(new GamePeg("null", i));
+                        break;
+                    case '0':
+                        gameRow.addPeg(new GamePeg("red", i));
+                        break;
+                    case '1':
+                        gameRow.addPeg(new GamePeg("green", i));
+                        break;
+                    case '2':
+                        gameRow.addPeg(new GamePeg("blue", i));
+                        break;
+                    case '3':
+                        gameRow.addPeg(new GamePeg("orange", i));
+                        break;
+                    case '4':
+                        gameRow.addPeg(new GamePeg("yellow", i));
+                        break;
+                    case '5':
+                        gameRow.addPeg(new GamePeg("light", i));
+                        break;
+                }
             }
         }
         return gameRow;

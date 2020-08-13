@@ -147,7 +147,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
     public void onClickSubmit(View view) {
         if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
-            if (!gameManager.nextTurn()) {
+            if (!gameManager.nextTurnIsNotWin()) {
                 for (int i = 0; i < hiddenRowImages.length; i++) {
                     hiddenRowImages[i].setVisibility(View.VISIBLE);
                 }

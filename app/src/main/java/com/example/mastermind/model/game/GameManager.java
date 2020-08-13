@@ -62,7 +62,7 @@ public class GameManager {
         }
     }
 
-    public boolean nextTurn() {
+    public boolean nextTurnIsNotWin() {
         checkRows.set(turn - 1, gameRows.get(turn - 1).checkGameRow(hidden));
         if (checkRows.get(turn - 1).isWin())
             return false;
@@ -70,6 +70,11 @@ public class GameManager {
         gameRows.add(new GameRow());
         checkRows.add(new CheckRow());
         return true;
+    }
+    public void nextTurn(){
+        this.turn++;
+        gameRows.add(new GameRow());
+        checkRows.add(new CheckRow());
     }
 
     public int getTurn() {

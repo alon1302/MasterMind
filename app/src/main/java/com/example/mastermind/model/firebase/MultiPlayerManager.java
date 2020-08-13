@@ -1,5 +1,6 @@
 package com.example.mastermind.model.firebase;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
@@ -26,27 +27,29 @@ public class MultiPlayerManager {
     private boolean codeCreated = false;
     private String TAG = "MultiPlayerManager";
     private String player;
-    private String playerTurn = "Player1";
+    private String playerTurn="";
     private String userHidden = "nnnn";
     private String opponentHidden="nnnn";
     Activity context;
 
-    public MultiPlayerManager() {
+    public MultiPlayerManager(Activity context) {
         this.code = "";
+        playerTurn = "Player1";
+        this.context = context;
     }
 
-    public void createRoom(final Activity context){
-        this.context = context;
+    public void createRoom(){
         final String currCode = createStringCode();
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists() && !codeCreated){
-                    createRoom(context);
+                    createRoom();
                 }
                 else{
                     code = currCode;
                     player = "Player1";
+                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("HowsTurn").setValue("Player1");
                     FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());
                     MethodCallBack methodCallBack = (MethodCallBack)context;
                     methodCallBack.onCallBack(2, null);
@@ -123,8 +126,7 @@ public class MultiPlayerManager {
         return code.toString();
     }
 
-    public void joinRoom(final String currCode, final Activity context){
-        this.context = context;
+    public void joinRoom(final String currCode){
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -157,15 +159,42 @@ public class MultiPlayerManager {
     public void addUserPeg(String row,String turn){
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("Turns").child(turn).child(player).setValue(row);
     }
+
     public void turnRotation(){
         if (playerTurn.equals("Player1")){
             playerTurn = "Player2";
+            FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("HowsTurn").setValue("Player2");
         }
-        if (playerTurn.equals("Player2")){
+        else {
             playerTurn = "Player1";
+            FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("HowsTurn").setValue("Player1");
         }
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("Turn").setValue(playerTurn);
+
     }
+
+    public void howsTurn(){
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("HowsTurn").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    Log.d(TAG, "onDataChange: Turn Ro -----------------------------");
+                    String t = snapshot.getValue(String.class);
+                    MethodCallBack methodCallBack = (MethodCallBack) context;
+                    if (player.equals(t)) {
+                        methodCallBack.onCallBack(5, null);
+                    } else if (!player.equals(t)){
+                        methodCallBack.onCallBack(6, null);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     public String getPlayer() {
         return player;
     }

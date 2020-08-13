@@ -24,7 +24,6 @@ import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.adapters.AdapterRows;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -108,27 +107,25 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         createHidden();
         createButtons();
         Glide.with(requireActivity()).load(user1.getImgUrl()).into((CircleImageView)view.findViewById(R.id.user_multi_img));
+        view.findViewById(R.id.user_multi_btn_submit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickSubmit();
+            }
+        });
         return view;
     }
 
-    public void onClickSubmit(View view) {
+    public void onClickSubmit() {
         if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
-            if (!gameManager.nextTurn()) {
-                for (int i = 0; i < hiddenRowImages.length; i++) {
-                    hiddenRowImages[i].setVisibility(View.VISIBLE);
-                }
-                //String s = convertGameRowToString();
-                //FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
-               // Toast.makeText(this, "You Win", Toast.LENGTH_LONG).show();
-                //pauseTimeRunning();
-                //checkTime();
-                //openWinnerActivity();
-            }
-
+            gameManager.nextTurn();
+            MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+            methodCallBack.onCallBack(9, null);
             recyclerView.smoothScrollToPosition(adapterRows.getItemCount() - 1);
             adapterRows.notifyDataSetChanged();
-           // String s = convertGameRowToString();
-//            FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
+
+        }else {
+            Toast.makeText(requireActivity(), "", Toast.LENGTH_SHORT).show();
         }
     }
 
