@@ -2,19 +2,21 @@ package com.example.mastermind.ui.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Dialog;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
+import android.widget.Button;
 
-import com.example.mastermind.OpponentTurnFragment;
+import com.example.mastermind.model.listeners.SendUsersCallBack;
+import com.example.mastermind.model.user.CurrentUser;
+import com.example.mastermind.model.user.User;
+import com.example.mastermind.ui.fragments.OpponentTurnFragment;
 import com.example.mastermind.R;
-import com.example.mastermind.UserTurnFragment;
+import com.example.mastermind.ui.fragments.UserTurnFragment;
 import com.example.mastermind.model.firebase.MultiPlayerManager;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.listeners.OnPegClickListener;
-import com.example.mastermind.ui.fragments.AboutFragment;
 import com.example.mastermind.ui.fragments.ChooseHiddenFragment;
 import com.example.mastermind.ui.fragments.JoinRoomFragment;
 import com.example.mastermind.ui.fragments.WaitingForOpponentFragment;
@@ -23,22 +25,27 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MultiplayerActivity extends AppCompatActivity implements MethodCallBack , OnPegClickListener {
+public class MultiplayerActivity extends AppCompatActivity implements MethodCallBack , OnPegClickListener, SendUsersCallBack {
 
     private static final String TAG = "Multiplayer" ;
     MultiPlayerManager multiPlayerManager;
     private UserTurnFragment userTurnFragment;
     private OpponentTurnFragment opponentTurnFragment;
+    private boolean entered = false;
+    private boolean entered2 = false;
+    User user1, user2;
+    Dialog d;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
+
         userTurnFragment = new UserTurnFragment();
         opponentTurnFragment = new OpponentTurnFragment();
+
         multiPlayerManager = new MultiPlayerManager();
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, new JoinRoomFragment()).commit();
-
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("Game").child("Turn").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -56,6 +63,11 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
 
             }
         });
+        d = new Dialog(this);
+        d.setContentView(R.layout.loading_dialog);
+        d.setCancelable(false);
+        d.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
     }
 
     public void toWaitingFragment(){
@@ -67,19 +79,23 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     }
 
     public void toChooseFragment(){
-        Log.d(TAG, "toChooseFragment: called");
-        ChooseHiddenFragment chooseHiddenFragment = new ChooseHiddenFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("code", multiPlayerManager.getCode());
-        chooseHiddenFragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, chooseHiddenFragment).commit();
+        Log.d(TAG, "toChooseFragment: " +  entered + "878787878787878787878");
+
+        if (!entered) {
+            ChooseHiddenFragment chooseHiddenFragment = new ChooseHiddenFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("code", multiPlayerManager.getCode());
+            chooseHiddenFragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, chooseHiddenFragment).commit();
+            entered = true;
+        }
     }
     public void toUserFragment(){
-        Log.d(TAG, "toChooseFragment: called");
+        Log.d(TAG, "toChooseFragment: 6666");
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, userTurnFragment).commit();
     }
     public void toOpponentFragment(){
-        Log.d(TAG, "toChooseFragment: called");
+        Log.d(TAG, "toChooseFragment: 61123");
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, opponentTurnFragment).commit();
     }
 
@@ -92,40 +108,83 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         // 4 - add hidden to database
         // 5 - user
         // 6 - opponent
+        // 7 - upload row changes
+        // 8 - start game after choosing
         if (action == 0) {
-            Log.d(TAG, "onCallBack: called back");
             multiPlayerManager.createRoom(this);
             return;
         }
         if (action == 1 ){
+            Log.d(TAG, "onCallBack: 1---------------------------");
             multiPlayerManager.joinRoom(value,this);
         }
         if (action == 2){
-            toWaitingFragment();
+            if (!entered2) {
+                Log.d(TAG, "onCallBack: 2---------------------------");
+                toWaitingFragment();
+                entered2 = true;
+            }
         }
         if(action == 3){
+            Log.d(TAG, "onCallBack: 3---------------------------");
             toChooseFragment();
         }
         if (action == 4){
+            d.show();
+            Log.d(TAG, "onCallBack: 4---------------------------");
             multiPlayerManager.setHiddenInFirebase(value);
+            multiPlayerManager.retriveHiddens();
         }
         if (action == 5){
+            Log.d(TAG, "onCallBack: 5---------------------------");
             toUserFragment();
         }
         if (action == 6){
+            Log.d(TAG, "onCallBack: 6---------------------------");
             toOpponentFragment();
         }
         if (action == 7){
+            Log.d(TAG, "onCallBack: 7---------------------------");
             String row = value.substring(0,4);
             String turn = value.substring(5);
             multiPlayerManager.addUserPeg(row,turn);
+        }
+        if (action == 8){
+            Log.d(TAG, "onCallBack: 8---------------------------");
+            if (value.equals("Player1"))
+                toUserFragment();
+            else
+                toOpponentFragment();
+            d.dismiss();
         }
 
     }
 
     @Override
     public void onPositionClicked(int position) {
+        Log.d(TAG, "onPositionClicked: " + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         OnPegClickListener onPegClickListener = (OnPegClickListener)userTurnFragment;
         onPegClickListener.onPositionClicked(position);
+    }
+
+    @Override
+    public void sendUsers(User user1, User user2) {
+        Log.d(TAG, "sendUsers: *-*-*-*-*-*-*-*-*-*-*-*//////////////////////////////////////////////////");
+        if (CurrentUser.getInstance().getId().equals(user1.getId())) {
+            this.user1 = user1;
+            this.user2 = user2;
+        }
+        else{
+            this.user2 = user1;
+            this.user1 = user2;
+        }
+        Bundle bundle = new Bundle();
+        bundle.putString("player", multiPlayerManager.getPlayer());
+        bundle.putSerializable("user1", this.user1);
+        bundle.putSerializable("user2", this.user2);
+        bundle.putString("opponentHidden",multiPlayerManager.getOpponentHidden());
+        bundle.putString("code", multiPlayerManager.getCode());
+        userTurnFragment.setArguments(bundle);
+        opponentTurnFragment.setArguments(bundle);
     }
 }

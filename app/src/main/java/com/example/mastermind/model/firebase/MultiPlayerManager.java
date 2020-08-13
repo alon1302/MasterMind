@@ -27,8 +27,16 @@ public class MultiPlayerManager {
     private String TAG = "MultiPlayerManager";
     private String player;
     private String playerTurn = "Player1";
+    private String userHidden = "nnnn";
+    private String opponentHidden="nnnn";
+    Activity context;
+
+    public MultiPlayerManager() {
+        this.code = "";
+    }
 
     public void createRoom(final Activity context){
+        this.context = context;
         final String currCode = createStringCode();
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addValueEventListener(new ValueEventListener() {
             @Override
@@ -54,7 +62,53 @@ public class MultiPlayerManager {
     }
 
     public void setHiddenInFirebase(String hidden){
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player + "Hidden").setValue(hidden);
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(player + "Hidden").setValue(hidden);
+        String other = "Player1";
+        if (player.equals("Player1"))
+            other = "Player2";
+
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(other+"Hidden").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                MethodCallBack methodCallBack = (MethodCallBack)context;
+                methodCallBack.onCallBack(8, player);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void retriveHiddens(){
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(player + "Hidden").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists())
+                    userHidden = snapshot.getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        String other = "Player1";
+        if (player.equals("Player1"))
+            other = "Player2";
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(other + "Hidden").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists())
+                    opponentHidden = snapshot.getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
     }
 
     private String createStringCode(){
@@ -70,6 +124,7 @@ public class MultiPlayerManager {
     }
 
     public void joinRoom(final String currCode, final Activity context){
+        this.context = context;
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -100,7 +155,7 @@ public class MultiPlayerManager {
     }
 
     public void addUserPeg(String row,String turn){
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(turn).child(player).setValue(row);
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("Turns").child(turn).child(player).setValue(row);
     }
     public void turnRotation(){
         if (playerTurn.equals("Player1")){
@@ -111,8 +166,19 @@ public class MultiPlayerManager {
         }
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("Turn").setValue(playerTurn);
     }
-
     public String getPlayer() {
         return player;
+    }
+
+    public String getPlayerTurn() {
+        return playerTurn;
+    }
+
+    public String getUserHidden() {
+        return userHidden;
+    }
+
+    public String getOpponentHidden() {
+        return opponentHidden;
     }
 }

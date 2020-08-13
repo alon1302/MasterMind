@@ -83,6 +83,10 @@ public class GameManager {
         this.gameRows.set(turn - 1, gameRow);
     }
 
+    public void setHidden(GameRow hidden) {
+        this.hidden = hidden;
+    }
+
     public GameRow getHidden() {
         return hidden;
     }

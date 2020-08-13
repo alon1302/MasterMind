@@ -18,6 +18,7 @@ import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.MethodCallBack;
+import com.google.firebase.database.FirebaseDatabase;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -43,30 +44,32 @@ public class ChooseHiddenFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  choose");
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_choose_hidden, container, false);
         createButtons();
         createRow();
-        view.findViewById(R.id.btn_submit_choose).setOnClickListener(new View.OnClickListener() {
+        Button button = view.findViewById(R.id.btn_submit_choose);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (hidden.isFull()){
-                    String row = hidden.getNumStringRow();
-                    MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-                    methodCallBack.onCallBack(4, row);
-                }
-                else{
-                    Toast.makeText(requireActivity(), "choose your hidden row", Toast.LENGTH_SHORT).show();
-                }
+                onClickSubmit();
             }
         });
         return view;
     }
 
-
-
+    private  void onClickSubmit(){
+        if (hidden.isFull()){
+            String row = hidden.getNumStringRow();
+            MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+            methodCallBack.onCallBack(4, row);
+        }
+        else{
+            Toast.makeText(requireActivity(), "choose your hidden row", Toast.LENGTH_SHORT).show();
+        }
+    }
     public void createRow() {
         hidden = new GameRow();
         hiddenRowImages = new CircleImageView[4];

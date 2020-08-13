@@ -94,6 +94,9 @@ public class GameRow {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < 4; i++) {
             switch (stringRow[i]) {
+                case "null":
+                    s.append("n");
+                    break;
                 case "red":
                     s.append("0");
                     break;

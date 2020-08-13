@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
 import com.example.mastermind.model.listeners.MethodCallBack;
+import com.example.mastermind.model.listeners.SendUsersCallBack;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.google.firebase.database.DataSnapshot;
@@ -58,6 +59,8 @@ public class WaitingForOpponentFragment extends Fragment {
                             Log.d("!!!!!!!!!!", "onDataChange: " + requireActivity().toString()+ " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
                             methodCallBack.onCallBack(3, null);
+                            SendUsersCallBack sendUsersCallBack = (SendUsersCallBack)requireActivity();
+                            sendUsersCallBack.sendUsers(user1, user2);
                         }
                     } catch (Exception ignored) {
                     }
@@ -78,6 +81,8 @@ public class WaitingForOpponentFragment extends Fragment {
                             ((TextView)(view.findViewById(R.id.codeTv))).setText("Starting Game");
                             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
                             methodCallBack.onCallBack(3, null);
+                            SendUsersCallBack sendUsersCallBack = (SendUsersCallBack)requireActivity();
+                            sendUsersCallBack.sendUsers(user1, user2);
                         }
                     }catch (Exception ignored){}
                 }

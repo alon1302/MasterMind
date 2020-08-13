@@ -1,28 +1,36 @@
-package com.example.mastermind;
+package com.example.mastermind.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.example.mastermind.R;
 import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GameManager;
+import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.listeners.OnPegClickListener;
+import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.adapters.AdapterRows;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.content.ContentValues.TAG;
 
 
 public class UserTurnFragment extends Fragment implements OnPegClickListener {
@@ -39,28 +47,67 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
 
+    GameRow hiddenRow;
     String currentSelection = "null";
     View view;
+    User user1, user2;
+    String player;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        user1 = (User) bundle.get("user1");
+        user2 = (User) bundle.get("user2");
+        player = bundle.getString("player");
+        hiddenRow = new GameRow();
+        String hidden = bundle.getString("opponentHidden");
+        for (int i = 0; i < 4; i++) {
+            switch (hidden.charAt(i)){
+                case 'n':
+                    hiddenRow.addPeg(new GamePeg("null",i));
+                    break;
+                case '0':
+                    hiddenRow.addPeg(new GamePeg("red",i));
+                    break;
+                case '1':
+                    hiddenRow.addPeg(new GamePeg("green",i));
+                    break;
+                case '2':
+                    hiddenRow.addPeg(new GamePeg("blue",i));
+                    break;
+                case '3':
+                    hiddenRow.addPeg(new GamePeg("orange",i));
+                    break;
+                case '4':
+                    hiddenRow.addPeg(new GamePeg("yellow",i));
+                    break;
+                case '5':
+                    hiddenRow.addPeg(new GamePeg("light",i));
+                    break;
+            }
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.d("onCreateView + UserTurn", "onCreateView: ");
         view = inflater.inflate(R.layout.fragment_user_turn, container, false);
-        recyclerView = view.findViewById(R.id.user_multi_recyclerView);
         gameManager = new GameManager();
+        gameManager.setHidden(hiddenRow);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
+        recyclerView = view.findViewById(R.id.user_multi_recyclerView);
+        recyclerView.setLayoutManager(layoutManager);
         gameRows = gameManager.getGameRows();
         checkRows = gameManager.getCheckRows();
         adapterRows = new AdapterRows(gameRows, checkRows,requireActivity());
         recyclerView.setAdapter(adapterRows);
         createHidden();
         createButtons();
+        Glide.with(requireActivity()).load(user1.getImgUrl()).into((CircleImageView)view.findViewById(R.id.user_multi_img));
         return view;
     }
 
@@ -91,6 +138,32 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         hiddenRowImages[1] = view.findViewById(R.id.user_multi_hidden1);
         hiddenRowImages[2] = view.findViewById(R.id.user_multi_hidden2);
         hiddenRowImages[3] = view.findViewById(R.id.user_multi_hidden3);
+        String[] hiddenColors = hiddenRow.getStringRow();
+        for (int i = 0; i < hiddenColors.length; i++) {
+            switch (hiddenColors[i]) {
+                case "null":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);
+                    break;
+                case "red":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorRed);
+                    break;
+                case "green":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorGreen);
+                    break;
+                case "blue":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorBlue);
+                    break;
+                case "orange":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorOrange);
+                    break;
+                case "yellow":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorYellow);
+                    break;
+                case "light":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorLight);
+                    break;
+            }
+        }
     }
 
     View.OnTouchListener onClickColorListener = new View.OnTouchListener() {
@@ -166,6 +239,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
     @Override
     public void onPositionClicked(int position) {
+        Log.d(TAG, "onPositionClicked: " + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         String lastSelection = gameRows.get(gameManager.getTurn() - 1).getColorByPosition(position);
         gameManager.pegToGameRow(currentSelection, position);
         currentSelection = lastSelection;

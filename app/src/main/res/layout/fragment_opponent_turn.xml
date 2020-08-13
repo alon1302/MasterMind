@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/master_mind_back"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".OpponentTurnFragment">
+    tools:context=".ui.fragments.OpponentTurnFragment">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/opponent_multi_img"
