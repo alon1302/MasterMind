@@ -38,6 +38,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     User user1, user2;
     Dialog d;
     private ValueEventListener valueEventListener;
+    private boolean choosed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
 
         userTurnFragment = new UserTurnFragment();
         opponentTurnFragment = new OpponentTurnFragment();
-
+        choosed = false;
         multiPlayerManager = new MultiPlayerManager(this);
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, new JoinRoomFragment()).commit();
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("Game").child("Turn").addValueEventListener(new ValueEventListener() {
@@ -139,6 +140,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             toChooseFragment();
         }
         if (action == 4){
+            choosed= true;
             d.show();
             Log.d(TAG, "onCallBack: 4---------------------------");
             multiPlayerManager.setHiddenInFirebase(value);
@@ -206,11 +208,13 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
                 String turn = snapshot.getValue(String.class);
                 Log.d(TAG, "onDataChange: ");
                 multiPlayerManager.setPlayerTurn(turn);
-                if (!turn.equals(multiPlayerManager.getPlayer())) {
-                    toOpponentFragment();
-                }else
-                    toUserFragment();
-
+                if (choosed) {
+                    if (!turn.equals(multiPlayerManager.getPlayer())) {
+                        toOpponentFragment();
+                    } else {
+                        toUserFragment();
+                    }
+                }
             }
 
             @Override
