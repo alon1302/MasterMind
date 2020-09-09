@@ -25,6 +25,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import static android.content.ContentValues.TAG;
+
 public class MultiplayerActivity extends AppCompatActivity implements MethodCallBack , OnPegClickListener, SendUsersCallBack {
 
     private static final String TAG = "Multiplayer" ;
@@ -35,6 +37,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     private boolean entered2 = false;
     User user1, user2;
     Dialog d;
+    private ValueEventListener valueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +71,10 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         d.setCancelable(false);
         d.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
+
+
+
+
     }
 
     public void toWaitingFragment(){
@@ -93,6 +100,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     public void toUserFragment(){
         Log.d(TAG, "toChooseFragment: 6666");
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, userTurnFragment).commit();
+
     }
     public void toOpponentFragment(){
         Log.d(TAG, "toChooseFragment: 61123");
@@ -135,7 +143,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             Log.d(TAG, "onCallBack: 4---------------------------");
             multiPlayerManager.setHiddenInFirebase(value);
             multiPlayerManager.retriveHiddens();
-            multiPlayerManager.howsTurn();
+            //multiPlayerManager.howsTurn();
         }
         if (action == 5){
             Log.d(TAG, "onCallBack: 5---------------------------");
@@ -191,5 +199,25 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         bundle.putString("code", multiPlayerManager.getCode());
         userTurnFragment.setArguments(bundle);
         opponentTurnFragment.setArguments(bundle);
+
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String turn = snapshot.getValue(String.class);
+                Log.d(TAG, "onDataChange: ");
+                multiPlayerManager.setPlayerTurn(turn);
+                if (!turn.equals(multiPlayerManager.getPlayer())) {
+                    toOpponentFragment();
+                }else
+                    toUserFragment();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("HowsTurn").addValueEventListener(valueEventListener);
     }
 }

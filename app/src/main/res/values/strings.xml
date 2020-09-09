@@ -19,4 +19,5 @@
     <string name="join_room">join room</string>
     <string name="create_room">create room</string>
     <string name="enter_room_code">Enter Room Code</string>
+    <string name="time_left">00:30</string>
 </resources>

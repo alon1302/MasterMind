@@ -78,8 +78,7 @@
         android:src="@color/colorTWhite"
         app:civ_border_color="@color/colorBlack"
         app:civ_border_width="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/chronometer"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout4"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     <LinearLayout
@@ -151,16 +150,18 @@
     </LinearLayout>
 
 
-    <Chronometer
-        android:id="@+id/chronometer"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/countDownText"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="48dp"
         android:textColor="@color/colorBlack"
+        android:text="@string/time_left"
+        android:gravity="center"
         android:textSize="50sp"
+        app:layout_constraintBottom_toBottomOf="@+id/currentSelection"
+        app:layout_constraintEnd_toStartOf="@+id/currentSelection"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+        app:layout_constraintTop_toTopOf="@+id/currentSelection" />
 
     <Button
         android:id="@+id/btn_submit_choose"

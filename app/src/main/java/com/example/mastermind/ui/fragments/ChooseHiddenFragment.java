@@ -1,16 +1,19 @@
 package com.example.mastermind.ui.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mastermind.R;
@@ -20,19 +23,30 @@ import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.ContentValues.TAG;
 
 public class ChooseHiddenFragment extends Fragment {
 
+    private static Random rnd;
+
 
     private CircleImageView[] hiddenRowImages;
     GameRow hidden;
+    Context context;
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
     String currentSelection = "null";
     View view;
+    String[] colors;
+
+    private TextView countDownText;
+    private CountDownTimer countDownTimer;
+    private long timeLeftInMillis = 30000;
 
     public ChooseHiddenFragment() {
         // Required empty public constructor
@@ -41,6 +55,10 @@ public class ChooseHiddenFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        rnd = new Random();
+        this.colors = new String[]{"red", "green", "blue", "orange", "yellow", "light"};
+        context = requireActivity();
+
     }
 
     @Override
@@ -57,10 +75,53 @@ public class ChooseHiddenFragment extends Fragment {
                 onClickSubmit();
             }
         });
+
+        countDownText = view.findViewById(R.id.countDownText);
+        startTimer();
         return view;
     }
 
-    private  void onClickSubmit(){
+    public void randomizeHidden() {
+        ArrayList<Integer> arrayList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            int num = rnd.nextInt(6);
+            while (arrayList.contains(num)) {
+                num = rnd.nextInt(6);
+            }
+            hidden.addPeg(new GamePeg(this.colors[num], i));
+            arrayList.add(num);
+        }
+    }
+
+    public void startTimer(){
+        countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
+            @Override
+            public void onTick(long l) {
+                timeLeftInMillis = l;
+                updateCountDownText();
+            }
+
+            @Override
+            public void onFinish() {
+                randomizeHidden();
+                String row = hidden.getNumStringRow();
+                MethodCallBack methodCallBack = (MethodCallBack)context;
+                methodCallBack.onCallBack(4, row);
+            }
+        }.start();
+    }
+
+    private void updateCountDownText() {
+        int timeLeftInSeconds = (int) timeLeftInMillis / 1000;
+        String timer = "00:";
+        if (timeLeftInSeconds >= 10)
+            timer += timeLeftInSeconds;
+        else
+            timer += "0" + timeLeftInSeconds;
+        countDownText.setText(timer);
+    }
+
+    private void onClickSubmit(){
         if (hidden.isFull()){
             String row = hidden.getNumStringRow();
             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();

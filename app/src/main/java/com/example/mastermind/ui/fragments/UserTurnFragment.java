@@ -1,8 +1,10 @@
 package com.example.mastermind.ui.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,8 +26,13 @@ import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.adapters.AdapterRows;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -34,7 +41,7 @@ import static android.content.ContentValues.TAG;
 
 public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
-    GameManager gameManager;
+    GameManager gameManager = new GameManager();;
 
     private ArrayList<GameRow> gameRows;
     private ArrayList<CheckRow> checkRows;
@@ -46,12 +53,22 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
 
+    ValueEventListener valueEventListener;
+
     GameRow hiddenRow;
     String currentSelection = "null";
     View view;
     User user1, user2;
     String player;
+    Context context;
+    private String code;
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach: +++++++++++++++++++++++++++++++++++++++++++++");
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +77,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         user1 = (User) bundle.get("user1");
         user2 = (User) bundle.get("user2");
         player = bundle.getString("player");
+        code = bundle.getString("code");
         hiddenRow = new GameRow();
         String hidden = bundle.getString("opponentHidden");
         for (int i = 0; i < 4; i++) {
@@ -87,6 +105,8 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
                     break;
             }
         }
+        gameManager.setHidden(hiddenRow);
+
     }
 
     @Override
@@ -95,8 +115,6 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         // Inflate the layout for this fragment
         Log.d("onCreateView + UserTurn", "onCreateView: ");
         view = inflater.inflate(R.layout.fragment_user_turn, container, false);
-        gameManager = new GameManager();
-        gameManager.setHidden(hiddenRow);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView = view.findViewById(R.id.user_multi_recyclerView);
         recyclerView.setLayoutManager(layoutManager);
@@ -113,6 +131,28 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
                 onClickSubmit();
             }
         });
+
+
+        context = requireActivity();
+//        valueEventListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                String turn = snapshot.getValue(String.class);
+//                Log.d(TAG, "onDataChange: ");
+//                if (!turn.equals(player)) {
+//                    MethodCallBack methodCallBack = (MethodCallBack)context;
+//                    methodCallBack.onCallBack(6, null);
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        };
+//        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").addValueEventListener(valueEventListener);
+
         return view;
     }
 
@@ -244,5 +284,10 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
         methodCallBack.onCallBack(7,gameRows.get(gameManager.getTurn()-1).getNumStringRow() + "|"+(gameManager.getTurn()-1));
         adapterRows.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 }

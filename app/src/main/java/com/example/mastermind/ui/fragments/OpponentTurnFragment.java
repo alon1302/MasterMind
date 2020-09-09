@@ -1,5 +1,6 @@
 package com.example.mastermind.ui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GameManager;
 import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
+import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.adapters.AdapterRows;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +42,9 @@ public class OpponentTurnFragment extends Fragment {
     ArrayList<CheckRow> checkRows;
 
     String code , player;
+    private Context context;
+
+    ValueEventListener valueEventListener;
 
     public OpponentTurnFragment() {
         // Required empty public constructor
@@ -54,6 +59,9 @@ public class OpponentTurnFragment extends Fragment {
         user2 = (User) bundle.get("user2");
         code = bundle.getString("code");
         player = bundle.getString("player");
+
+        context = getActivity();
+
     }
 
     @Override
@@ -96,6 +104,25 @@ public class OpponentTurnFragment extends Fragment {
             }
         });
 
+
+//        valueEventListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                String turn = snapshot.getValue(String.class);
+//                if (turn.equals(player)) {
+//                    MethodCallBack methodCallBack = (MethodCallBack)context;
+//                    methodCallBack.onCallBack(5, null);
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        };
+//        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").addValueEventListener(valueEventListener);
+
         return view;
 
     }
@@ -130,5 +157,9 @@ public class OpponentTurnFragment extends Fragment {
             }
         }
         return gameRow;
+    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 }

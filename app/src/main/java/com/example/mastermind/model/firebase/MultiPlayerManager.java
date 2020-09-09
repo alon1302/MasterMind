@@ -27,15 +27,16 @@ public class MultiPlayerManager {
     private boolean codeCreated = false;
     private String TAG = "MultiPlayerManager";
     private String player;
-    private String playerTurn="";
+    private String playerTurn="Player1";
     private String userHidden = "nnnn";
     private String opponentHidden="nnnn";
     Activity context;
+    private boolean done;
 
     public MultiPlayerManager(Activity context) {
         this.code = "";
-        playerTurn = "Player1";
         this.context = context;
+        done =false;
     }
 
     public void createRoom(){
@@ -49,7 +50,10 @@ public class MultiPlayerManager {
                 else{
                     code = currCode;
                     player = "Player1";
-                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("HowsTurn").setValue("Player1");
+                    if (!done) {
+                        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").setValue("Player1");
+                        done = true;
+                    }
                     FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());
                     MethodCallBack methodCallBack = (MethodCallBack)context;
                     methodCallBack.onCallBack(2, null);
@@ -163,37 +167,40 @@ public class MultiPlayerManager {
     public void turnRotation(){
         if (playerTurn.equals("Player1")){
             playerTurn = "Player2";
-            FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("HowsTurn").setValue("Player2");
+            FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").setValue("Player2");
         }
         else {
             playerTurn = "Player1";
-            FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("HowsTurn").setValue("Player1");
+            FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").setValue("Player1");
         }
 
     }
 
-    public void howsTurn(){
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("HowsTurn").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    Log.d(TAG, "onDataChange: Turn Ro -----------------------------");
-                    String t = snapshot.getValue(String.class);
-                    MethodCallBack methodCallBack = (MethodCallBack) context;
-                    if (player.equals(t)) {
-                        methodCallBack.onCallBack(5, null);
-                    } else if (!player.equals(t)){
-                        methodCallBack.onCallBack(6, null);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+    public void setPlayerTurn(String playerTurn) {
+        this.playerTurn = playerTurn;
     }
+    //    public void howsTurn(){
+//        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.exists()){
+//                    Log.d(TAG, "onDataChange: Turn Ro -----------------------------");
+//                    String t = snapshot.getValue(String.class);
+//                    MethodCallBack methodCallBack = (MethodCallBack) context;
+//                    if (player.equals(t)) {
+//                        methodCallBack.onCallBack(5, null);
+//                    } else if (!player.equals(t)){
+//                        methodCallBack.onCallBack(6, null);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
 
     public String getPlayer() {
         return player;
