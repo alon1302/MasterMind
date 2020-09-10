@@ -93,6 +93,7 @@ public class OpponentTurnFragment extends Fragment {
                     else {
                         gameRows.set(turn, convertStringToGameRow(row));
                     }
+                    // TODO add actual checkRow
                     checkRows.add(new CheckRow());
                     adapterRows.notifyDataSetChanged();
                 }

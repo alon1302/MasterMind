@@ -54,11 +54,10 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    if (snapshot.getValue(String.class).equals(multiPlayerManager.getPlayer())) {
+                    if (snapshot.getValue(String.class).equals(multiPlayerManager.getPlayer()))
                         toUserFragment();
-                    } else {
+                    else
                         toOpponentFragment();
-                    }
                 }
             }
 
@@ -67,15 +66,11 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
 
             }
         });
+
         d = new Dialog(this);
         d.setContentView(R.layout.loading_dialog);
         d.setCancelable(false);
         d.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-
-
-
-
     }
 
     public void toWaitingFragment(){
