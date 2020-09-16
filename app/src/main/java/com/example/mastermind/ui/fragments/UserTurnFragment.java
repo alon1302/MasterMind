@@ -79,34 +79,51 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         player = bundle.getString("player");
         code = bundle.getString("code");
         hiddenRow = new GameRow();
-        String hidden = bundle.getString("opponentHidden");
-        for (int i = 0; i < 4; i++) {
-            switch (hidden.charAt(i)){
-                case 'n':
-                    hiddenRow.addPeg(new GamePeg("null",i));
-                    break;
-                case '0':
-                    hiddenRow.addPeg(new GamePeg("red",i));
-                    break;
-                case '1':
-                    hiddenRow.addPeg(new GamePeg("green",i));
-                    break;
-                case '2':
-                    hiddenRow.addPeg(new GamePeg("blue",i));
-                    break;
-                case '3':
-                    hiddenRow.addPeg(new GamePeg("orange",i));
-                    break;
-                case '4':
-                    hiddenRow.addPeg(new GamePeg("yellow",i));
-                    break;
-                case '5':
-                    hiddenRow.addPeg(new GamePeg("light",i));
-                    break;
-            }
-        }
-        gameManager.setHidden(hiddenRow);
 
+        String opponent = bundle.getString("opponent");
+
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(opponent + "Hidden").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+               /* multiPlayerManager.setOpponentHidden(snapshot.getValue(String.class));*/
+                if (snapshot.exists()) {
+                    for (int i = 0; i < 4; i++) {
+                        switch (snapshot.getValue(String.class).charAt(i)) {
+                            case 'n':
+                                hiddenRow.addPeg(new GamePeg("null", i));
+                                break;
+                            case '0':
+                                hiddenRow.addPeg(new GamePeg("red", i));
+                                break;
+                            case '1':
+                                hiddenRow.addPeg(new GamePeg("green", i));
+                                break;
+                            case '2':
+                                hiddenRow.addPeg(new GamePeg("blue", i));
+                                break;
+                            case '3':
+                                hiddenRow.addPeg(new GamePeg("orange", i));
+                                break;
+                            case '4':
+                                hiddenRow.addPeg(new GamePeg("yellow", i));
+                                break;
+                            case '5':
+                                hiddenRow.addPeg(new GamePeg("light", i));
+                                break;
+                        }
+                    }
+                    gameManager.setHidden(hiddenRow);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        String hidden = bundle.getString("opponentHidden");
+        Log.d(TAG, "onCreate: " + hidden + "                    5");
+        Log.d(TAG, "onCreate: " + hiddenRow.toString()+ "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 
     @Override
@@ -158,7 +175,16 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
     public void onClickSubmit() {
         if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
-            gameManager.nextTurn();
+            if (!gameManager.nextTurnIsNotWin()){
+                if (player.equals("Player2")){
+                    Toast.makeText(context, "You Win!", Toast.LENGTH_SHORT).show();
+                }
+                else{
+
+                }
+            }
+            checkRows.set(gameManager.getTurn() - 1, gameRows.get(gameManager.getTurn() - 1).checkGameRow(hiddenRow));
+            Log.d(TAG, "onClickSubmit: " + gameManager.getCheckRows().toString());
             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
             methodCallBack.onCallBack(9, null);
             recyclerView.smoothScrollToPosition(adapterRows.getItemCount() - 1);

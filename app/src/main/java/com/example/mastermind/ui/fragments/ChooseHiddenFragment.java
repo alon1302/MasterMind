@@ -123,6 +123,7 @@ public class ChooseHiddenFragment extends Fragment {
 
     private void onClickSubmit(){
         if (hidden.isFull()){
+            countDownTimer.cancel();
             String row = hidden.getNumStringRow();
             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
             methodCallBack.onCallBack(4, row);

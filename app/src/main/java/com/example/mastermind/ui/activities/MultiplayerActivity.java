@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
+import com.example.mastermind.model.listeners.SendHiddenToOpponent;
 import com.example.mastermind.model.listeners.SendUsersCallBack;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
@@ -71,6 +72,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         d.setContentView(R.layout.loading_dialog);
         d.setCancelable(false);
         d.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
     }
 
     public void toWaitingFragment(){
@@ -100,6 +102,8 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     }
     public void toOpponentFragment(){
         Log.d(TAG, "toChooseFragment: 61123");
+        SendHiddenToOpponent sendHiddenToOpponent = (SendHiddenToOpponent)opponentTurnFragment;
+        sendHiddenToOpponent.sendHidden(multiPlayerManager.getHidden());
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, opponentTurnFragment).commit();
     }
 
@@ -190,6 +194,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         }
         Bundle bundle = new Bundle();
         bundle.putString("player", multiPlayerManager.getPlayer());
+        bundle.putString("opponent", multiPlayerManager.getOpponent());
         bundle.putSerializable("user1", this.user1);
         bundle.putSerializable("user2", this.user2);
         bundle.putString("opponentHidden",multiPlayerManager.getOpponentHidden());

@@ -151,8 +151,8 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
                 for (int i = 0; i < hiddenRowImages.length; i++) {
                     hiddenRowImages[i].setVisibility(View.VISIBLE);
                 }
-                String s = convertGameRowToString();
-                FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
+                //String s = convertGameRowToString();
+                //FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
                 Toast.makeText(this, "You Win", Toast.LENGTH_LONG).show();
                 pauseTimeRunning();
                 checkTime();
@@ -160,8 +160,8 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
             }
             recyclerView.smoothScrollToPosition(adapterRows.getItemCount() - 1);
             adapterRows.notifyDataSetChanged();
-            String s = convertGameRowToString();
-            FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
+//            String s = convertGameRowToString();
+//            FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
         }
     }
 

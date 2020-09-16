@@ -42,8 +42,26 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         GameRow currGameRow = gameRows.get(position);
-        CheckRow currCheckRow = checkRows.get(position);
-        String[] colorCheckRow = currCheckRow.getStringRow();
+        if (checkRows.size() > position){
+            CheckRow currCheckRow = checkRows.get(position);
+            String[] colorCheckRow = currCheckRow.getStringRow();
+            colorCheckRow = sortCheckRow(colorCheckRow);
+            for (int i = 0; i < holder.SIZE; i++) {
+                switch (colorCheckRow[i]) {
+                    case "null":
+                        holder.check[i].setVisibility(View.INVISIBLE);
+                        break;
+                    case "black":
+                        holder.check[i].setVisibility(View.VISIBLE);
+                        holder.check[i].setImageResource(R.color.colorBlack);
+                        break;
+                    case "white":
+                        holder.check[i].setVisibility(View.VISIBLE);
+                        holder.check[i].setImageResource(R.color.colorWhite);
+                        break;
+                }
+            }
+        }
         //Log.d("TAG", "colorCheckRow: " + Arrays.toString(colorCheckRow));
         String[] colorGameRow = currGameRow.getStringRow();
         //Log.d("TAG", "colorGameRow: " + Arrays.toString(colorGameRow));
@@ -77,22 +95,6 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
                     break;
                 case "light":
                     holder.game[i].setImageResource(R.color.colorLight);
-                    break;
-            }
-        }
-        colorCheckRow = sortCheckRow(colorCheckRow);
-        for (int i = 0; i < holder.SIZE; i++) {
-            switch (colorCheckRow[i]) {
-                case "null":
-                    holder.check[i].setVisibility(View.INVISIBLE);
-                    break;
-                case "black":
-                    holder.check[i].setVisibility(View.VISIBLE);
-                    holder.check[i].setImageResource(R.color.colorBlack);
-                    break;
-                case "white":
-                    holder.check[i].setVisibility(View.VISIBLE);
-                    holder.check[i].setImageResource(R.color.colorWhite);
                     break;
             }
         }
@@ -143,7 +145,6 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
             check[1] = itemView.findViewById(R.id.check_1);
             check[2] = itemView.findViewById(R.id.check_2);
             check[3] = itemView.findViewById(R.id.check_3);
-            // reference to linear layout
             fullRow = itemView.findViewById(R.id.fullRow);
         }
     }

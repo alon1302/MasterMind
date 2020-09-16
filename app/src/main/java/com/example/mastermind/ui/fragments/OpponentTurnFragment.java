@@ -18,7 +18,7 @@ import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GameManager;
 import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
-import com.example.mastermind.model.listeners.MethodCallBack;
+import com.example.mastermind.model.listeners.SendHiddenToOpponent;
 import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.adapters.AdapterRows;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class OpponentTurnFragment extends Fragment {
+public class OpponentTurnFragment extends Fragment implements SendHiddenToOpponent {
 
     User user1, user2;
     View view;
@@ -38,17 +38,18 @@ public class OpponentTurnFragment extends Fragment {
     RecyclerView recyclerView;
     AdapterRows adapterRows;
 
+    GameManager gameManager;
     ArrayList<GameRow> gameRows;
     ArrayList<CheckRow> checkRows;
+    String hidden;
+
+    CircleImageView[] hiddenRowImages;
 
     String code , player;
     private Context context;
 
     ValueEventListener valueEventListener;
-
-    public OpponentTurnFragment() {
-        // Required empty public constructor
-    }
+    private GameRow hiddenRow;
 
 
     @Override
@@ -59,9 +60,39 @@ public class OpponentTurnFragment extends Fragment {
         user2 = (User) bundle.get("user2");
         code = bundle.getString("code");
         player = bundle.getString("player");
-
-        context = getActivity();
-
+        gameManager = new GameManager();
+        hiddenRow = new GameRow();
+        for (int i = 0; i < 4; i++) {
+            switch (hidden.charAt(i)) {
+                case 'n':
+                    hiddenRow.addPeg(new GamePeg("null", i));
+                    break;
+                case '0':
+                    hiddenRow.addPeg(new GamePeg("red", i));
+                    break;
+                case '1':
+                    hiddenRow.addPeg(new GamePeg("green", i));
+                    break;
+                case '2':
+                    hiddenRow.addPeg(new GamePeg("blue", i));
+                    break;
+                case '3':
+                    hiddenRow.addPeg(new GamePeg("orange", i));
+                    break;
+                case '4':
+                    hiddenRow.addPeg(new GamePeg("yellow", i));
+                    break;
+                case '5':
+                    hiddenRow.addPeg(new GamePeg("light", i));
+                    break;
+            }
+        }
+        gameManager.setHidden(hiddenRow);
+        gameManager = new GameManager();
+        gameRows = gameManager.getGameRows();
+        checkRows = gameManager.getCheckRows();
+        hiddenRowImages = new CircleImageView[4];
+        context = requireActivity();
     }
 
     @Override
@@ -71,12 +102,12 @@ public class OpponentTurnFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_opponent_turn, container, false);
         Glide.with(requireActivity()).load(user2.getImgUrl()).into((CircleImageView) view.findViewById(R.id.opponent_multi_img));
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
-        gameRows = new ArrayList<>();
-        checkRows = new ArrayList<>();
+
         recyclerView = view.findViewById(R.id.opponent_multi_recyclerView);
         adapterRows = new AdapterRows(gameRows, checkRows, requireActivity());
         recyclerView.setAdapter(adapterRows);
         recyclerView.setLayoutManager(layoutManager);
+
 
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("Turns").addValueEventListener(new ValueEventListener() {
             @Override
@@ -93,8 +124,7 @@ public class OpponentTurnFragment extends Fragment {
                     else {
                         gameRows.set(turn, convertStringToGameRow(row));
                     }
-                    // TODO add actual checkRow
-                    checkRows.add(new CheckRow());
+                    checkRows.add(turn, gameRows.get(turn).checkGameRow(hiddenRow));
                     adapterRows.notifyDataSetChanged();
                 }
             }
@@ -123,7 +153,7 @@ public class OpponentTurnFragment extends Fragment {
 //            }
 //        };
 //        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").addValueEventListener(valueEventListener);
-
+        createRow();
         return view;
 
     }
@@ -159,8 +189,49 @@ public class OpponentTurnFragment extends Fragment {
         }
         return gameRow;
     }
+
+    private void createRow(){
+        hiddenRowImages[0] = view.findViewById(R.id.opponent_multi_hidden0);
+        hiddenRowImages[1] = view.findViewById(R.id.opponent_multi_hidden1);
+        hiddenRowImages[2] = view.findViewById(R.id.opponent_multi_hidden2);
+        hiddenRowImages[3] = view.findViewById(R.id.opponent_multi_hidden3);
+
+        String[] hiddenColors = hiddenRow.getStringRow();
+        for (int i = 0; i < hiddenRowImages.length; i++) {
+            switch (hiddenColors[i]) {
+                case "null":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);
+                    break;
+                case "red":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorRed);
+                    break;
+                case "green":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorGreen);
+                    break;
+                case "blue":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorBlue);
+                    break;
+                case "orange":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorOrange);
+                    break;
+                case "yellow":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorYellow);
+                    break;
+                case "light":
+                    this.hiddenRowImages[i].setImageResource(R.color.colorLight);
+                    break;
+            }
+        }
+
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    @Override
+    public void sendHidden(String hidden) {
+        this.hidden = hidden;
     }
 }

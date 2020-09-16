@@ -32,6 +32,8 @@ public class MultiPlayerManager {
     private String opponentHidden="nnnn";
     Activity context;
     private boolean done;
+    private String opponent;
+    private String hidden;
 
     public MultiPlayerManager(Activity context) {
         this.code = "";
@@ -50,6 +52,7 @@ public class MultiPlayerManager {
                 else{
                     code = currCode;
                     player = "Player1";
+                    opponent = "Player2";
                     if (!done) {
                         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").setValue("Player1");
                         done = true;
@@ -69,6 +72,7 @@ public class MultiPlayerManager {
     }
 
     public void setHiddenInFirebase(String hidden){
+        this.hidden = hidden;
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(player + "Hidden").setValue(hidden);
         String other = "Player1";
         if (player.equals("Player1"))
@@ -140,6 +144,7 @@ public class MultiPlayerManager {
                 else{
                     code =currCode;
                     player = "Player2";
+                    opponent = "Player2";
                     FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());
                     MethodCallBack methodCallBack = (MethodCallBack)context;
                     methodCallBack.onCallBack(2, null);
@@ -216,5 +221,25 @@ public class MultiPlayerManager {
 
     public String getOpponentHidden() {
         return opponentHidden;
+    }
+
+    public String getOpponent() {
+        return opponent;
+    }
+
+    public void setOpponentHidden(String opponentHidden) {
+        this.opponentHidden = opponentHidden;
+    }
+
+    public void setOpponent(String opponent) {
+        this.opponent = opponent;
+    }
+
+    public String getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(String hidden) {
+        this.hidden = hidden;
     }
 }

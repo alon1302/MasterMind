@@ -73,7 +73,6 @@ public class GameRow {
         CheckRow checkRow = new CheckRow();
         for (int i = 0; i<SIZE; i++) {
             checkRow.addCheckPeg(this.check(other.row[i]));
-            Log.d("!!!!!!!!", "checkGameRow: " + checkRow.toString());
         }
         return checkRow;
     }

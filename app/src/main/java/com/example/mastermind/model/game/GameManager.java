@@ -26,6 +26,8 @@ public class GameManager {
         this.seconds = 0;
     }
 
+
+
     public ArrayList<GameRow> getGameRows() {
         return gameRows;
     }
@@ -66,9 +68,7 @@ public class GameManager {
         checkRows.set(turn - 1, gameRows.get(turn - 1).checkGameRow(hidden));
         if (checkRows.get(turn - 1).isWin())
             return false;
-        this.turn++;
-        gameRows.add(new GameRow());
-        checkRows.add(new CheckRow());
+        nextTurn();
         return true;
     }
     public void nextTurn(){
