@@ -242,4 +242,10 @@ public class MultiPlayerManager {
     public void setHidden(String hidden) {
         this.hidden = hidden;
     }
+
+    public void setWinnerInFirebase() {
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Winner").setValue(this.player);
+    }
+
+
 }

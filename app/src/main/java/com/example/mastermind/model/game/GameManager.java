@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GameManager {
-    static Random rnd = new Random();
+    private static Random rnd = new Random();
     private String[] colors;
     private ArrayList<GameRow> gameRows;
     private ArrayList<CheckRow> checkRows;
@@ -25,8 +25,6 @@ public class GameManager {
         this.minutes = 0;
         this.seconds = 0;
     }
-
-
 
     public ArrayList<GameRow> getGameRows() {
         return gameRows;
@@ -56,9 +54,11 @@ public class GameManager {
         ArrayList<Integer> arrayList = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             int num = rnd.nextInt(6);
+
             while (arrayList.contains(num)) {
                 num = rnd.nextInt(6);
             }
+
             hidden.addPeg(new GamePeg(this.colors[num], i));
             arrayList.add(num);
         }
@@ -71,6 +71,13 @@ public class GameManager {
         nextTurn();
         return true;
     }
+
+    public boolean isWin(){
+        this.turn++;
+        gameRows.add(new GameRow());
+        return checkRows.get(turn - 1).isWin();
+    }
+
     public void nextTurn(){
         this.turn++;
         gameRows.add(new GameRow());

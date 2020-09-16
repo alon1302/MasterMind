@@ -63,6 +63,8 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     Context context;
     private String code;
 
+    boolean isWaitingForWin;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -82,11 +84,15 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
         String opponent = bundle.getString("opponent");
 
+        if (player.equals("Player1"))
+            opponent = "Player2";
+        else
+            opponent = "Player1";
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(opponent + "Hidden").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-               /* multiPlayerManager.setOpponentHidden(snapshot.getValue(String.class));*/
                 if (snapshot.exists()) {
+                    hiddenRow= new GameRow();
                     for (int i = 0; i < 4; i++) {
                         switch (snapshot.getValue(String.class).charAt(i)) {
                             case 'n':
@@ -150,40 +156,28 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         });
 
 
-        context = requireActivity();
-//        valueEventListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                String turn = snapshot.getValue(String.class);
-//                Log.d(TAG, "onDataChange: ");
-//                if (!turn.equals(player)) {
-//                    MethodCallBack methodCallBack = (MethodCallBack)context;
-//                    methodCallBack.onCallBack(6, null);
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        };
-//        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").addValueEventListener(valueEventListener);
+        Log.d(TAG, "onCreateView:_______________ " + gameManager.getCheckRows().toString() + "________________________________________");
 
+
+
+
+        context = requireActivity();
         return view;
     }
 
     public void onClickSubmit() {
         if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
-            if (!gameManager.nextTurnIsNotWin()){
+            checkRows.add(gameManager.getTurn() - 1, gameRows.get(gameManager.getTurn() - 1).checkGameRow(hiddenRow));
+            if (gameManager.isWin()){
                 if (player.equals("Player2")){
                     Toast.makeText(context, "You Win!", Toast.LENGTH_SHORT).show();
                 }
                 else{
-
+                    Toast.makeText(context, "You Win! but wait for the last turn", Toast.LENGTH_SHORT).show();
+                    MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+                    methodCallBack.onCallBack(10, null);
                 }
             }
-            checkRows.set(gameManager.getTurn() - 1, gameRows.get(gameManager.getTurn() - 1).checkGameRow(hiddenRow));
             Log.d(TAG, "onClickSubmit: " + gameManager.getCheckRows().toString());
             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
             methodCallBack.onCallBack(9, null);
@@ -194,6 +188,8 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
             Toast.makeText(requireActivity(), "", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     public void createHidden() {
         hiddenRowImages = new CircleImageView[4];

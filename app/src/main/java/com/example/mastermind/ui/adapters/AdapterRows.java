@@ -42,26 +42,25 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         GameRow currGameRow = gameRows.get(position);
-        if (checkRows.size() > position){
-            CheckRow currCheckRow = checkRows.get(position);
-            String[] colorCheckRow = currCheckRow.getStringRow();
-            colorCheckRow = sortCheckRow(colorCheckRow);
-            for (int i = 0; i < holder.SIZE; i++) {
-                switch (colorCheckRow[i]) {
-                    case "null":
-                        holder.check[i].setVisibility(View.INVISIBLE);
-                        break;
-                    case "black":
-                        holder.check[i].setVisibility(View.VISIBLE);
-                        holder.check[i].setImageResource(R.color.colorBlack);
-                        break;
-                    case "white":
-                        holder.check[i].setVisibility(View.VISIBLE);
-                        holder.check[i].setImageResource(R.color.colorWhite);
-                        break;
-                }
+        CheckRow currCheckRow = checkRows.get(position);
+        String[] colorCheckRow = currCheckRow.getStringRow();
+        colorCheckRow = sortCheckRow(colorCheckRow);
+        for (int i = 0; i < holder.SIZE; i++) {
+            switch (colorCheckRow[i]) {
+                case "null":
+                    holder.check[i].setVisibility(View.INVISIBLE);
+                    break;
+                case "black":
+                    holder.check[i].setVisibility(View.VISIBLE);
+                    holder.check[i].setImageResource(R.color.colorBlack);
+                    break;
+                case "white":
+                    holder.check[i].setVisibility(View.VISIBLE);
+                    holder.check[i].setImageResource(R.color.colorWhite);
+                    break;
             }
         }
+
         //Log.d("TAG", "colorCheckRow: " + Arrays.toString(colorCheckRow));
         String[] colorGameRow = currGameRow.getStringRow();
         //Log.d("TAG", "colorGameRow: " + Arrays.toString(colorGameRow));

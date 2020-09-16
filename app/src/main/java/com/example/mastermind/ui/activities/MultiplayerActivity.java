@@ -12,6 +12,7 @@ import com.example.mastermind.model.listeners.SendHiddenToOpponent;
 import com.example.mastermind.model.listeners.SendUsersCallBack;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
+import com.example.mastermind.ui.fragments.EndGameFragment;
 import com.example.mastermind.ui.fragments.OpponentTurnFragment;
 import com.example.mastermind.R;
 import com.example.mastermind.ui.fragments.UserTurnFragment;
@@ -34,6 +35,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     MultiPlayerManager multiPlayerManager;
     private UserTurnFragment userTurnFragment;
     private OpponentTurnFragment opponentTurnFragment;
+    EndGameFragment endGameFragment;
     private boolean entered = false;
     private boolean entered2 = false;
     User user1, user2;
@@ -41,13 +43,17 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     private ValueEventListener valueEventListener;
     private boolean choosed;
 
+    private boolean isWaitingForWin = false;
+    boolean allow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
-
+        allow = true;
         userTurnFragment = new UserTurnFragment();
         opponentTurnFragment = new OpponentTurnFragment();
+        endGameFragment = new EndGameFragment();
         choosed = false;
         multiPlayerManager = new MultiPlayerManager(this);
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, new JoinRoomFragment()).commit();
@@ -68,11 +74,47 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             }
         });
 
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("Winner").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    String value = snapshot.getValue(String.class);
+                    if (value.equals("Player1")){
+                        if (isWaitingForWin) {
+                            toEndGameFragment(1);
+                            allow = false;
+                        }
+                        else
+                            isWaitingForWin = true;
+                    }
+                    if (value.equals("Player2")) {
+                        allow = false;
+                        if (isWaitingForWin)
+                            toEndGameFragment(0);
+                        else
+                            toEndGameFragment(2);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         d = new Dialog(this);
         d.setContentView(R.layout.loading_dialog);
         d.setCancelable(false);
         d.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
+    }
+
+    private void toEndGameFragment(int whoIsWin) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("whoIsWin", whoIsWin);
+        endGameFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, endGameFragment).commit();
     }
 
     public void toWaitingFragment(){
@@ -108,7 +150,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     }
 
     @Override
-    public void onCallBack(int action, String value) {
+    public void onCallBack(int action, Object value) {
         // 0 - create room
         // 1 - join room
         // 2 - room created
@@ -119,13 +161,14 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         // 7 - upload row changes
         // 8 - start game after choosing
         // 9 - turn rotation
+        // 10 - waiting for last turn to win
         if (action == 0) {
             multiPlayerManager.createRoom();
             return;
         }
         if (action == 1 ){
             Log.d(TAG, "onCallBack: 1---------------------------");
-            multiPlayerManager.joinRoom(value);
+            multiPlayerManager.joinRoom((String) value);
         }
         if (action == 2){
             if (!entered2) {
@@ -142,22 +185,24 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             choosed= true;
             d.show();
             Log.d(TAG, "onCallBack: 4---------------------------");
-            multiPlayerManager.setHiddenInFirebase(value);
+            multiPlayerManager.setHiddenInFirebase((String) value);
             multiPlayerManager.retriveHiddens();
             //multiPlayerManager.howsTurn();
         }
-        if (action == 5){
+        if (action == 5) {
             Log.d(TAG, "onCallBack: 5---------------------------");
-            toUserFragment();
+            if (allow)
+                toUserFragment();
         }
-        if (action == 6){
+        if (action == 6) {
             Log.d(TAG, "onCallBack: 6---------------------------");
-            toOpponentFragment();
+            if (allow)
+                toOpponentFragment();
         }
         if (action == 7){
             Log.d(TAG, "onCallBack: 7---------------------------");
-            String row = value.substring(0,4);
-            String turn = value.substring(5);
+            String row = ((String) value).substring(0,4);
+            String turn = ((String) value).substring(5);
             multiPlayerManager.addUserPeg(row,turn);
         }
         if (action == 8){
@@ -170,6 +215,9 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         }
         if (action == 9){
             multiPlayerManager.turnRotation();
+        }
+        if (action == 10){
+            multiPlayerManager.setWinnerInFirebase();
         }
 
     }
