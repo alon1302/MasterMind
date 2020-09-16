@@ -108,7 +108,6 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         recyclerView.setAdapter(adapterRows);
         recyclerView.setLayoutManager(layoutManager);
 
-
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("Turns").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
