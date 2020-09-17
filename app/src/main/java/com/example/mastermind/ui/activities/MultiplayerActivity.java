@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -57,51 +58,6 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         choosed = false;
         multiPlayerManager = new MultiPlayerManager(this);
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, new JoinRoomFragment()).commit();
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("Game").child("Turn").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    if (snapshot.getValue(String.class).equals(multiPlayerManager.getPlayer()))
-                        toUserFragment();
-                    else
-                        toOpponentFragment();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("Winner").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    String value = snapshot.getValue(String.class);
-                    if (value.equals("Player1")){
-                        if (isWaitingForWin) {
-                            toEndGameFragment(1);
-                            allow = false;
-                        }
-                        else
-                            isWaitingForWin = true;
-                    }
-                    if (value.equals("Player2")) {
-                        allow = false;
-                        if (isWaitingForWin)
-                            toEndGameFragment(0);
-                        else
-                            toEndGameFragment(2);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
         d = new Dialog(this);
         d.setContentView(R.layout.loading_dialog);
@@ -110,10 +66,47 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
 
     }
 
+    public void createWinnerListener(){
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("Winner").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    String value = snapshot.getValue(String.class);
+                    Log.d(TAG, "onDataChange: " + value + "4444444444444444444444444444444444444444444444444");
+                    if (value.equals("Player1")){
+                        if (isWaitingForWin) {
+                            toEndGameFragment(1);
+                            allow = false;
+                        }
+                        else
+                            isWaitingForWin = true;
+                    }
+                    else /*if (value.equals("Player2"))*/ {
+                        allow = false;
+                        if (isWaitingForWin)
+                            toEndGameFragment(0);
+                        else
+                            toEndGameFragment(2);
+                    }
+                }
+                else{
+                    Log.d(TAG, "onDataChange: "  + "4444444444444444444444444444444444444444444444444");
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void toEndGameFragment(int whoIsWin) {
+        Log.d(TAG, "toEndGameFragment: in 9999999999999999999999999999999999999999999999999999999999999999_____ " + whoIsWin);
         Bundle bundle = new Bundle();
         bundle.putInt("whoIsWin", whoIsWin);
         endGameFragment.setArguments(bundle);
+//        Intent intent = new Intent(this, MainActivity.class);
+//        startActivity(intent);
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, endGameFragment).commit();
     }
 
@@ -139,14 +132,17 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     }
     public void toUserFragment(){
         Log.d(TAG, "toChooseFragment: 6666");
-        getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, userTurnFragment).commit();
+        if (allow)
+            getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, userTurnFragment).commit();
 
     }
     public void toOpponentFragment(){
         Log.d(TAG, "toChooseFragment: 61123");
-        SendHiddenToOpponent sendHiddenToOpponent = (SendHiddenToOpponent)opponentTurnFragment;
-        sendHiddenToOpponent.sendHidden(multiPlayerManager.getHidden());
-        getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, opponentTurnFragment).commit();
+        if (allow) {
+            SendHiddenToOpponent sendHiddenToOpponent = (SendHiddenToOpponent) opponentTurnFragment;
+            sendHiddenToOpponent.sendHidden(multiPlayerManager.getHidden());
+            getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, opponentTurnFragment).commit();
+        }
     }
 
     @Override
@@ -217,9 +213,9 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             multiPlayerManager.turnRotation();
         }
         if (action == 10){
+            createWinnerListener();
             multiPlayerManager.setWinnerInFirebase();
         }
-
     }
 
     @Override

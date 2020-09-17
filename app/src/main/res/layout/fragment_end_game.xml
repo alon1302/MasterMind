@@ -6,17 +6,74 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.EndGameFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/PlayerOne_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginEnd="32dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintEnd_toStartOf="@+id/guideline12"
+        app:layout_constraintTop_toTopOf="@+id/guideline13" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_winner"
+        android:layout_width="187dp"
+        android:layout_height="187dp"
+        app:layout_constraintBottom_toBottomOf="@+id/PlayerTwo_image"
+        app:layout_constraintEnd_toEndOf="@+id/PlayerTwo_image"
+        app:layout_constraintStart_toStartOf="@+id/PlayerTwo_image"
+        app:layout_constraintTop_toTopOf="@+id/guideline13"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="winner_gif.json"
+        app:lottie_loop="false" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_loser"
+        android:layout_width="187dp"
+        android:layout_height="187dp"
+        app:layout_constraintBottom_toBottomOf="@+id/PlayerOne_image"
+        app:layout_constraintEnd_toEndOf="@+id/PlayerOne_image"
+        app:layout_constraintStart_toStartOf="@+id/PlayerOne_image"
+        app:layout_constraintTop_toTopOf="@+id/PlayerOne_image"/>
+<!--        app:lottie_autoPlay="true"-->
+<!--        app:lottie_fileName="winner_gif.json"-->
+<!--        app:lottie_loop="false" />-->
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/PlayerTwo_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="32dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBottom_toBottomOf="@+id/PlayerOne_image"
+        app:layout_constraintStart_toStartOf="@+id/guideline12"
+        app:layout_constraintTop_toTopOf="@+id/PlayerOne_image" />
+
     <TextView
         android:id="@+id/winner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="64dp"
         android:text="@string/winner"
         android:textColor="@color/colorBlack"
         android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/lottie_winner" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50121653" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

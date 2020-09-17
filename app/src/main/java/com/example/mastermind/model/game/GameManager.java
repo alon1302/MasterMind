@@ -73,9 +73,10 @@ public class GameManager {
     }
 
     public boolean isWin(){
+        boolean win = checkRows.get(turn - 1).isWin();
         this.turn++;
         gameRows.add(new GameRow());
-        return checkRows.get(turn - 1).isWin();
+        return win;
     }
 
     public void nextTurn(){

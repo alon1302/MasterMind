@@ -143,6 +143,11 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         recyclerView.setLayoutManager(layoutManager);
         gameRows = gameManager.getGameRows();
         checkRows = gameManager.getCheckRows();
+//        if (checkRows.get(checkRows.size()-1).isWin()){
+//            Log.d(TAG, "onCreateView: " + "prev win11111111111111111111111111111111111111111111111111");
+//            MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+//            methodCallBack.onCallBack(10, null);
+//        }
         adapterRows = new AdapterRows(gameRows, checkRows,requireActivity());
         recyclerView.setAdapter(adapterRows);
         createHidden();
@@ -169,8 +174,11 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
             checkRows.add(gameManager.getTurn() - 1, gameRows.get(gameManager.getTurn() - 1).checkGameRow(hiddenRow));
             if (gameManager.isWin()){
+                Log.d(TAG, "onClickSubmit: " + player + "(((((((()(())()()()())()()()()()()()()()()(");
                 if (player.equals("Player2")){
                     Toast.makeText(context, "You Win!", Toast.LENGTH_SHORT).show();
+                    MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+                    methodCallBack.onCallBack(10, null);
                 }
                 else{
                     Toast.makeText(context, "You Win! but wait for the last turn", Toast.LENGTH_SHORT).show();
