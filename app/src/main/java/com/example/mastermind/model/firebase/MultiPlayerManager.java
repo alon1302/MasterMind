@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
+import com.example.mastermind.ui.activities.MultiplayerActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,11 +18,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.core.Context;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
-public class MultiPlayerManager {
+public class MultiPlayerManager implements Serializable {
 
     private String code;
     private boolean codeCreated = false;
@@ -55,6 +57,7 @@ public class MultiPlayerManager {
                     opponent = "Player2";
                     if (!done) {
                         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").setValue("Player1");
+                        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Winner").setValue("None");
                         done = true;
                     }
                     FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());
@@ -92,7 +95,7 @@ public class MultiPlayerManager {
         });
     }
 
-    public void retriveHiddens(){
+    public void retrieveHidden(){
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(player + "Hidden").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -142,7 +145,7 @@ public class MultiPlayerManager {
                     Toast.makeText(context, "Please Type a Valid Game Code", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    code =currCode;
+                    setCode(currCode);
                     player = "Player2";
                     opponent = "Player2";
                     FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());

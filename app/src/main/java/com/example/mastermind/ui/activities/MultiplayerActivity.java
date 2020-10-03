@@ -4,10 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 
 import com.example.mastermind.model.listeners.SendHiddenToOpponent;
 import com.example.mastermind.model.listeners.SendUsersCallBack;
@@ -28,8 +26,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import static android.content.ContentValues.TAG;
-
 public class MultiplayerActivity extends AppCompatActivity implements MethodCallBack , OnPegClickListener, SendUsersCallBack {
 
     private static final String TAG = "Multiplayer" ;
@@ -43,14 +39,17 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     Dialog d;
     private ValueEventListener valueEventListener;
     private boolean choosed;
-
+    private int winner;
+    String winnerString = "";
     private boolean isWaitingForWin = false;
+
     boolean allow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
+        winner = -1;
         allow = true;
         userTurnFragment = new UserTurnFragment();
         opponentTurnFragment = new OpponentTurnFragment();
@@ -64,33 +63,34 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         d.setCancelable(false);
         d.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
+
     }
 
     public void createWinnerListener(){
+        Log.d(TAG, "createWinnerListener: "+ multiPlayerManager.getCode()+"      ()()()()()()()()()()()()()(");
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("Winner").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "onDataChange: 0000000000000000000000000000000000000000000000");
                 if (snapshot.exists()){
-                    String value = snapshot.getValue(String.class);
-                    Log.d(TAG, "onDataChange: " + value + "4444444444444444444444444444444444444444444444444");
-                    if (value.equals("Player1")){
-                        if (isWaitingForWin) {
-                            toEndGameFragment(1);
-                            allow = false;
+                    winnerString = snapshot.getValue(String.class);
+                    String currPlayer = multiPlayerManager.getPlayer();
+                    if (winnerString.equals("Player2")){
+                        if (!isWaitingForWin) {
+                            if (currPlayer.equals("Player2")) {
+                                winner = 1;
+                            }
+                            else {
+                                winner = 2;
+                            }
                         }
                         else
-                            isWaitingForWin = true;
+                            winner = 0;
+                        toEndGameFragment();
                     }
-                    else /*if (value.equals("Player2"))*/ {
-                        allow = false;
-                        if (isWaitingForWin)
-                            toEndGameFragment(0);
-                        else
-                            toEndGameFragment(2);
+                    else if(winnerString.equals("Player1")){
+                        isWaitingForWin = true;
                     }
-                }
-                else{
-                    Log.d(TAG, "onDataChange: "  + "4444444444444444444444444444444444444444444444444");
                 }
             }
             @Override
@@ -100,13 +100,26 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         });
     }
 
-    private void toEndGameFragment(int whoIsWin) {
-        Log.d(TAG, "toEndGameFragment: in 9999999999999999999999999999999999999999999999999999999999999999_____ " + whoIsWin);
+    public void checkWinner(){
+        if (winner != 0) {
+            if (isWaitingForWin && multiPlayerManager.getPlayerTurn().equals("Player1")) {
+                if (multiPlayerManager.getPlayer().equals("Player2"))
+                    winner = 2;
+                else
+                    winner = 1;
+                toEndGameFragment();
+            }
+        }
+    }
+
+    private void toEndGameFragment() {
+        allow = false;
+        Log.d(TAG, "onDataChange: ________" + winner);
         Bundle bundle = new Bundle();
-        bundle.putInt("whoIsWin", whoIsWin);
+        bundle.putInt("whoIsWin", winner);
+        bundle.putSerializable("user1", user1);
+        bundle.putSerializable("user2", user2);
         endGameFragment.setArguments(bundle);
-//        Intent intent = new Intent(this, MainActivity.class);
-//        startActivity(intent);
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, endGameFragment).commit();
     }
 
@@ -131,18 +144,18 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         }
     }
     public void toUserFragment(){
-        Log.d(TAG, "toChooseFragment: 6666");
-        if (allow)
+        if(allow) {
             getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, userTurnFragment).commit();
-
+        }
+        checkWinner();
     }
-    public void toOpponentFragment(){
-        Log.d(TAG, "toChooseFragment: 61123");
+    public void toOpponentFragment() {
         if (allow) {
             SendHiddenToOpponent sendHiddenToOpponent = (SendHiddenToOpponent) opponentTurnFragment;
             sendHiddenToOpponent.sendHidden(multiPlayerManager.getHidden());
             getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, opponentTurnFragment).commit();
         }
+        checkWinner();
     }
 
     @Override
@@ -160,10 +173,12 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         // 10 - waiting for last turn to win
         if (action == 0) {
             multiPlayerManager.createRoom();
+
             return;
         }
         if (action == 1 ){
             multiPlayerManager.joinRoom((String) value);
+
         }
         if (action == 2){
             if (!entered2) {
@@ -173,20 +188,22 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         }
         if(action == 3){
             toChooseFragment();
+            createWinnerListener();
         }
         if (action == 4){
             choosed= true;
             d.show();
             multiPlayerManager.setHiddenInFirebase((String) value);
-            multiPlayerManager.retriveHiddens();
+            multiPlayerManager.retrieveHidden();
             //multiPlayerManager.howsTurn();
         }
         if (action == 5) {
-            if (allow)
+            if (winner == -1)
                 toUserFragment();
         }
         if (action == 6) {
-            if (allow)
+            Log.d(TAG, "onCallBack: " + isWaitingForWin + "_______________________");
+            if (winner == -1)
                 toOpponentFragment();
         }
         if (action == 7){
@@ -205,7 +222,6 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             multiPlayerManager.turnRotation();
         }
         if (action == 10){
-            createWinnerListener();
             multiPlayerManager.setWinnerInFirebase();
         }
     }
