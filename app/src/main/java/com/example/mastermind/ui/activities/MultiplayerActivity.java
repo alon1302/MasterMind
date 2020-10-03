@@ -163,46 +163,38 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             return;
         }
         if (action == 1 ){
-            Log.d(TAG, "onCallBack: 1---------------------------");
             multiPlayerManager.joinRoom((String) value);
         }
         if (action == 2){
             if (!entered2) {
-                Log.d(TAG, "onCallBack: 2---------------------------");
                 toWaitingFragment();
                 entered2 = true;
             }
         }
         if(action == 3){
-            Log.d(TAG, "onCallBack: 3---------------------------");
             toChooseFragment();
         }
         if (action == 4){
             choosed= true;
             d.show();
-            Log.d(TAG, "onCallBack: 4---------------------------");
             multiPlayerManager.setHiddenInFirebase((String) value);
             multiPlayerManager.retriveHiddens();
             //multiPlayerManager.howsTurn();
         }
         if (action == 5) {
-            Log.d(TAG, "onCallBack: 5---------------------------");
             if (allow)
                 toUserFragment();
         }
         if (action == 6) {
-            Log.d(TAG, "onCallBack: 6---------------------------");
             if (allow)
                 toOpponentFragment();
         }
         if (action == 7){
-            Log.d(TAG, "onCallBack: 7---------------------------");
             String row = ((String) value).substring(0,4);
             String turn = ((String) value).substring(5);
             multiPlayerManager.addUserPeg(row,turn);
         }
         if (action == 8){
-            Log.d(TAG, "onCallBack: 8---------------------------");
             if (value.equals("Player1"))
                 toUserFragment();
             else
@@ -220,14 +212,12 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
 
     @Override
     public void onPositionClicked(int position) {
-        Log.d(TAG, "onPositionClicked: " + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         OnPegClickListener onPegClickListener = (OnPegClickListener)userTurnFragment;
         onPegClickListener.onPositionClicked(position);
     }
 
     @Override
     public void sendUsers(User user1, User user2) {
-        Log.d(TAG, "sendUsers: *-*-*-*-*-*-*-*-*-*-*-*//////////////////////////////////////////////////");
         if (CurrentUser.getInstance().getId().equals(user1.getId())) {
             this.user1 = user1;
             this.user2 = user2;

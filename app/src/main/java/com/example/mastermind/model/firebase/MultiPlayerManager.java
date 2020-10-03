@@ -43,7 +43,7 @@ public class MultiPlayerManager {
 
     public void createRoom(){
         final String currCode = createStringCode();
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists() && !codeCreated){
