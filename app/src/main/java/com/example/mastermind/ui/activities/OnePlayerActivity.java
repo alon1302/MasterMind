@@ -11,11 +11,13 @@ import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Chronometer;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mastermind.R;
 import com.example.mastermind.model.game.*;
 import com.example.mastermind.model.listeners.OnPegClickListener;
+import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.ui.adapters.AdapterRows;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -45,13 +47,17 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private long timeInMillis;
     private long minutes, seconds;
 
+    private TextView tv_coins;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one_player);
 
         chronometer = findViewById(R.id.chronometer);
+        tv_coins = findViewById(R.id.textView_coinsGame);
+        tv_coins.setText("" + CurrentUser.getUserCoins());
         gameManager = new GameManager();
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView = findViewById(R.id.recyclerView);
@@ -250,7 +256,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         GameRow hiddenRow = gameManager.getHidden();
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenColors.length; i++) {
-            hiddenRowImages[i].setVisibility(View.INVISIBLE);
+            //TODO // hiddenRowImages[i].setVisibility(View.INVISIBLE);
             switch (hiddenColors[i]) {
                 case "null":
                     this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);

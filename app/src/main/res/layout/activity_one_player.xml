@@ -8,6 +8,31 @@
     tools:context=".ui.activities.OnePlayerActivity">
 
 
+    <TextView
+        android:id="@+id/textView_coinsGame"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="4dp"
+        android:shadowColor="#000000"
+        android:text="coins"
+        android:textColor="#FF9800"
+        android:textColorHighlight="#000000"
+        android:textSize="23sp"
+        app:layout_constraintBottom_toBottomOf="@+id/circleImageView5"
+        app:layout_constraintEnd_toStartOf="@+id/chronometer"
+        app:layout_constraintStart_toEndOf="@+id/circleImageView5"
+        app:layout_constraintTop_toTopOf="@+id/chronometer" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleImageView5"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/coins"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/chronometer" />
+
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"

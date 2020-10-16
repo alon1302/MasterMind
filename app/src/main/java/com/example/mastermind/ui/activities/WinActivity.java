@@ -53,16 +53,30 @@ public class WinActivity extends AppCompatActivity implements DataChangedListene
         tv_time = findViewById(R.id.winner_Time);
         profileImage = findViewById(R.id.profile_image);
         getData();
+        calculateCoins();
 
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView = findViewById(R.id.recyclerView_records);
         recyclerView.setLayoutManager(layoutManager);
 
-
-
         RecordsRepo.addRecord(time, CurrentUser.getInstance().getId(), this);
         adapterRecords = new AdapterRecords(records, this);
         recyclerView.setAdapter(adapterRecords);
+    }
+
+    private void calculateCoins() {
+        int coins = 50;
+        if (time < 180000)
+            coins = 100;
+        if (time < 120000)
+            coins = 125;
+        if (time < 90000)
+            coins = 150;
+        if (time < 60000)
+            coins = 200;
+        if (time < 30000)
+            coins = 300;
+        CurrentUser.addCoins(coins);
     }
 
 

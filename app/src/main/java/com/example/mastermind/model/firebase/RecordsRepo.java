@@ -24,10 +24,6 @@ import java.util.HashMap;
 
 public class RecordsRepo {
 
-//    public interface GetRecordsListener{
-//        void OnGetRecords();
-//    }
-
     private static ArrayList<RecordPerUser> records = null;
     private static HashMap<String, String> recordsId = new HashMap<>();
     private static DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Records");
@@ -48,12 +44,6 @@ public class RecordsRepo {
         if (!recordsId.containsKey(record.getId())) {
             boolean isIn = false;
             String key = "";
-//        if (records.isEmpty() || record.getTime()<records.get(0).getTime()) {
-//            records.add(0, record);
-//            Log.d(TAG, "ADD SORTED: ajk,shvfijsAGVFOUASDVFOUASDVFOUASDFVOAUFGOUASDFGV" + records);
-//            isIn = true;
-//        }
-//        else {
             for (int i = 0; i < records.size(); i++) {
                 if (record.getTime() < records.get(i).getTime()) {
                     records.add(i, record);
@@ -63,7 +53,6 @@ public class RecordsRepo {
                     break;
                 }
             }
-            //}
             if (!isIn) {
                 records.add(records.size(), record);
             }
@@ -81,18 +70,6 @@ public class RecordsRepo {
             }
         }
     }
-
-//    public static void sort(){
-//        for (int i =0; i<records.size()-1; i++){
-//            for (int j = 0; j<records.size()-i-1; j++){
-//                if (records.get(j).getTime()> records.get(i).getTime()){
-//                    RecordPerUser temp = records.get(j);
-//                    records.set(j, records.get(i));
-//                    records.set(i,temp);
-//                }
-//            }
-//        }
-//    }
 
     public static ArrayList<RecordPerUser> getRecords(Context context) {
         if (records == null){
@@ -134,25 +111,6 @@ public class RecordsRepo {
 
             }
         });
-//        query.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                for (DataSnapshot s: snapshot.getChildren()) {
-//                    Record r = s.getValue(Record.class);
-//                    RecordPerUser record = new RecordPerUser(r.getTime(), getUserInfo(r.getUserId(), context), s.getKey());
-//                    addSorted(record);
-////                    DataChangedListener dataChangedListener = (DataChangedListener) context;
-////                    dataChangedListener.onDataChanged();
-//                    Log.d(TAG, "onDataChange: " + record);
-//                }
-//                Log.d(TAG, "getRecords: ajk,shvfijsAGVFOUASDVFOUASDVFOUASDFVOAUFGOUASDFGV" + records);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.d(TAG, "onCancelled: ERROR");
-//            }
-//        });
     }
 
     private static MutableLiveData<User> getUserInfo(String id, final Context context) {

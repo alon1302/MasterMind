@@ -1,10 +1,17 @@
 package com.example.mastermind.model.user;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class CurrentUser {
 
     private static User instance = null;
+    private static int userCoins;
 
     private CurrentUser() {
     }
@@ -16,8 +23,30 @@ public class CurrentUser {
             instance.setEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
             instance.setImgUrl(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
             instance.setName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+            FirebaseDatabase.getInstance().getReference().child("Users/" + instance.getId()+ "/Collection/Coins").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    userCoins = snapshot.getValue(Integer.class);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
         }
         return instance;
+    }
+
+    public static void addCoins(int coins){
+        FirebaseDatabase.getInstance().getReference().child("Users/" + instance.getId()+ "/Collection/Coins").setValue(userCoins + coins);
+        userCoins = userCoins + coins;
+    }
+
+    public static void setUserCoins(int userCoins) {
+        CurrentUser.userCoins = userCoins;
+    }
+
+    public static int getUserCoins() {
+        return userCoins;
     }
 
     public static void logout() {

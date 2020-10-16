@@ -77,12 +77,10 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
                     String currPlayer = multiPlayerManager.getPlayer();
                     if (winnerString.equals("Player2")){
                         if (!isWaitingForWin) {
-                            if (currPlayer.equals("Player2")) {
+                            if (currPlayer.equals("Player2"))
                                 winner = 1;
-                            }
-                            else {
+                            else
                                 winner = 2;
-                            }
                         }
                         else
                             winner = 0;
@@ -95,7 +93,6 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }

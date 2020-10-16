@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.mastermind.R;
 import com.example.mastermind.model.listeners.ImageUploadListener;
 import com.example.mastermind.model.user.CurrentUser;
+import com.example.mastermind.model.user.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -42,6 +43,8 @@ import com.google.firebase.database.core.Context;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -121,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             currentUser = mAuth.getCurrentUser();
-                            myRef.child("Users").child(currentUser.getUid()).setValue(CurrentUser.getInstance());
+                            addOrUpdateUser(currentUser);
                             Toast.makeText(getApplicationContext(), "Authentication succeed.", Toast.LENGTH_SHORT).show();
                             openHomeActivity();
                         } else {
@@ -129,6 +132,15 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                         }
                     }
                 });
+    }
+
+    public static void addOrUpdateUser(FirebaseUser user){
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("name",user.getDisplayName());
+        map.put("email",user.getEmail());
+        map.put("id",user.getUid());
+        map.put("imgUrl",user.getPhotoUrl().toString());
+        FirebaseDatabase.getInstance().getReference().child("Users").child(user.getUid()).updateChildren(map);
     }
 
     private void signInWithGoogle() {
@@ -164,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                             }
                         } else {
                         }
-
                     }
                 });
     }

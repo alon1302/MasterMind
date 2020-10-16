@@ -18,6 +18,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleImageView4"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/coins"
+        app:layout_constraintStart_toStartOf="@+id/tv_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name" />
+
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
@@ -135,5 +144,20 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.35" />
+
+    <TextView
+        android:id="@+id/textView_coins"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="4dp"
+        android:shadowColor="#000000"
+        android:text="coins"
+        android:textColor="#FF9800"
+        android:textColorHighlight="#000000"
+        android:textSize="23sp"
+        app:layout_constraintBottom_toBottomOf="@+id/circleImageView4"
+        app:layout_constraintStart_toEndOf="@+id/circleImageView4"
+        app:layout_constraintTop_toTopOf="@+id/circleImageView4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
