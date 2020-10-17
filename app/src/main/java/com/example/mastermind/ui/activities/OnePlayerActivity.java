@@ -5,11 +5,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +24,7 @@ import com.example.mastermind.ui.adapters.AdapterRows;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -70,6 +73,33 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         startTimeRunning();
         createHidden();
         createButtons();
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void onClickHint(View view){
+        // TODO - לבדוק אם כבר קנה רמז במשחק הזה
+        final Dialog hintDialog = new Dialog(this);
+        hintDialog.setContentView(R.layout.get_hint_dialog);
+        hintDialog.setCancelable(true);
+        hintDialog.show();
+        TextView coins = hintDialog.findViewById(R.id.textView_coinsHint);
+        coins.setText("" + CurrentUser.getUserCoins());
+        Button buy = hintDialog.findViewById(R.id.buyHintButton);
+        buy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (CurrentUser.getUserCoins() < 500){
+                    Toast.makeText(OnePlayerActivity.this, "You Don't Have Enough Coins", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    CurrentUser.addCoins(-500);
+                    int position = new Random().nextInt(4);
+                    hiddenRowImages[position].setVisibility(View.VISIBLE);
+                    tv_coins.setText("" + CurrentUser.getUserCoins());
+                }
+                hintDialog.dismiss();
+            }
+        });
     }
 
     //_______________Timer_______________//
@@ -256,7 +286,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         GameRow hiddenRow = gameManager.getHidden();
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenColors.length; i++) {
-            //TODO // hiddenRowImages[i].setVisibility(View.INVISIBLE);
+            hiddenRowImages[i].setVisibility(View.INVISIBLE);
             switch (hiddenColors[i]) {
                 case "null":
                     this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);

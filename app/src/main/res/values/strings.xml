@@ -21,4 +21,6 @@
     <string name="enter_room_code">Enter Room Code</string>
     <string name="time_left">00:30</string>
     <string name="winner">winner</string>
+    <string name="want_to_buy_hint">Want To Buy Hint?</string>
+    <string name="reveal_one_peg">Reveal One Peg -</string>
 </resources>
