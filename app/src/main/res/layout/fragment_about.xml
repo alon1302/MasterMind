@@ -92,7 +92,7 @@
         android:layout_marginTop="35dp"
         android:layout_marginEnd="16dp"
         android:gravity="center"
-        android:text="When you start the game a series of 4 different colors randomly selected,\n and it stay covered until you success to guess it perfectly or you lose after 10 tries. "
+        android:text="When you start the game a series of 4 different colors randomly selected,\n and it stay covered until you success to guess it perfectly. "
         android:textColor="@color/colorBlack"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"

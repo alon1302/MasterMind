@@ -66,24 +66,30 @@ public class HomeActivity extends AppCompatActivity {
 
     public void showCoins(){
         tv_coins = findViewById(R.id.textView_coins);
-        FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").addValueEventListener(new ValueEventListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    int coins = snapshot.getValue(Integer.class);
-                    tv_coins.setText("" + coins);
-                    CurrentUser.setUserCoins(coins);
+        try {
+            FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").addValueEventListener(new ValueEventListener() {
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        int coins = snapshot.getValue(Integer.class);
+                        tv_coins.setText("" + coins);
+                        CurrentUser.setUserCoins(coins);
+                    } else {
+                        FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").setValue(0);
+                        CurrentUser.setUserCoins(0);
+                    }
                 }
-                else{
-                    FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").setValue(0);
-                    CurrentUser.setUserCoins(0);
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").setValue(0);
+        }
     }
 
     public void onClickOnePlayer(View view) {

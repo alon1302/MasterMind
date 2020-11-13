@@ -7,18 +7,6 @@
     tools:context=".ui.fragments.EndGameFragment">
 
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lottie_winner"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        app:layout_constraintBottom_toBottomOf="@+id/Winner_image"
-        app:layout_constraintEnd_toEndOf="@+id/Winner_image"
-        app:layout_constraintStart_toStartOf="@+id/Winner_image"
-        app:layout_constraintTop_toTopOf="@+id/Winner_image"
-        app:lottie_autoPlay="true"
-        app:lottie_fileName="winner_gif.json"
-        app:lottie_loop="false" />
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/Winner_image"
         android:layout_width="120dp"
@@ -62,5 +50,17 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.2" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_winner"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toBottomOf="@+id/Winner_image"
+        app:layout_constraintEnd_toEndOf="@+id/Winner_image"
+        app:layout_constraintStart_toStartOf="@+id/Winner_image"
+        app:layout_constraintTop_toTopOf="@+id/Winner_image"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="winner_gif.json"
+        app:lottie_loop="false" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
