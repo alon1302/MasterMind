@@ -37,8 +37,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.core.Context;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
         progressDialogUpload = new ProgressDialog(this, android.R.style.Theme_DeviceDefault_Dialog);
 
         mAuth = FirebaseAuth.getInstance();
-//        mAuth.signOut();
+        //mAuth.signOut();
         currentUser = mAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
@@ -134,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                 });
     }
 
-    public static void addOrUpdateUser(FirebaseUser user){
+    public static void addOrUpdateUser(final FirebaseUser user){
         HashMap<String,Object> map = new HashMap<>();
         map.put("name",user.getDisplayName());
         map.put("email",user.getEmail());

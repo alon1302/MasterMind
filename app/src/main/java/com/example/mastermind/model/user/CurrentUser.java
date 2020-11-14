@@ -23,15 +23,32 @@ public class CurrentUser {
             instance.setEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
             instance.setImgUrl(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
             instance.setName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-            FirebaseDatabase.getInstance().getReference().child("Users/" + instance.getId()+ "/Collection/Coins").addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference().child("Users/" + instance.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    userCoins = snapshot.getValue(Integer.class);
+                    if (!snapshot.child("Collection").exists()){
+                        FirebaseDatabase.getInstance().getReference().child("Users/" + instance.getId()+ "/Collection/Coins").setValue(0);
+                        userCoins = 0;
+                    }
+                    else{
+                        userCoins = snapshot.child("Collection/Coins").getValue(Integer.class);
+                    }
                 }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
+
                 }
             });
+//            FirebaseDatabase.getInstance().getReference().child("Users/" + instance.getId()+ "/Collection/Coins").addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                    userCoins = snapshot.getValue(Integer.class);
+//                }
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//                }
+//            });
         }
         return instance;
     }
