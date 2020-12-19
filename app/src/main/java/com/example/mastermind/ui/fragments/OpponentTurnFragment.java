@@ -104,7 +104,7 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
 
         recyclerView = view.findViewById(R.id.opponent_multi_recyclerView);
-        adapterRows = new AdapterRows(gameRows, checkRows, requireActivity());
+        adapterRows = new AdapterRows(gameRows, checkRows, requireActivity(),false);
         recyclerView.setAdapter(adapterRows);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -133,25 +133,6 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
 
             }
         });
-
-
-//        valueEventListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                String turn = snapshot.getValue(String.class);
-//                if (turn.equals(player)) {
-//                    MethodCallBack methodCallBack = (MethodCallBack)context;
-//                    methodCallBack.onCallBack(5, null);
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        };
-//        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").addValueEventListener(valueEventListener);
         createRow();
         return view;
 
@@ -197,6 +178,7 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
 
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenRowImages.length; i++) {
+            hiddenRowImages[i].setClickable(false);
             switch (hiddenColors[i]) {
                 case "null":
                     this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);

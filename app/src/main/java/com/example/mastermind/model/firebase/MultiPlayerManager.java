@@ -11,7 +11,9 @@ import androidx.fragment.app.Fragment;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.ui.activities.MultiplayerActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -40,7 +42,19 @@ public class MultiPlayerManager implements Serializable {
     public MultiPlayerManager(Activity context) {
         this.code = "";
         this.context = context;
-        done =false;
+        done = false;
+    }
+    public MultiPlayerManager(Activity context,String code, String player1) {
+        this.code = code;
+        this.context = context;
+        done = false;
+        if (player1.equals(CurrentUser.getInstance().getId())){
+            player = "Player1";
+            opponent = "Player2";
+        }else {
+            player = "Player2";
+            opponent = "Player1";
+        }
     }
 
     public void createRoom(){
@@ -114,8 +128,11 @@ public class MultiPlayerManager implements Serializable {
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(other + "Hidden").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists())
+                if (snapshot.exists()) {
                     opponentHidden = snapshot.getValue(String.class);
+                    MethodCallBack methodCallBack = (MethodCallBack) context;
+                    methodCallBack.onCallBack(11,null);
+                }
             }
 
             @Override
@@ -187,28 +204,6 @@ public class MultiPlayerManager implements Serializable {
     public void setPlayerTurn(String playerTurn) {
         this.playerTurn = playerTurn;
     }
-    //    public void howsTurn(){
-//        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.exists()){
-//                    Log.d(TAG, "onDataChange: Turn Ro -----------------------------");
-//                    String t = snapshot.getValue(String.class);
-//                    MethodCallBack methodCallBack = (MethodCallBack) context;
-//                    if (player.equals(t)) {
-//                        methodCallBack.onCallBack(5, null);
-//                    } else if (!player.equals(t)){
-//                        methodCallBack.onCallBack(6, null);
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
 
     public String getPlayer() {
         return player;
@@ -250,5 +245,12 @@ public class MultiPlayerManager implements Serializable {
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Winner").setValue(this.player);
     }
 
+    public void deleteRoom() {
+        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
 
+            }
+        });
+    }
 }

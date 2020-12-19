@@ -24,11 +24,13 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
     private ArrayList<CheckRow> checkRows;
     private Context context;
     public LinearLayout fullRow;
+    boolean clickable;
 
-    public AdapterRows(ArrayList<GameRow> gameRows, ArrayList<CheckRow> checkRows, Context context) {
+    public AdapterRows(ArrayList<GameRow> gameRows, ArrayList<CheckRow> checkRows, Context context, boolean clickable) {
         this.gameRows = gameRows;
         this.checkRows = checkRows;
         this.context = context;
+        this.clickable= clickable;
     }
 
     @NonNull
@@ -66,13 +68,15 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         //Log.d("TAG", "colorGameRow: " + Arrays.toString(colorGameRow));
         for (int i = 0; i < holder.SIZE; i++) {
             final int finalI = i;
-            holder.game[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    OnPegClickListener pegClickListener = (OnPegClickListener) context;
-                    pegClickListener.onPositionClicked(finalI);
-                }
-            });
+            if (clickable) {
+                holder.game[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        OnPegClickListener pegClickListener = (OnPegClickListener) context;
+                        pegClickListener.onPositionClicked(finalI);
+                    }
+                });
+            }
             switch (colorGameRow[i]) {
                 case "null":
                     holder.game[i].setImageResource(R.color.colorTWhite);

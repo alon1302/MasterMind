@@ -19,6 +19,7 @@ public class CurrentUser {
     public static User getInstance() {
         if (instance == null) {
             instance = new User();
+        }
             instance.setId(FirebaseAuth.getInstance().getCurrentUser().getUid());
             instance.setEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
             instance.setImgUrl(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
@@ -40,16 +41,7 @@ public class CurrentUser {
 
                 }
             });
-//            FirebaseDatabase.getInstance().getReference().child("Users/" + instance.getId()+ "/Collection/Coins").addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    userCoins = snapshot.getValue(Integer.class);
-//                }
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//                }
-//            });
-        }
+
         return instance;
     }
 

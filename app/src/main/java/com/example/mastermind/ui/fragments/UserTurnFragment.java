@@ -148,7 +148,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
 //            MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
 //            methodCallBack.onCallBack(10, null);
 //        }
-        adapterRows = new AdapterRows(gameRows, checkRows,requireActivity());
+        adapterRows = new AdapterRows(gameRows, checkRows,requireActivity(),true);
         recyclerView.setAdapter(adapterRows);
         createHidden();
         createButtons();

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -67,7 +68,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         recyclerView.setLayoutManager(layoutManager);
         gameRows = gameManager.getGameRows();
         checkRows = gameManager.getCheckRows();
-        adapterRows = new AdapterRows(gameRows, checkRows, this);
+        adapterRows = new AdapterRows(gameRows, checkRows, this,true);
         recyclerView.setAdapter(adapterRows);
         current = findViewById(R.id.currentSelection);
         startTimeRunning();
@@ -79,6 +80,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     public void onClickHint(View view){
         // TODO - לבדוק אם כבר קנה רמז במשחק הזה
         final Dialog hintDialog = new Dialog(this);
+        hintDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         hintDialog.setContentView(R.layout.get_hint_dialog);
         hintDialog.setCancelable(true);
         hintDialog.show();

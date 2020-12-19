@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/master_mind_back"
     tools:context=".ui.activities.WinActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -68,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="name"
-        android:textColor="@color/colorBlack"
+        android:textColor="@color/colorWhite"
         android:textSize="25sp"
         app:layout_constraintEnd_toStartOf="@+id/home"
         app:layout_constraintStart_toEndOf="@+id/restart"
@@ -80,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Time"
-        android:textColor="@color/colorBlack"
+        android:textColor="@color/colorTWhite"
         android:textSize="25dp"
         app:layout_constraintEnd_toStartOf="@+id/home"
         app:layout_constraintStart_toEndOf="@+id/restart"

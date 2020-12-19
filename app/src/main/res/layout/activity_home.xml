@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/master_mind_back"
     tools:context=".ui.activities.HomeActivity">
 
     <TextView
@@ -13,7 +14,7 @@
         android:layout_marginTop="10dp"
         android:fontFamily="sans-serif-condensed-medium"
         android:text="Welcome"
-        android:textColor="@color/colorBlack"
+        android:textColor="@color/colorWhite"
         android:textSize="55sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline3" />
@@ -34,7 +35,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="100dp"
         android:text="name"
-        android:textColor="@color/colorBlack"
+        android:textColor="@color/colorTWhite"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline3" />
@@ -60,8 +61,8 @@
         android:layout_gravity="center"
         android:layout_margin="4dp"
         android:background="@drawable/main_design"
-        android:text="How To Play ?"
         android:onClick="onClickHowToPlay"
+        android:text="How To Play ?"
         android:textAllCaps="false"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
