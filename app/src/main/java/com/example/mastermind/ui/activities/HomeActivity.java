@@ -4,7 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +18,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
+import com.example.mastermind.model.ComeBackBroadcast;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -62,6 +69,8 @@ public class HomeActivity extends AppCompatActivity {
 
         circleImageView = findViewById(R.id.iv_image);
         Glide.with(this).load(user.getImgUrl()).into(circleImageView);
+
+        createNotificationChannel();
     }
 
     public void showCoins(){
@@ -113,5 +122,28 @@ public class HomeActivity extends AppCompatActivity {
     public void onClickHowToPlay(View view) {
         Intent intent = new Intent(this, HowToPlayActivity.class);
         startActivity(intent);
+    }
+
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            String name = "ComeBackReminder";
+            String description = "we missed you' please come back";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("Comeback", name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Intent intent = new Intent(HomeActivity.this, ComeBackBroadcast.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        long currentTime = System.currentTimeMillis();
+        long tenSecondsTest = 10000;
+        alarmManager.set(AlarmManager.RTC_WAKEUP, currentTime + tenSecondsTest, pendingIntent);
     }
 }

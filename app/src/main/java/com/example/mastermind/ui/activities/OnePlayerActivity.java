@@ -34,6 +34,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private Chronometer chronometer;
     private long pauseOffset;
     private boolean running;
+    private boolean tookHint;
 
     private AdapterRows adapterRows;
     private RecyclerView recyclerView;
@@ -62,6 +63,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         chronometer = findViewById(R.id.chronometer);
         tv_coins = findViewById(R.id.textView_coinsGame);
         tv_coins.setText("" + CurrentUser.getUserCoins());
+        tookHint = false;
         gameManager = new GameManager();
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView = findViewById(R.id.recyclerView);
@@ -78,30 +80,33 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
     @SuppressLint("SetTextI18n")
     public void onClickHint(View view){
-        // TODO - לבדוק אם כבר קנה רמז במשחק הזה
-        final Dialog hintDialog = new Dialog(this);
-        hintDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        hintDialog.setContentView(R.layout.get_hint_dialog);
-        hintDialog.setCancelable(true);
-        hintDialog.show();
-        TextView coins = hintDialog.findViewById(R.id.textView_coinsHint);
-        coins.setText("" + CurrentUser.getUserCoins());
-        Button buy = hintDialog.findViewById(R.id.buyHintButton);
-        buy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (CurrentUser.getUserCoins() < 500){
-                    Toast.makeText(OnePlayerActivity.this, "You Don't Have Enough Coins", Toast.LENGTH_SHORT).show();
+        if (tookHint) {
+            Toast.makeText(OnePlayerActivity.this, "You Already took hint", Toast.LENGTH_SHORT).show();
+        } else {
+            final Dialog hintDialog = new Dialog(this);
+            hintDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            hintDialog.setContentView(R.layout.get_hint_dialog);
+            hintDialog.setCancelable(true);
+            hintDialog.show();
+            TextView coins = hintDialog.findViewById(R.id.textView_coinsHint);
+            coins.setText("" + CurrentUser.getUserCoins());
+            Button buy = hintDialog.findViewById(R.id.buyHintButton);
+            buy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (CurrentUser.getUserCoins() < 500) {
+                        Toast.makeText(OnePlayerActivity.this, "You Don't Have Enough Coins", Toast.LENGTH_SHORT).show();
+                    } else {
+                        CurrentUser.addCoins(-500);
+                        int position = new Random().nextInt(4);
+                        hiddenRowImages[position].setVisibility(View.VISIBLE);
+                        tv_coins.setText("" + CurrentUser.getUserCoins());
+                        tookHint = true;
+                    }
+                    hintDialog.dismiss();
                 }
-                else{
-                    CurrentUser.addCoins(-500);
-                    int position = new Random().nextInt(4);
-                    hiddenRowImages[position].setVisibility(View.VISIBLE);
-                    tv_coins.setText("" + CurrentUser.getUserCoins());
-                }
-                hintDialog.dismiss();
-            }
-        });
+            });
+        }
     }
 
     //_______________Timer_______________//
