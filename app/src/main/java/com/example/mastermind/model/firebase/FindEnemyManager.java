@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -67,6 +68,16 @@ public class FindEnemyManager extends MultiPlayerManager{
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+    }
+
+    @Override
+    public void deleteRoom() {
+        super.deleteRoom();
+        FirebaseDatabase.getInstance().getReference().child("AvailableRooms").child(code).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
             }
         });
     }

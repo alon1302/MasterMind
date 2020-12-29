@@ -132,7 +132,13 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        multiPlayerManager.deleteRoom();
+        if (multiPlayerManager instanceof FindEnemyManager){
+            FindEnemyManager findEnemyManager = (FindEnemyManager)multiPlayerManager;
+            findEnemyManager.deleteRoom();
+        }
+        else{
+            multiPlayerManager.deleteRoom();
+        }
     }
 
     private void toEndGameFragment() {
