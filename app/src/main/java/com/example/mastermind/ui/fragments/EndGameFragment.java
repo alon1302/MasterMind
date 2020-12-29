@@ -101,25 +101,29 @@ public class EndGameFragment extends Fragment {
                     rematchResponse = 2;
                     indication.setVisibility(View.VISIBLE);
                     if (snapshot.getValue(Integer.class) >= 2){
-                        Intent intent = new Intent(EndGameFragment.this.requireActivity(), MultiplayerActivity.class);
-                        if (situation == 1){
-                            intent.putExtra("player1" , user1);
-                            intent.putExtra("player2" , user2);
-                        }else if (situation == 2){
-                            intent.putExtra("player2" , user1);
-                            intent.putExtra("player1" , user2);
-                        }else {
-                            if (player.equals("player1")){
-                                intent.putExtra("player2" , user2);
+                        try {
+                            Intent intent = new Intent(EndGameFragment.this.requireActivity(), MultiplayerActivity.class);
+                            if (situation == 1){
                                 intent.putExtra("player1" , user1);
+                                intent.putExtra("player2" , user2);
+                            }else if (situation == 2){
+                                intent.putExtra("player2" , user1);
+                                intent.putExtra("player1" , user2);
                             }else {
-                                intent.putExtra("player1", user2);
-                                intent.putExtra("player2", user1);
+                                if (player.equals("player1")){
+                                    intent.putExtra("player2" , user2);
+                                    intent.putExtra("player1" , user1);
+                                }else {
+                                    intent.putExtra("player1", user2);
+                                    intent.putExtra("player2", user1);
+                                }
                             }
+                            intent.putExtra("code", code);
+                            startActivity(intent);
+                            EndGameFragment.this.requireActivity().finish();
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
-                        intent.putExtra("code", code);
-                        startActivity(intent);
-                        EndGameFragment.this.requireActivity().finish();
                     }
                 }
             }

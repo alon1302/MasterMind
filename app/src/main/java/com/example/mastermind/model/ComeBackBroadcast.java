@@ -14,9 +14,9 @@ public class ComeBackBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "Comeback")
-                .setSmallIcon(R.drawable.ic_baseline_emoji_people_24)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setContentTitle("Master Mind")
-                .setContentText("we missed you' please come back")
+                .setContentText("We Missed You Please Come Back")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(1, builder.build());

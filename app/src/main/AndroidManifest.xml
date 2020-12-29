@@ -9,18 +9,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activities.MultiplayerActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.WinActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.OnePlayerActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.HomeActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activities.MainActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".ui.activities.MultiplayerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.WinActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.OnePlayerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.HomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".model.ComeBackBroadcast"/>
+
+        <receiver android:name=".model.ComeBackBroadcast" />
+
         <activity android:name=".ui.activities.HowToPlayActivity" />
     </application>
 

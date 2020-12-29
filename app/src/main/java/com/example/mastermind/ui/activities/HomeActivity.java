@@ -108,8 +108,15 @@ public class HomeActivity extends AppCompatActivity {
 
     public void onClickTwoPlayer(View view){
         Intent intent = new Intent(this, MultiplayerActivity.class);
+        intent.putExtra("type", "withCode");
         startActivity(intent);
     }
+    public void onClickFindEnemy(View view){
+        Intent intent = new Intent(this, MultiplayerActivity.class);
+        intent.putExtra("type", "findEnemy");
+        startActivity(intent);
+    }
+
 
     public void onClickLogOut(View view) {
         Intent intent = new Intent(this, MainActivity.class);

@@ -258,4 +258,10 @@ public class ChooseHiddenFragment extends Fragment {
                 break;
         }
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        countDownTimer.cancel();
+    }
 }

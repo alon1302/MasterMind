@@ -27,17 +27,17 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class MultiPlayerManager implements Serializable {
 
-    private String code;
-    private boolean codeCreated = false;
-    private String TAG = "MultiPlayerManager";
-    private String player;
-    private String playerTurn="Player1";
-    private String userHidden = "nnnn";
-    private String opponentHidden="nnnn";
+    protected String code;
+    protected boolean codeCreated = false;
+    protected String TAG = "MultiPlayerManager";
+    protected String player;
+    protected String playerTurn="Player1";
+    protected String userHidden = "nnnn";
+    protected String opponentHidden="nnnn";
     Activity context;
-    private boolean done;
-    private String opponent;
-    private String hidden;
+    protected boolean done;
+    protected String opponent;
+    protected String hidden;
 
     public MultiPlayerManager(Activity context) {
         this.code = "";
@@ -142,7 +142,7 @@ public class MultiPlayerManager implements Serializable {
 
     }
 
-    private String createStringCode(){
+    protected String createStringCode(){
         StringBuilder code = new StringBuilder();
         int limit;
         if (new Random().nextInt(2) == 0)
