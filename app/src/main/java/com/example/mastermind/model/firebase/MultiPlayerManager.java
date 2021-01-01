@@ -139,7 +139,6 @@ public class MultiPlayerManager implements Serializable {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-
     }
 
     protected String createStringCode(){

@@ -14,7 +14,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
@@ -46,6 +48,7 @@ public class HomeActivity extends AppCompatActivity {
     TextView tv_name;
     TextView tv_coins;
     CircleImageView circleImageView;
+    int from;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -53,24 +56,22 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-
+        
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
         user = CurrentUser.getInstance();
-
-        Log.d("", "onCreate: " + user.toString());
-
         tv_name = findViewById(R.id.tv_name);
         tv_name.setText(user.getName());
-        showCoins();
 
         circleImageView = findViewById(R.id.iv_image);
         Glide.with(this).load(user.getImgUrl()).into(circleImageView);
 
         createNotificationChannel();
+        from = getIntent().getIntExtra("from", 0);
+        showCoins();
     }
 
     public void showCoins(){
@@ -82,8 +83,13 @@ public class HomeActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
                         int coins = snapshot.getValue(Integer.class);
-                        tv_coins.setText("" + coins);
                         CurrentUser.setUserCoins(coins);
+                        if (from == 1){
+                            CurrentUser.addCoins(300);
+                            from = 0;
+                            Toast.makeText(HomeActivity.this, "Congrats, You got 300 More Coins", Toast.LENGTH_SHORT).show();
+                        }
+                        tv_coins.setText("" + coins);
                     } else {
                         FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").setValue(0);
                         CurrentUser.setUserCoins(0);
