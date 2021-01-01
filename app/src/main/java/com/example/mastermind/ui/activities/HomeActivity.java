@@ -49,6 +49,7 @@ public class HomeActivity extends AppCompatActivity {
     TextView tv_coins;
     CircleImageView circleImageView;
     int from;
+    boolean got;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -59,7 +60,7 @@ public class HomeActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        
+
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         user = CurrentUser.getInstance();
@@ -70,7 +71,14 @@ public class HomeActivity extends AppCompatActivity {
         Glide.with(this).load(user.getImgUrl()).into(circleImageView);
 
         createNotificationChannel();
-        from = getIntent().getIntExtra("from", 0);
+        got = false;
+        if(!got){
+            from = getIntent().getIntExtra("from", 0);
+            got = true;
+        }
+        else{
+            from = 0;
+        }
         showCoins();
     }
 
