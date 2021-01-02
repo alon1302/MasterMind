@@ -2,16 +2,16 @@ package com.example.mastermind.model.game;
 
 public class Record {
     private long time;
-    private String userId;
-    private String id;
+    private String name;
+    private String imgUrl;
 
     public Record() {
     }
 
-    public Record(long time, String userId, String id) {
+    public Record(long time, String name, String imgUrl) {
         this.time = time;
-        this.userId = userId;
-        this.id = id;
+        this.name = name;
+        this.imgUrl = imgUrl;
     }
 
     public long getTime() {
@@ -22,19 +22,19 @@ public class Record {
         this.time = time;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getName() {
+        return name;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public String getImgUrl() {
+        return imgUrl;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

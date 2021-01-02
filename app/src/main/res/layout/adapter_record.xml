@@ -18,7 +18,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/name"
@@ -27,7 +27,8 @@
             android:layout_margin="6dp"
             android:layout_marginStart="10dp"
             android:text="name"
-            android:textSize="20sp"
+            android:textColor="@color/colorWhite"
+            android:textSize="22sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +38,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
             android:text="time"
-            android:textSize="20dp"
+            android:textColor="@color/colorTWhite"
+            android:textSize="21dp"
             app:layout_constraintEnd_toEndOf="@+id/name"
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@+id/name" />
@@ -49,6 +51,7 @@
             android:layout_marginTop="14dp"
             android:layout_marginEnd="16dp"
             android:text="sn"
+            android:textColor="@color/colorWhite"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

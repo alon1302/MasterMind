@@ -1,25 +1,29 @@
 package com.example.mastermind.ui.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
-import com.example.mastermind.model.firebase.RecordPerUser;
-import com.example.mastermind.model.firebase.RecordsRepo;
 import com.example.mastermind.model.game.Record;
 import com.example.mastermind.model.listeners.DataChangedListener;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
-import com.example.mastermind.ui.adapters.AdapterRecords;
+import com.example.mastermind.ui.adapters.RecordViewHolder;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -35,18 +39,15 @@ public class WinActivity extends AppCompatActivity implements DataChangedListene
     long minutes, seconds;
     long time;
 
-    AdapterRecords adapterRecords;
-    ArrayList<RecordPerUser> records;
-    RecyclerView recyclerView;
+    private FirebaseRecyclerOptions<Record> options;
+    private FirebaseRecyclerAdapter<Record, RecordViewHolder> adapter;
+    private RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_win);
-
-        records = RecordsRepo.getRecords(this);
 
         currentUser = CurrentUser.getInstance();
         tv_name = findViewById(R.id.winner_name);
@@ -55,13 +56,33 @@ public class WinActivity extends AppCompatActivity implements DataChangedListene
         getData();
         calculateCoins();
 
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView = findViewById(R.id.recyclerView_records);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        RecordsRepo.addRecord(time, CurrentUser.getInstance().getId(), this);
-        adapterRecords = new AdapterRecords(records, this);
-        recyclerView.setAdapter(adapterRecords);
+        Query ref = FirebaseDatabase.getInstance().getReference().child("Records");
+        options = new FirebaseRecyclerOptions.Builder<Record>().setQuery(ref, Record.class).build();
+        adapter = new FirebaseRecyclerAdapter<Record, RecordViewHolder>(options) {
+            @SuppressLint("DefaultLocale")
+            @Override
+            protected void onBindViewHolder(@NonNull RecordViewHolder holder, int position, @NonNull Record model) {
+                Glide.with(WinActivity.this).load(model.getImgUrl()).into(holder.img);
+                holder.name.setText(model.getName());
+                long minutes = (model.getTime() / 1000) / 60;
+                long seconds = (model.getTime() / 1000) % 60;
+                holder.time.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
+                holder.sn.setText(String.format("%d", position + 1));
+            }
+            @NonNull
+            @Override
+            public RecordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_record, parent, false);
+                return new RecordViewHolder(view);
+            }
+        };
+        adapter.startListening();
+        recyclerView.setAdapter(adapter);
     }
 
     private void calculateCoins() {
@@ -99,10 +120,17 @@ public class WinActivity extends AppCompatActivity implements DataChangedListene
         tv_name.setText(currentUser.getName());
         tv_time.setText(String.format(Locale.getDefault(),"%02d:%02d",minutes, seconds));
         Glide.with(this).load(currentUser.getImgUrl()).into(profileImage);
+        addRecord();
+
+    }
+
+    private void addRecord() {
+        Record record = new Record(time, currentUser.getName(), currentUser.getImgUrl());
+        FirebaseDatabase.getInstance().getReference().child("Records").push().setValue(record);
     }
 
     @Override
     public void onDataChanged() {
-        adapterRecords.notifyDataSetChanged();
+        //adapterRecords.notifyDataSetChanged();
     }
 }
