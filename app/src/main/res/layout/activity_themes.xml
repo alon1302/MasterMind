@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/master_mind_back"
+    tools:context=".ui.activities.ThemesActivity">
+
+    <TextView
+        android:id="@+id/textView_coinsThemes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:shadowColor="#000000"
+        android:text="coins"
+        android:textColor="#FF9800"
+        android:textColorHighlight="#000000"
+        android:textSize="23sp"
+        app:layout_constraintBottom_toBottomOf="@+id/circleImageView5"
+        app:layout_constraintStart_toEndOf="@+id/circleImageView5"
+        app:layout_constraintTop_toTopOf="@+id/circleImageView5" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleImageView5"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/coins"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_themes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_coinsThemes" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -162,4 +162,20 @@
         app:layout_constraintStart_toEndOf="@+id/circleImageView4"
         app:layout_constraintTop_toTopOf="@+id/circleImageView4" />
 
+    <ImageView
+        android:id="@+id/btn_Themes"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_gravity="center"
+        android:layout_margin="4dp"
+        android:onClick="onClickThemes"
+        android:src="@drawable/ic_baseline_color_lens_24"
+        android:textAllCaps="false"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_logOut"
+        app:tint="#ABF5FF" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

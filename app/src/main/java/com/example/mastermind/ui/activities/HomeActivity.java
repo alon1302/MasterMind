@@ -157,6 +157,11 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    public void onClickThemes(View v){
+        Intent intent = new Intent(this,ThemesActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
