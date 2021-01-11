@@ -28,6 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
+
 public class MultiplayerActivity extends AppCompatActivity implements MethodCallBack , OnPegClickListener, SendUsersCallBack {
 
     private static final String TAG = "Multiplayer" ;
@@ -59,7 +61,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         d = new Dialog(this);
         d.setContentView(R.layout.wait_to_opponent_dialog);
         d.setCancelable(false);
-        d.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        Objects.requireNonNull(d.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
         winner = -1;
         if(getIntent().getStringExtra("code") != null){
             user1 = (User)getIntent().getSerializableExtra("player1");
@@ -129,17 +131,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if (multiPlayerManager instanceof FindEnemyManager){
-            FindEnemyManager findEnemyManager = (FindEnemyManager)multiPlayerManager;
-            findEnemyManager.deleteRoom();
-        }
-        else{
-            multiPlayerManager.deleteRoom();
-        }
-    }
+
 
     private void toEndGameFragment() {
         endGameFragment = new EndGameFragment();
@@ -311,10 +303,27 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         FirebaseDatabase.getInstance().getReference().child("Rooms").child(multiPlayerManager.getCode()).child("HowsTurn").addValueEventListener(valueEventListener);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
+    private void deleteFromFirebase(){
+        if (multiPlayerManager instanceof FindEnemyManager){
+            FindEnemyManager findEnemyManager = (FindEnemyManager)multiPlayerManager;
+            findEnemyManager.deleteRoom();
+        }
+        else{
+            multiPlayerManager.deleteRoom();
+        }
+    }
 
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        deleteFromFirebase();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        deleteFromFirebase();
     }
 }
 

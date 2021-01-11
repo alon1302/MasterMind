@@ -16,6 +16,7 @@ import com.example.mastermind.model.game.*;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -26,11 +27,27 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
     public LinearLayout fullRow;
     boolean clickable;
 
+    private HashMap<String, Integer> colors;
+
     public AdapterRows(ArrayList<GameRow> gameRows, ArrayList<CheckRow> checkRows, Context context, boolean clickable) {
         this.gameRows = gameRows;
         this.checkRows = checkRows;
         this.context = context;
-        this.clickable= clickable;
+        this.clickable = clickable;
+        createColorsMap();
+    }
+
+    public void createColorsMap(){
+        colors = new HashMap<>();
+        colors.put("null", R.color.colorTWhite);
+        colors.put("black", R.color.colorBlack);
+        colors.put("white", R.color.colorWhite);
+        colors.put("red", R.color.colorRed);
+        colors.put("green", R.color.colorGreen);
+        colors.put("blue", R.color.colorBlue);
+        colors.put("orange", R.color.colorOrange);
+        colors.put("yellow", R.color.colorYellow);
+        colors.put("light", R.color.colorLight);
     }
 
     @NonNull
@@ -48,24 +65,13 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         String[] colorCheckRow = currCheckRow.getStringRow();
         colorCheckRow = sortCheckRow(colorCheckRow);
         for (int i = 0; i < holder.SIZE; i++) {
-            switch (colorCheckRow[i]) {
-                case "null":
-                    holder.check[i].setVisibility(View.INVISIBLE);
-                    break;
-                case "black":
-                    holder.check[i].setVisibility(View.VISIBLE);
-                    holder.check[i].setImageResource(R.color.colorBlack);
-                    break;
-                case "white":
-                    holder.check[i].setVisibility(View.VISIBLE);
-                    holder.check[i].setImageResource(R.color.colorWhite);
-                    break;
-            }
+            holder.check[i].setImageResource(colors.get(colorCheckRow[i]));
+            if (colorCheckRow[i].equals("null"))
+                holder.check[i].setVisibility(View.INVISIBLE);
+            else
+                holder.check[i].setVisibility(View.VISIBLE);
         }
-
-        //Log.d("TAG", "colorCheckRow: " + Arrays.toString(colorCheckRow));
         String[] colorGameRow = currGameRow.getStringRow();
-        //Log.d("TAG", "colorGameRow: " + Arrays.toString(colorGameRow));
         for (int i = 0; i < holder.SIZE; i++) {
             final int finalI = i;
             if (clickable) {
@@ -77,51 +83,25 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
                     }
                 });
             }
-            switch (colorGameRow[i]) {
-                case "null":
-                    holder.game[i].setImageResource(R.color.colorTWhite);
-                    break;
-                case "red":
-                    holder.game[i].setImageResource(R.color.colorRed);
-                    break;
-                case "green":
-                    holder.game[i].setImageResource(R.color.colorGreen);
-                    break;
-                case "blue":
-                    holder.game[i].setImageResource(R.color.colorBlue);
-                    break;
-                case "orange":
-                    holder.game[i].setImageResource(R.color.colorOrange);
-                    break;
-                case "yellow":
-                    holder.game[i].setImageResource(R.color.colorYellow);
-                    break;
-                case "light":
-                    holder.game[i].setImageResource(R.color.colorLight);
-                    break;
-            }
+            holder.game[i].setImageResource(colors.get(colorGameRow[i]));
         }
     }
 
     public String[] sortCheckRow(String[] arr) {
         String[] newArr = new String[4];
         int black = 0, white = 0;
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = 0; i < arr.length; i++)
             newArr[i] = "null";
-        }
         for (int i = 0; i < arr.length; i++) {
-            if (arr[i].equals("black")) {
+            if (arr[i].equals("black"))
                 black++;
-            } else if (arr[i].equals("white")) {
+            else if (arr[i].equals("white"))
                 white++;
-            }
         }
-        for (int i = 0; i < black; i++) {
+        for (int i = 0; i < black; i++)
             newArr[i] = "black";
-        }
-        for (int i = black; i < black + white; i++) {
+        for (int i = black; i < black + white; i++)
             newArr[i] = "white";
-        }
         return newArr;
     }
 
@@ -135,7 +115,6 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         int SIZE = 4;
         public CircleImageView[] game;
         public CircleImageView[] check;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             game = new CircleImageView[SIZE];

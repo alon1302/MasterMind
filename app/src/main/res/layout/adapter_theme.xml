@@ -20,7 +20,7 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/red"
             android:layout_width="54dp"
-            android:layout_height="52dp"
+            android:layout_height="54dp"
             android:layout_margin="1.5dp"
             android:src="@color/colorRed"
             app:civ_border_color="@color/colorBlack"
@@ -81,6 +81,7 @@
         android:background="@drawable/game_design"
         android:backgroundTint="@color/colorWhite"
         android:textSize="16sp"
+        android:layout_marginEnd="8dp"
         android:textAllCaps="false" />
 </LinearLayout>
 

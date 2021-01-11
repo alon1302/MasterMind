@@ -37,4 +37,13 @@ public class Record {
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
     }
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "time=" + time +
+                ", name='" + name + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                '}';
+    }
 }

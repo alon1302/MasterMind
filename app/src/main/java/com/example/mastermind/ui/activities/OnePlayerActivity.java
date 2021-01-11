@@ -22,9 +22,9 @@ import com.example.mastermind.model.game.*;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.ui.adapters.AdapterRows;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -45,6 +45,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private GameManager gameManager;
 
     String currentSelection = "null";
+    private HashMap<String, Integer> colors;
 
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
@@ -60,6 +61,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one_player);
 
+        createColorsMap();
         chronometer = findViewById(R.id.chronometer);
         tv_coins = findViewById(R.id.textView_coinsGame);
         tv_coins.setText("" + CurrentUser.getUserCoins());
@@ -78,6 +80,17 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         createButtons();
     }
 
+    public void createColorsMap(){
+        colors = new HashMap<>();
+        colors.put("null", R.color.colorTWhite);
+        colors.put("red", R.color.colorRed);
+        colors.put("green", R.color.colorGreen);
+        colors.put("blue", R.color.colorBlue);
+        colors.put("orange", R.color.colorOrange);
+        colors.put("yellow", R.color.colorYellow);
+        colors.put("light", R.color.colorLight);
+    }
+
     @SuppressLint("SetTextI18n")
     public void onClickHint(View view){
         if (tookHint) {
@@ -85,7 +98,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         } else {
             final Dialog hintDialog = new Dialog(this);
             hintDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            hintDialog.setContentView(R.layout.get_hint_dialog);
+            hintDialog.setContentView(R.layout.dialog_get_hint);
             hintDialog.setCancelable(true);
             hintDialog.show();
             TextView coins = hintDialog.findViewById(R.id.textView_coinsHint);
@@ -138,19 +151,18 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     View.OnTouchListener onClickColorListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (v == red) {
+            if (v == red)
                 currentSelection = "red";
-            } else if (v == green) {
+            else if (v == green)
                 currentSelection = "green";
-            } else if (v == blue) {
+            else if (v == blue)
                 currentSelection = "blue";
-            } else if (v == orange) {
+            else if (v == orange)
                 currentSelection = "orange";
-            } else if (v == yellow) {
+            else if (v == yellow)
                 currentSelection = "yellow";
-            } else if (v == light) {
+            else if (v == light)
                 currentSelection = "light";
-            }
             updateCurrImg();
             return true;
         }
@@ -191,11 +203,8 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     public void onClickSubmit(View view) {
         if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
             if (!gameManager.nextTurnIsNotWin()) {
-                for (int i = 0; i < hiddenRowImages.length; i++) {
+                for (int i = 0; i < hiddenRowImages.length; i++)
                     hiddenRowImages[i].setVisibility(View.VISIBLE);
-                }
-                //String s = convertGameRowToString();
-                //FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
                 Toast.makeText(this, "You Win", Toast.LENGTH_LONG).show();
                 pauseTimeRunning();
                 checkTime();
@@ -203,50 +212,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
             }
             recyclerView.smoothScrollToPosition(adapterRows.getItemCount() - 1);
             adapterRows.notifyDataSetChanged();
-//            String s = convertGameRowToString();
-//            FirebaseDatabase.getInstance().getReference().child("games").child("" + (gameManager.getTurn() - 1)).setValue(s);
         }
-    }
-
-    private String convertGameRowToString() {
-        GameRow currG = gameRows.get(gameManager.getTurn() - 2);
-        String[] currGstrings = currG.getStringRow();
-        CheckRow currC = checkRows.get(gameManager.getTurn() - 2);
-        String[] currCstrings = currC.getStringRow();
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < 4; i++) {
-            switch (currGstrings[i]) {
-                case "red":
-                    s.append("0");
-                    break;
-                case "green":
-                    s.append("1");
-                    break;
-                case "blue":
-                    s.append("2");
-                    break;
-                case "orange":
-                    s.append("3");
-                    break;
-                case "yellow":
-                    s.append("4");
-                    break;
-                case "light":
-                    s.append("5");
-                    break;
-            }
-        }
-        for (int i = 0; i < 4; i++) {
-            switch (currCstrings[i]) {
-                case "black":
-                    s.append("&");
-                    break;
-                case "white":
-                    s.append("|");
-                    break;
-            }
-        }
-        return s.toString();
     }
 
     private void openWinnerActivity() {
@@ -259,29 +225,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     }
 
     public void updateCurrImg() {
-        switch (currentSelection) {
-            case "null":
-                current.setImageResource(R.color.colorTWhite);
-                break;
-            case "red":
-                current.setImageResource(R.color.colorRed);
-                break;
-            case "blue":
-                current.setImageResource(R.color.colorBlue);
-                break;
-            case "green":
-                current.setImageResource(R.color.colorGreen);
-                break;
-            case "orange":
-                current.setImageResource(R.color.colorOrange);
-                break;
-            case "yellow":
-                current.setImageResource(R.color.colorYellow);
-                break;
-            case "light":
-                current.setImageResource(R.color.colorLight);
-                break;
-        }
+        current.setImageResource(colors.get(currentSelection));
     }
 
     public void createHidden() {
@@ -294,29 +238,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenColors.length; i++) {
             hiddenRowImages[i].setVisibility(View.INVISIBLE);
-            switch (hiddenColors[i]) {
-                case "null":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);
-                    break;
-                case "red":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorRed);
-                    break;
-                case "green":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorGreen);
-                    break;
-                case "blue":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorBlue);
-                    break;
-                case "orange":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorOrange);
-                    break;
-                case "yellow":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorYellow);
-                    break;
-                case "light":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorLight);
-                    break;
-            }
+            hiddenRowImages[i].setImageResource(colors.get(hiddenColors[i]));
         }
     }
 }

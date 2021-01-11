@@ -71,18 +71,13 @@ public class HomeActivity extends AppCompatActivity {
         Glide.with(this).load(user.getImgUrl()).into(circleImageView);
 
         createNotificationChannel();
-        got = false;
-        if(!got){
-            from = getIntent().getIntExtra("from", 0);
-            got = true;
-        }
-        else{
-            from = 0;
-        }
+
+        from = getIntent().getIntExtra("from", 0);
+        getIntent().removeExtra("from");
         showCoins();
     }
 
-    public void showCoins(){
+    public void showCoins() {
         tv_coins = findViewById(R.id.textView_coins);
         try {
             FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").addValueEventListener(new ValueEventListener() {
@@ -92,7 +87,7 @@ public class HomeActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         int coins = snapshot.getValue(Integer.class);
                         CurrentUser.setUserCoins(coins);
-                        if (from == 1){
+                        if (from == 1) {
                             CurrentUser.addCoins(300);
                             from = 0;
                             Toast.makeText(HomeActivity.this, "Congrats, You got 300 More Coins", Toast.LENGTH_SHORT).show();
@@ -108,8 +103,7 @@ public class HomeActivity extends AppCompatActivity {
                 public void onCancelled(@NonNull DatabaseError error) {
                 }
             });
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").setValue(0);
         }
@@ -120,12 +114,13 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onClickTwoPlayer(View view){
+    public void onClickTwoPlayer(View view) {
         Intent intent = new Intent(this, MultiplayerActivity.class);
         intent.putExtra("type", "withCode");
         startActivity(intent);
     }
-    public void onClickFindEnemy(View view){
+
+    public void onClickFindEnemy(View view) {
         Intent intent = new Intent(this, MultiplayerActivity.class);
         intent.putExtra("type", "findEnemy");
         startActivity(intent);
@@ -145,8 +140,8 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void createNotificationChannel(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String name = "ComeBackReminder";
             String description = "we missed you' please come back";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -157,14 +152,15 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickThemes(View v){
-        Intent intent = new Intent(this,ThemesActivity.class);
+    public void onClickThemes(View v) {
+        Intent intent = new Intent(this, ThemesActivity.class);
         startActivity(intent);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        getIntent().removeExtra("from");
         Intent intent = new Intent(HomeActivity.this, ComeBackBroadcast.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);

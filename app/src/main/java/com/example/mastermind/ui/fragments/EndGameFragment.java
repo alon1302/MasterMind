@@ -37,16 +37,6 @@ public class EndGameFragment extends Fragment {
     TextView indication;
     int rematchResponse = 1;
 
-    public EndGameFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,8 +47,13 @@ public class EndGameFragment extends Fragment {
         winnerIV = view.findViewById(R.id.Winner_image);
         loserIV = view.findViewById(R.id.Loser_image);
         indication = view.findViewById(R.id.indication);
-        user1 = (User) getArguments().getSerializable("user1");
-        user2 = (User) getArguments().getSerializable("user2");
+        if (getArguments() != null) {
+            user1 = (User) getArguments().getSerializable("user1");
+            user2 = (User) getArguments().getSerializable("user2");
+        }else
+            requireActivity().finish();
+
+
         final String player = getArguments().getString("player");
         code = getArguments().getString("code");
 
@@ -110,7 +105,7 @@ public class EndGameFragment extends Fragment {
                                 intent.putExtra("player2" , user1);
                                 intent.putExtra("player1" , user2);
                             }else {
-                                if (player.equals("player1")){
+                                if (player.equals("Player1")){
                                     intent.putExtra("player2" , user2);
                                     intent.putExtra("player1" , user1);
                                 }else {

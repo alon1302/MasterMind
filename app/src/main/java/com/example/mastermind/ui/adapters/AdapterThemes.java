@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mastermind.R;
 import com.example.mastermind.model.Theme;
 import com.example.mastermind.model.Themes;
+import com.example.mastermind.model.listeners.MethodCallBack;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesViewHolder> {
     Context context;
-    int[] colors = {R.color.colorRed, R.color.colorGreen, R.color.colorBlue, R.color.colorOrange, R.color.colorYellow, R.color.colorLight};
+    //int[] colors = {R.color.colorRed, R.color.colorGreen, R.color.colorBlue, R.color.colorOrange, R.color.colorYellow, R.color.colorLight};
 
     public AdapterThemes(Context context) {
         this.context = context;
@@ -36,7 +37,7 @@ public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ThemesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ThemesViewHolder holder, final int position) {
         ArrayList<Theme> list = Themes.getInstance(context.getApplicationContext()).getAllThemes();
         for (int i = 0; i < holder.imageViews.length; i++) {
             holder.imageViews[i].setForeground(context.getResources().getDrawable(list.get(position).getPegImage()));
@@ -49,6 +50,14 @@ public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesView
         }
         else
             holder.status.setImageResource(R.drawable.ic_baseline_lock_24);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MethodCallBack methodCallBack = (MethodCallBack) context;
+                methodCallBack.onCallBack(0, holder.imageViews[0].getForeground());
+            }
+        });
     }
 
     @Override
