@@ -1,26 +1,24 @@
 package com.example.mastermind.ui.activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.listeners.ImageUploadListener;
 import com.example.mastermind.model.user.CurrentUser;
-import com.example.mastermind.model.user.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -37,12 +35,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.core.Context;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -53,14 +47,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements ImageUploadListener {
 
-    private static final String TAG = "FacebookAuthentication";
-
     static int PICK_IMAGE = 100;
     static int GOOGLE = 1;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private StorageReference mStorageRef;
     FirebaseDatabase database;
     DatabaseReference myRef;
 
@@ -87,16 +78,14 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
         currentUser = mAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
-        mStorageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        if (currentUser != null) {
+        if (currentUser != null)
             openHomeActivity();
-        }
 
         createDialogs();
 
@@ -104,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
         btn_howToPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent intent = new Intent(getApplicationContext(), HowToPlayActivity.class);
-               startActivity(intent);
+                Intent intent = new Intent(getApplicationContext(), HowToPlayActivity.class);
+                startActivity(intent);
             }
         });
         SignInButton btn_google = findViewById(R.id.signInButton);
@@ -117,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
         });
     }
 
-
     //////////////////////////////// Google ////////////////////////////////////
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -128,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                         if (task.isSuccessful()) {
                             currentUser = mAuth.getCurrentUser();
                             addOrUpdateUser(currentUser);
-                            Toast.makeText(getApplicationContext(), "Authentication succeed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Authentication succeed", Toast.LENGTH_SHORT).show();
                             openHomeActivity();
                         } else {
                             Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
@@ -137,13 +125,13 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                 });
     }
 
-    public static void addOrUpdateUser(final FirebaseUser user){
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("name",user.getDisplayName());
-        map.put("email",user.getEmail());
-        map.put("id",user.getUid());
-        map.put("imgUrl",user.getPhotoUrl().toString());
-        FirebaseDatabase.getInstance().getReference().child("Users").child(user.getUid()).updateChildren(map);
+    public static void addOrUpdateUser(final FirebaseUser user) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(Const.USER_NAME_IN_FIREBASE, user.getDisplayName());
+        map.put(Const.USER_EMAIL_IN_FIREBASE, user.getEmail());
+        map.put(Const.USER_ID_IN_FIREBASE, user.getUid());
+        map.put(Const.USER_IMG_URL_IN_FIREBASE, user.getPhotoUrl().toString());
+        FirebaseDatabase.getInstance().getReference().child(Const.USERS_IN_FIREBASE).child(user.getUid()).updateChildren(map);
     }
 
     private void signInWithGoogle() {
@@ -158,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user =  FirebaseAuth.getInstance().getCurrentUser();
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(name)
                                     .setPhotoUri(Uri.parse("https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png"))
@@ -167,17 +155,14 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                                 user.updateProfile(profileUpdate).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        myRef.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(CurrentUser.getInstance());
-                                        if (imageUri != null){
-                                            uploadProfileImage(CurrentUser.getInstance().getId(),imageUri);
-                                        }
-                                        else {
+                                        myRef.child(Const.USERS_IN_FIREBASE).child(mAuth.getCurrentUser().getUid()).setValue(CurrentUser.getInstance());
+                                        if (imageUri != null)
+                                            uploadProfileImage(CurrentUser.getInstance().getId(), imageUri);
+                                        else
                                             openHomeActivity();
-                                        }
                                     }
                                 });
                             }
-                        } else {
                         }
                     }
                 });
@@ -193,29 +178,29 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                         if (task.isSuccessful()) {
                             Toast.makeText(MainActivity.this, "Authentication succeed", Toast.LENGTH_SHORT).show();
                             CurrentUser.logout();
-                            myRef.child("Users").child(currentUser.getUid()).setValue(CurrentUser.getInstance());
+                            myRef.child(Const.USERS_IN_FIREBASE).child(currentUser.getUid()).setValue(CurrentUser.getInstance());
                             openHomeActivity();
                         }
                     }
                 });
     }
 
-    public void uploadProfileImage(final String id, Uri data){
+    public void uploadProfileImage(final String id, Uri data) {
         final StorageReference reference = FirebaseStorage.getInstance().getReference();
-        reference.child("Profile Images").child(id).putFile(data).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        reference.child(Const.PROFILE_IMG_IN_STORAGE).child(id).putFile(data).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                if (task.isSuccessful()){
-                    reference.child("Profile Images").child(id).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                if (task.isSuccessful()) {
+                    reference.child(Const.PROFILE_IMG_IN_STORAGE).child(id).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
-                            if (task.isSuccessful()){
-                                FirebaseDatabase.getInstance().getReference().child("Users").child(id).child("imgUrl").setValue(task.getResult().toString());
+                            if (task.isSuccessful()) {
+                                FirebaseDatabase.getInstance().getReference().child(Const.USERS_IN_FIREBASE).child(id).child(Const.USER_IMG_URL_IN_FIREBASE).setValue(task.getResult().toString());
                                 UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                                         .setPhotoUri(Uri.parse(task.getResult().toString()))
                                         .build();
                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                if (user != null) {
+                                if (user != null)
                                     user.updateProfile(profileUpdate).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -224,13 +209,11 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            reference.child("Profile Images").child(id).delete();
+                                            reference.child(Const.PROFILE_IMG_IN_STORAGE).child(id).delete();
                                         }
                                     });
-                                }
-                            } else {
-                                reference.child("Profile Images").child(id).delete();
-                            }
+                            } else
+                                reference.child(Const.PROFILE_IMG_IN_STORAGE).child(id).delete();
                         }
                     });
                 }
@@ -250,26 +233,23 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
         String email = emailET.getText().toString();
         String pass = passET.getText().toString();
         String passConfirm = passConfirmET.getText().toString();
-        if (validateSignUp(display,email,pass,passConfirm)){
+        if (validateSignUp(display, email, pass, passConfirm)) {
             progressDialog.show();
-            signUpWithEmail(display,email,pass);
+            signUpWithEmail(display, email, pass);
         }
     }
 
-    private boolean validateSignUp(String display , String email, String pass , String passConfirm){
-        if (display.matches("")){
+    private boolean validateSignUp(String display, String email, String pass, String passConfirm) {
+        if (display.matches("")) {
             Toast.makeText(this, "Please Enter Name", Toast.LENGTH_SHORT).show();
             return false;
-        }
-        else if (email.matches("") || email.indexOf('@') == -1 || email.indexOf('.') == -1 || email.charAt(0) == '@' ){
+        } else if (email.matches("") || email.indexOf('@') == -1 || email.indexOf('.') == -1 || email.charAt(0) == '@') {
             Toast.makeText(this, "Invalid Email Address", Toast.LENGTH_SHORT).show();
             return false;
-        }
-        else if (pass.length() < 6){
+        } else if (pass.length() < 6) {
             Toast.makeText(this, "A Password Needs To Contained At Least 6 Characters", Toast.LENGTH_SHORT).show();
             return false;
-        }
-        else if (!pass.equals(passConfirm)){
+        } else if (!pass.equals(passConfirm)) {
             Toast.makeText(this, "Passwords Are Not Identical", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -301,11 +281,11 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     currentUser = mAuth.getCurrentUser();
-                    Toast.makeText(getApplicationContext(), "Authentication succeed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Authentication succeed", Toast.LENGTH_SHORT).show();
                     login_dialog.dismiss();
                     openHomeActivity();
                 } else
-                    Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
                 d.dismiss();
             }
         });
@@ -338,13 +318,12 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE) {
+        if (requestCode == PICK_IMAGE)
             if (resultCode == RESULT_OK) {
                 CircleImageView iv = register_dialog.findViewById(R.id.register_iv_image);
                 iv.setImageURI(data.getData());
                 imageUri = data.getData();
             }
-        }
         if (requestCode == GOOGLE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {

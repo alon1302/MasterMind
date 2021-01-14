@@ -2,7 +2,6 @@ package com.example.mastermind.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.example.mastermind.R;
 import com.example.mastermind.model.user.CurrentUser;
@@ -13,10 +12,7 @@ public class Themes {
 
     private static Themes instance = null;
     private ArrayList<Theme> allThemes = new ArrayList<>();
-    private int usedTheme;
     private Context context;
-
-
     private Themes(){
     }
 
@@ -40,12 +36,10 @@ public class Themes {
         allThemes.add(7, new Theme(R.drawable.flower, false));
         allThemes.add(8, new Theme(R.drawable.car, false));
         allThemes.add(9, new Theme(R.drawable.plane, false));
-
-        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("" + 0, true);
-        editor.putInt("index", 0);
-        //allThemes.add(, new Theme(R.drawable.butterfly, false));
+        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
     }
 
     private void setContext(Context context) {
@@ -54,9 +48,5 @@ public class Themes {
 
     public ArrayList<Theme> getAllThemes() {
         return allThemes;
-    }
-
-    public int getUsedTheme() {
-        return usedTheme;
     }
 }

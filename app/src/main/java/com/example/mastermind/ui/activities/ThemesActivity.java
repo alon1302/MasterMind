@@ -1,22 +1,21 @@
 package com.example.mastermind.ui.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
@@ -24,8 +23,7 @@ import com.example.mastermind.ui.adapters.AdapterThemes;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ThemesActivity extends AppCompatActivity implements MethodCallBack
-{
+public class ThemesActivity extends AppCompatActivity implements MethodCallBack {
 
     TextView textViewCoins;
 
@@ -51,15 +49,14 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-        sharedPreferences = getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        sharedPreferences = getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-
     }
 
     @Override
     public void onCallBack(final int action, final Object value) {
         if (sharedPreferences.getBoolean("" + action, false)){
-            editor.putInt("index", action);
+            editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, action);
             editor.apply();
             adapter.notifyDataSetChanged();
         } else {
@@ -75,22 +72,20 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack
             images[3] = d.findViewById(R.id.orange);
             images[4] = d.findViewById(R.id.yellow);
             images[5] = d.findViewById(R.id.light);
-            for (int i = 0; i < images.length; i++) {
+            for (int i = 0; i < images.length; i++)
                 images[i].setForeground((Drawable) value);
-            }
             d.setCancelable(true);
             d.show();
-
             d.findViewById(R.id.buyThemeButton).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (CurrentUser.getUserCoins() >= 1500) {
-                        CurrentUser.addCoins(-1500);
+                    if (CurrentUser.getUserCoins() >= Const.THEME_COST) {
+                        CurrentUser.addCoins(-1 * Const.THEME_COST);
                         Themes.getInstance(ThemesActivity.this.getApplicationContext()).getAllThemes().get(action).setOpened(true);
                         d.dismiss();
                         textViewCoins.setText("" + CurrentUser.getUserCoins());
                         editor.putBoolean("" + action, true);
-                        editor.putInt("index", action);
+                        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, action);
                         editor.apply();
                         adapter.notifyDataSetChanged();
                     } else

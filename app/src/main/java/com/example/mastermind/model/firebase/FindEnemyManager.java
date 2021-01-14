@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -21,7 +22,7 @@ public class FindEnemyManager extends MultiPlayerManager{
     @Override
     public void createRoom() {
         final String currCode = super.createStringCode();
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(currCode).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists() && !FindEnemyManager.super.codeCreated){
@@ -29,15 +30,15 @@ public class FindEnemyManager extends MultiPlayerManager{
                 }
                 else{
                     code = currCode;
-                    player = "Player1";
-                    opponent = "Player2";
+                    player = Const.PLAYER1_IN_FIREBASE;
+                    opponent = Const.PLAYER2_IN_FIREBASE;
                     if (!done) {
-                        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").setValue("Player1");
-                        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Winner").setValue("None");
+                        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.WHOS_TURN_IN_FIREBASE).setValue(Const.PLAYER1_IN_FIREBASE);
+                        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.WINNER_IN_FIREBASE).setValue(Const.NONE_IN_FIREBASE);
                         done = true;
                     }
-                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());
-                    FirebaseDatabase.getInstance().getReference().child("AvailableRooms").child(code).setValue(code);
+                    FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(player).setValue(CurrentUser.getInstance());
+                    FirebaseDatabase.getInstance().getReference().child(Const.AVAILABLE_ROOMS_IN_FIREBASE).child(code).setValue(code);
                     MethodCallBack methodCallBack = (MethodCallBack)context;
                     methodCallBack.onCallBack(2, null);
                     codeCreated = true;
@@ -50,7 +51,7 @@ public class FindEnemyManager extends MultiPlayerManager{
     }
 
     public void joinRoom() {
-        FirebaseDatabase.getInstance().getReference().child("AvailableRooms").addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(Const.AVAILABLE_ROOMS_IN_FIREBASE).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
@@ -75,7 +76,7 @@ public class FindEnemyManager extends MultiPlayerManager{
     @Override
     public void deleteRoom() {
         super.deleteRoom();
-        FirebaseDatabase.getInstance().getReference().child("AvailableRooms").child(code).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+        FirebaseDatabase.getInstance().getReference().child(Const.AVAILABLE_ROOMS_IN_FIREBASE).child(code).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
             }

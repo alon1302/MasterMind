@@ -1,26 +1,24 @@
 package com.example.mastermind.ui.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.accessibility.AccessibilityManager;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
 import com.example.mastermind.model.ComeBackBroadcast;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,7 +47,6 @@ public class HomeActivity extends AppCompatActivity {
     TextView tv_coins;
     CircleImageView circleImageView;
     int from;
-    boolean got;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -80,7 +77,7 @@ public class HomeActivity extends AppCompatActivity {
     public void showCoins() {
         tv_coins = findViewById(R.id.textView_coins);
         try {
-            FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").addValueEventListener(new ValueEventListener() {
+            FirebaseDatabase.getInstance().getReference().child(Const.USERS_IN_FIREBASE).child(CurrentUser.getInstance().getId()).child(Const.COLLECTION_IN_FIREBASE).child(Const.COINS_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
                 @SuppressLint("SetTextI18n")
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -94,7 +91,7 @@ public class HomeActivity extends AppCompatActivity {
                         }
                         tv_coins.setText("" + coins);
                     } else {
-                        FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").setValue(0);
+                        FirebaseDatabase.getInstance().getReference().child(Const.USERS_IN_FIREBASE).child(CurrentUser.getInstance().getId()).child(Const.COLLECTION_IN_FIREBASE).child(Const.COINS_IN_FIREBASE).setValue(0);
                         CurrentUser.setUserCoins(0);
                     }
                 }
@@ -105,7 +102,7 @@ public class HomeActivity extends AppCompatActivity {
             });
         } catch (Exception e) {
             e.printStackTrace();
-            FirebaseDatabase.getInstance().getReference().child("Users/" + CurrentUser.getInstance().getId() + "/Collection/Coins").setValue(0);
+            FirebaseDatabase.getInstance().getReference().child(Const.USERS_IN_FIREBASE).child(CurrentUser.getInstance().getId()).child(Const.COLLECTION_IN_FIREBASE).child(Const.COINS_IN_FIREBASE).setValue(0);
         }
     }
 
@@ -116,13 +113,13 @@ public class HomeActivity extends AppCompatActivity {
 
     public void onClickTwoPlayer(View view) {
         Intent intent = new Intent(this, MultiplayerActivity.class);
-        intent.putExtra("type", "withCode");
+        intent.putExtra(Const.INTENT_EXTRA_KEY_TYPE, Const.INTENT_EXTRA_VALUE_WITH_CODE);
         startActivity(intent);
     }
 
     public void onClickFindEnemy(View view) {
         Intent intent = new Intent(this, MultiplayerActivity.class);
-        intent.putExtra("type", "findEnemy");
+        intent.putExtra(Const.INTENT_EXTRA_KEY_TYPE, Const.INTENT_EXTRA_VALUE_FIND_ENEMY);
         startActivity(intent);
     }
 
@@ -142,10 +139,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String name = "ComeBackReminder";
-            String description = "we missed you' please come back";
+            String name = Const.NOTIFICATION_CHANNEL_NAME;
+            String description = "Click Here To Get Extra 300 Coins";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("Comeback", name, importance);
+            NotificationChannel channel = new NotificationChannel(Const.NOTIFICATION_CHANNEL_NAME, name, importance);
             channel.setDescription(description);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
@@ -160,12 +157,11 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        getIntent().removeExtra("from");
+        getIntent().removeExtra(Const.INTENT_EXTRA_KEY_FROM);
         Intent intent = new Intent(HomeActivity.this, ComeBackBroadcast.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         long currentTime = System.currentTimeMillis();
-        long tenSecondsTest = 10000;
-        alarmManager.set(AlarmManager.RTC_WAKEUP, currentTime + tenSecondsTest, pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, currentTime + Const.NOTIFICATION_TIME, pendingIntent);
     }
 }

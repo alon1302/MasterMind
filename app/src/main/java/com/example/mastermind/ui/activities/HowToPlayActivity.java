@@ -1,36 +1,24 @@
 package com.example.mastermind.ui.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.ui.adapters.ViewPagerAdapter;
-import com.example.mastermind.ui.fragments.AboutFragment;
-import com.example.mastermind.ui.fragments.GoalFragment;
-import com.example.mastermind.ui.fragments.RulesFragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.firebase.auth.FirebaseAuth;
-import com.ismaeldivita.chipnavigation.ChipNavigationBar;
-
-import java.util.ArrayList;
 
 public class HowToPlayActivity extends AppCompatActivity {
 
     TabLayout bottomNav;
     ViewPager2 viewPager;
     ViewPagerAdapter adapter;
-    private MenuItem prevMenuItem;
-    String[] titles = {"About", "Rules", "Goal"};
+    String[] titles = {Const.FRAGMENT_TITLE_ABOUT, Const.FRAGMENT_TITLE_RULES, Const.FRAGMENT_TITLE_GOAL};
     int[] icons = {R.drawable.about, R.drawable.rules, R.drawable.target};
 
     @Override
@@ -51,11 +39,9 @@ public class HowToPlayActivity extends AppCompatActivity {
         }).attach();
     }
 
-
     public void onClickStart(View view) {
         finish();
     }
-
 }
 
 

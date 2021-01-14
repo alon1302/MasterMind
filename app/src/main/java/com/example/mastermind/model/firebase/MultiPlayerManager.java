@@ -1,39 +1,31 @@
 package com.example.mastermind.model.firebase;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
-import com.example.mastermind.ui.activities.MultiplayerActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.core.Context;
 
 import java.io.Serializable;
 import java.util.Random;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class MultiPlayerManager implements Serializable {
 
     protected String code;
     protected boolean codeCreated = false;
-    protected String TAG = "MultiPlayerManager";
     protected String player;
-    protected String playerTurn="Player1";
-    protected String userHidden = "nnnn";
-    protected String opponentHidden="nnnn";
+    protected String playerTurn = Const.PLAYER1_IN_FIREBASE;
+    protected String userHidden = Const.NULL_ROW_IN_FIREBASE;
+    protected String opponentHidden = Const.NULL_ROW_IN_FIREBASE;
     Activity context;
     protected boolean done;
     protected String opponent;
@@ -44,38 +36,38 @@ public class MultiPlayerManager implements Serializable {
         this.context = context;
         done = false;
     }
-    public MultiPlayerManager(Activity context,String code, String player1) {
+
+    public MultiPlayerManager(Activity context, String code, String player1) {
         this.code = code;
         this.context = context;
         done = false;
-        if (player1.equals(CurrentUser.getInstance().getId())){
-            player = "Player1";
-            opponent = "Player2";
-        }else {
-            player = "Player2";
-            opponent = "Player1";
+        if (player1.equals(CurrentUser.getInstance().getId())) {
+            player = Const.PLAYER1_IN_FIREBASE;
+            opponent = Const.PLAYER2_IN_FIREBASE;
+        } else {
+            player = Const.PLAYER2_IN_FIREBASE;
+            opponent = Const.PLAYER1_IN_FIREBASE;
         }
     }
 
-    public void createRoom(){
+    public void createRoom() {
         final String currCode = createStringCode();
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(currCode).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists() && !codeCreated){
+                if (snapshot.exists() && !codeCreated)
                     createRoom();
-                }
-                else{
+                else {
                     code = currCode;
-                    player = "Player1";
-                    opponent = "Player2";
+                    player = Const.PLAYER1_IN_FIREBASE;
+                    opponent = Const.PLAYER2_IN_FIREBASE;
                     if (!done) {
-                        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").setValue("Player1");
-                        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Winner").setValue("None");
+                        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.WHOS_TURN_IN_FIREBASE).setValue(Const.PLAYER1_IN_FIREBASE);
+                        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.WINNER_IN_FIREBASE).setValue(Const.NONE_IN_FIREBASE);
                         done = true;
                     }
-                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());
-                    MethodCallBack methodCallBack = (MethodCallBack)context;
+                    FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(player).setValue(CurrentUser.getInstance());
+                    MethodCallBack methodCallBack = (MethodCallBack) context;
                     methodCallBack.onCallBack(2, null);
                     codeCreated = true;
                 }
@@ -83,34 +75,32 @@ public class MultiPlayerManager implements Serializable {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
-    public void setHiddenInFirebase(String hidden){
+    public void setHiddenInFirebase(String hidden) {
         this.hidden = hidden;
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(player + "Hidden").setValue(hidden);
-        String other = "Player1";
-        if (player.equals("Player1"))
-            other = "Player2";
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(player + Const.HIDDEN_IN_FIREBASE).setValue(hidden);
+        String other = Const.PLAYER1_IN_FIREBASE;
+        if (player.equals(Const.PLAYER1_IN_FIREBASE))
+            other = Const.PLAYER2_IN_FIREBASE;
 
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(other+"Hidden").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(other + Const.HIDDEN_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                MethodCallBack methodCallBack = (MethodCallBack)context;
+                MethodCallBack methodCallBack = (MethodCallBack) context;
                 methodCallBack.onCallBack(8, player);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
-    public void retrieveHidden(){
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(player + "Hidden").addValueEventListener(new ValueEventListener() {
+    public void retrieveHidden() {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(player + Const.HIDDEN_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists())
@@ -119,19 +109,19 @@ public class MultiPlayerManager implements Serializable {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
-        String other = "Player1";
-        if (player.equals("Player1"))
-            other = "Player2";
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(other + "Hidden").addValueEventListener(new ValueEventListener() {
+
+        String other = Const.PLAYER1_IN_FIREBASE;
+        if (player.equals(Const.PLAYER1_IN_FIREBASE))
+            other = Const.PLAYER2_IN_FIREBASE;
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(other + Const.HIDDEN_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     opponentHidden = snapshot.getValue(String.class);
                     MethodCallBack methodCallBack = (MethodCallBack) context;
-                    methodCallBack.onCallBack(11,null);
+                    methodCallBack.onCallBack(11, null);
                 }
             }
 
@@ -141,37 +131,36 @@ public class MultiPlayerManager implements Serializable {
         });
     }
 
-    protected String createStringCode(){
+    protected String createStringCode() {
         StringBuilder code = new StringBuilder();
         int limit;
         if (new Random().nextInt(2) == 0)
             limit = 4;
         else
             limit = 5;
-        for (int i=0; i< limit; i++)
+        for (int i = 0; i < limit; i++)
             code.append(new Random().nextInt(10));
         return code.toString();
     }
 
-    public void joinRoom(final String currCode){
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(currCode).addValueEventListener(new ValueEventListener() {
+    public void joinRoom(final String currCode) {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(currCode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()){
+                if (!snapshot.exists()) {
                     Toast.makeText(context, "Please Type a Valid Game Code", Toast.LENGTH_SHORT).show();
-                }
-                else{
+                } else {
                     setCode(currCode);
-                    player = "Player2";
-                    opponent = "Player2";
-                    FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child(player).setValue(CurrentUser.getInstance());
-                    MethodCallBack methodCallBack = (MethodCallBack)context;
+                    player = Const.PLAYER2_IN_FIREBASE;
+                    opponent = Const.PLAYER1_IN_FIREBASE;
+                    FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(player).setValue(CurrentUser.getInstance());
+                    MethodCallBack methodCallBack = (MethodCallBack) context;
                     methodCallBack.onCallBack(2, null);
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
@@ -184,18 +173,17 @@ public class MultiPlayerManager implements Serializable {
         this.code = code;
     }
 
-    public void addUserPeg(String row,String turn){
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child("Turns").child(turn).child(player).setValue(row);
+    public void addUserPeg(String row, String turn) {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(Const.TURNS_IN_FIREBASE).child(turn).child(player).setValue(row);
     }
 
-    public void turnRotation(){
-        if (playerTurn.equals("Player1")){
-            playerTurn = "Player2";
-            FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").setValue("Player2");
-        }
-        else {
-            playerTurn = "Player1";
-            FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("HowsTurn").setValue("Player1");
+    public void turnRotation() {
+        if (playerTurn.equals(Const.PLAYER1_IN_FIREBASE)) {
+            playerTurn = Const.PLAYER2_IN_FIREBASE;
+            FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.WHOS_TURN_IN_FIREBASE).setValue(Const.PLAYER2_IN_FIREBASE);
+        } else {
+            playerTurn = Const.PLAYER1_IN_FIREBASE;
+            FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.WHOS_TURN_IN_FIREBASE).setValue(Const.PLAYER1_IN_FIREBASE);
         }
 
     }
@@ -241,14 +229,13 @@ public class MultiPlayerManager implements Serializable {
     }
 
     public void setWinnerInFirebase() {
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Winner").setValue(this.player);
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.WINNER_IN_FIREBASE).setValue(this.player);
     }
 
     public void deleteRoom() {
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-
             }
         });
     }

@@ -1,49 +1,42 @@
 package com.example.mastermind.model.game;
 
+import com.example.mastermind.model.Const;
+
 import java.util.Arrays;
 
 public class CheckRow {
-    private static int SIZE = 4;
     private CheckPeg[] row;
     private int index;
 
     public CheckRow() {
-        this.row = new CheckPeg[SIZE];
-        for (int i = 0; i < SIZE; i++) {
-            this.row[i] = new CheckPeg("null");
+        this.row = new CheckPeg[Const.ROW_SIZE];
+        for (int i = 0; i < Const.ROW_SIZE; i++) {
+            this.row[i] = new CheckPeg(Const.NULL_COLOR_IN_GAME);
         }
         this.index = 0;
     }
 
-    public void addCheckPeg(int num) { // 1-black , 2-white, 3-none
-        if (num == 3) {// none
-            this.row[this.index] = new CheckPeg("null");
-            this.index++;
-        }
-        else if (num == 1) { // black
-            this.row[this.index] = new CheckPeg("black");
-            this.index++;
-        }
-        else {
-            this.row[this.index] = new CheckPeg("white");
-            this.index++;
-        }
+    public void addCheckPeg(int num) {
+        if (num == Const.REF_TO_BLACK_COLOR)
+            this.row[this.index] = new CheckPeg(Const.BLACK_COLOR_IN_GAME);
+        else if (num == Const.REF_TO_WHITE_COLOR)
+            this.row[this.index] = new CheckPeg(Const.WHITE_COLOR_IN_GAME);
+        else if (num == Const.REF_TO_NULL_COLOR)
+            this.row[this.index] = new CheckPeg(Const.NULL_COLOR_IN_GAME);
+        this.index++;
     }
 
     public String[] getStringRow() {
-        String[] s = new String[4];
-        for (int i=0; i<s.length; i++) {
+        String[] s = new String[Const.ROW_SIZE];
+        for (int i = 0; i < s.length; i++)
             s[i] = this.row[i].getColor();
-        }
         return s;
     }
 
     public boolean isWin() {
-        for (int i = 0; i<SIZE; i++) {
-            if (!row[i].getColor().equals("black")) {
+        for (int i = 0; i < Const.ROW_SIZE; i++)
+            if (!row[i].getColor().equals(Const.BLACK_COLOR_IN_GAME))
                 return false;
-            }
-        }
         return true;
     }
 

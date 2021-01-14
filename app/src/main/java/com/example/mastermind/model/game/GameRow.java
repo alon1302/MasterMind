@@ -1,122 +1,94 @@
 package com.example.mastermind.model.game;
 
-import android.util.Log;
+import com.example.mastermind.model.Const;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class GameRow {
 
-    private static int SIZE = 4;
     private GamePeg[] row;
     private int currNum;
+    private HashMap<String, Character> colorToCharMap;
 
     public GameRow(){
-        row = new GamePeg[4];
-        for (int i = 0; i< SIZE; i++) {
-            row[i] = new GamePeg("null", i);
+        row = new GamePeg[Const.ROW_SIZE];
+        for (int i = 0; i < Const.ROW_SIZE; i++) {
+            row[i] = new GamePeg(Const.NULL_COLOR_IN_GAME, i);
         }
         currNum = 0;
+        createMap();
     }
 
     public void addPeg(GamePeg peg) {
-        if (this.exist(peg)) {
+        if (this.exist(peg))
             removePeg(peg.getColor());
-        }
         if (this.row[peg.getPosition()] == null)
             this.currNum++;
         this.row[peg.getPosition()] = peg;
     }
 
     public void removePeg(String color) {
-        for (int i=0; i<SIZE; i++) {
+        for (int i = 0; i < Const.ROW_SIZE; i++) {
             if (row[i].getColor().equals(color)) {
-                row[i] = new GamePeg("null", i);
+                row[i] = new GamePeg(Const.NULL_COLOR_IN_GAME, i);
             }
         }
     }
 
     public boolean exist(GamePeg peg) {
-        if (peg.getColor().equals("null")) {
+        if (peg.getColor().equals(Const.NULL_COLOR_IN_GAME))
             return false;
-        }
-        for (int i=0; i<SIZE; i++) {
-            if (this.row[i].equalsColor(peg)) {
+        for (int i = 0; i < Const.ROW_SIZE; i++)
+            if (this.row[i].equalsColor(peg))
                 return true;
-            }
-        }
         return false;
     }
 
     public boolean isFull() {
-        for (int i=0; i<SIZE; i++) {
-            if (this.row[i].getColor().equals("null")) {
+        for (int i = 0; i < Const.ROW_SIZE; i++)
+            if (this.row[i].getColor().equals(Const.NULL_COLOR_IN_GAME))
                 return false;
-            }
-        }
         return true;
     }
 
     public int check(GamePeg peg) { // 1-black , 2-white, 3-none
-        for (int i = 0; i< SIZE; i++) {
+        for (int i = 0; i < Const.ROW_SIZE; i++) {
             GamePeg curr = this.row[i];
-            if (curr.equals(peg)) {
-                return 1;
-            }
-            else if (curr.equalsColor(peg)) {
-                return 2;
-            }
+            if (curr.equals(peg))
+                return Const.REF_TO_BLACK_COLOR;
+            else if (curr.equalsColor(peg))
+                return Const.REF_TO_WHITE_COLOR;
         }
-        return 3;
+        return Const.REF_TO_NULL_COLOR;
     }
 
     public CheckRow checkGameRow (GameRow other) {
         CheckRow checkRow = new CheckRow();
-        for (int i = 0; i<SIZE; i++) {
+        for (int i = 0; i < Const.ROW_SIZE; i++)
             checkRow.addCheckPeg(this.check(other.row[i]));
-        }
         return checkRow;
     }
 
     public String[] getStringRow() {
-        String[] s = new String[4];
-        for (int i=0; i<s.length; i++) {
+        String[] s = new String[Const.ROW_SIZE];
+        for (int i = 0; i < s.length; i++)
             s[i] = this.row[i].getColor();
-        }
         return s;
     }
 
     public String getNumStringRow() {
-        String[] stringRow = new String[4];
-        for (int i=0; i<stringRow.length; i++) {
+        String[] stringRow = new String[Const.ROW_SIZE];
+        for (int i = 0; i < stringRow.length; i++)
             stringRow[i] = this.row[i].getColor();
-        }
         StringBuilder s = new StringBuilder();
-        for (int i = 0; i < 4; i++) {
-            switch (stringRow[i]) {
-                case "null":
-                    s.append("n");
-                    break;
-                case "red":
-                    s.append("0");
-                    break;
-                case "green":
-                    s.append("1");
-                    break;
-                case "blue":
-                    s.append("2");
-                    break;
-                case "orange":
-                    s.append("3");
-                    break;
-                case "yellow":
-                    s.append("4");
-                    break;
-                case "light":
-                    s.append("5");
-                    break;
-            }
-        }
+        for (int i = 0; i < Const.ROW_SIZE; i++)
+            s.append(colorToCharMap.get(stringRow[i]));
         return s.toString();
+    }
+
+    public String getColorByPosition(int position) {
+        return this.row[position].getColor();
     }
 
     @Override
@@ -127,7 +99,14 @@ public class GameRow {
                 '}';
     }
 
-    public String getColorByPosition(int position) {
-        return this.row[position].getColor();
+    private void createMap(){
+        colorToCharMap = new HashMap<>();
+        colorToCharMap.put(Const.NULL_COLOR_IN_GAME, Const.NULL_CHAR_IN_GAME);
+        colorToCharMap.put(Const.RED_COLOR_IN_GAME, Const.RED_CHAR_IN_GAME);
+        colorToCharMap.put(Const.BLUE_COLOR_IN_GAME, Const.GREEN_CHAR_IN_GAME);
+        colorToCharMap.put(Const.GREEN_COLOR_IN_GAME, Const.BLUE_CHAR_IN_GAME);
+        colorToCharMap.put(Const.ORANGE_COLOR_IN_GAME, Const.ORANGE_CHAR_IN_GAME);
+        colorToCharMap.put(Const.YELLOW_COLOR_IN_GAME, Const.YELLOW_CHAR_IN_GAME);
+        colorToCharMap.put(Const.LIGHT_COLOR_IN_GAME, Const.LIGHT_CHAR_IN_GAME);
     }
 }

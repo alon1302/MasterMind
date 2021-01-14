@@ -1,9 +1,5 @@
 package com.example.mastermind.ui.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
@@ -13,7 +9,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -21,10 +16,16 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.mastermind.R;
-import com.example.mastermind.model.Theme;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.Themes;
-import com.example.mastermind.model.game.*;
+import com.example.mastermind.model.game.CheckRow;
+import com.example.mastermind.model.game.GameManager;
+import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.ui.adapters.AdapterRows;
@@ -50,7 +51,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private CircleImageView[] hiddenRowImages;
     private GameManager gameManager;
 
-    String currentSelection = "null";
+    String currentSelection = Const.NULL_COLOR_IN_GAME;
     private HashMap<String, Integer> colors;
 
     private CircleImageView red, green, blue, orange, yellow, light;
@@ -83,8 +84,8 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         recyclerView.setAdapter(adapterRows);
         current = findViewById(R.id.currentSelection);
 
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        int useIndex = sharedPreferences.getInt("index", 0);
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        int useIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
         int themeImg = Themes.getInstance(getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
 
@@ -95,20 +96,20 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
     public void createColorsMap(){
         colors = new HashMap<>();
-        colors.put("null", R.color.colorTWhite);
-        colors.put("red", R.color.colorRed);
-        colors.put("green", R.color.colorGreen);
-        colors.put("blue", R.color.colorBlue);
-        colors.put("orange", R.color.colorOrange);
-        colors.put("yellow", R.color.colorYellow);
-        colors.put("light", R.color.colorLight);
+        colors.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
+        colors.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
+        colors.put(Const.GREEN_COLOR_IN_GAME, R.color.colorGreen);
+        colors.put(Const.BLUE_COLOR_IN_GAME, R.color.colorBlue);
+        colors.put(Const.ORANGE_COLOR_IN_GAME, R.color.colorOrange);
+        colors.put(Const.YELLOW_COLOR_IN_GAME, R.color.colorYellow);
+        colors.put(Const.LIGHT_COLOR_IN_GAME, R.color.colorLight);
     }
 
     @SuppressLint("SetTextI18n")
     public void onClickHint(View view){
-        if (tookHint) {
+        if (tookHint)
             Toast.makeText(OnePlayerActivity.this, "You Already took hint", Toast.LENGTH_SHORT).show();
-        } else {
+        else {
             final Dialog hintDialog = new Dialog(this);
             hintDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             hintDialog.setContentView(R.layout.dialog_get_hint);
@@ -120,11 +121,11 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
             buy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (CurrentUser.getUserCoins() < 500) {
+                    if (CurrentUser.getUserCoins() < Const.HINT_COST)
                         Toast.makeText(OnePlayerActivity.this, "You Don't Have Enough Coins", Toast.LENGTH_SHORT).show();
-                    } else {
-                        CurrentUser.addCoins(-500);
-                        int position = new Random().nextInt(4);
+                    else {
+                        CurrentUser.addCoins(-1 * Const.HINT_COST);
+                        int position = new Random().nextInt(Const.ROW_SIZE);
                         hiddenRowImages[position].setVisibility(View.VISIBLE);
                         tv_coins.setText("" + CurrentUser.getUserCoins());
                         tookHint = true;
@@ -156,8 +157,6 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         timeInMillis = SystemClock.elapsedRealtime() - chronometer.getBase();
         minutes = (timeInMillis / 1000) / 60;
         seconds = (timeInMillis / 1000) % 60;
-        gameManager.setMinutes(minutes);
-        gameManager.setSeconds(seconds);
     }
 
     //_______________Listeners_______________//
@@ -165,17 +164,17 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (v == red)
-                currentSelection = "red";
+                currentSelection = Const.RED_COLOR_IN_GAME;
             else if (v == green)
-                currentSelection = "green";
+                currentSelection = Const.GREEN_COLOR_IN_GAME;
             else if (v == blue)
-                currentSelection = "blue";
+                currentSelection = Const.BLUE_COLOR_IN_GAME;
             else if (v == orange)
-                currentSelection = "orange";
+                currentSelection = Const.ORANGE_COLOR_IN_GAME;
             else if (v == yellow)
-                currentSelection = "yellow";
+                currentSelection = Const.YELLOW_COLOR_IN_GAME;
             else if (v == light)
-                currentSelection = "light";
+                currentSelection = Const.LIGHT_COLOR_IN_GAME;
             updateCurrImg();
             return true;
         }
@@ -213,7 +212,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         current.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currentSelection = "null";
+                currentSelection = Const.NULL_COLOR_IN_GAME;
                 updateCurrImg();
             }
         });
@@ -236,23 +235,23 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
     private void openWinnerActivity() {
         Intent intent = new Intent(this, WinActivity.class);
-        intent.putExtra("minutes", minutes);
-        intent.putExtra("seconds", seconds);
-        intent.putExtra("time", timeInMillis);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_MINUTES, minutes);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_SECONDS, seconds);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_TIME, timeInMillis);
         startActivity(intent);
         finish();
     }
 
     public void updateCurrImg() {
         current.setImageResource(colors.get(currentSelection));
-        if (!currentSelection.equals("null"))
+        if (!currentSelection.equals(Const.NULL_COLOR_IN_GAME))
             current.setForeground(theme);
         else
             current.setForeground(null);
     }
 
     public void createHidden() {
-        hiddenRowImages = new CircleImageView[4];
+        hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
         hiddenRowImages[0] = findViewById(R.id.hidden0);
         hiddenRowImages[1] = findViewById(R.id.hidden1);
         hiddenRowImages[2] = findViewById(R.id.hidden2);
