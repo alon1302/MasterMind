@@ -2,6 +2,8 @@ package com.example.mastermind.ui.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.example.mastermind.R;
+import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.game.*;
 import com.example.mastermind.model.listeners.OnPegClickListener;
+import com.example.mastermind.model.user.CurrentUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,12 +33,18 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
 
     private HashMap<String, Integer> colors;
 
+    Drawable theme;
+
     public AdapterRows(ArrayList<GameRow> gameRows, ArrayList<CheckRow> checkRows, Context context, boolean clickable) {
         this.gameRows = gameRows;
         this.checkRows = checkRows;
         this.context = context;
         this.clickable = clickable;
         createColorsMap();
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        int useIndex = sharedPreferences.getInt("index", 0);
+        int themeImg = Themes.getInstance(context.getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
+        theme = context.getResources().getDrawable(themeImg);
     }
 
     public void createColorsMap(){
@@ -84,6 +94,10 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
                 });
             }
             holder.game[i].setImageResource(colors.get(colorGameRow[i]));
+            if (!colorGameRow[i].equals("null"))
+                holder.game[i].setForeground(theme);
+            else
+                holder.game[i].setForeground(null);
         }
     }
 

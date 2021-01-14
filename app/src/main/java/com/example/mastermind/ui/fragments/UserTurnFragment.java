@@ -2,6 +2,8 @@ package com.example.mastermind.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,12 +20,14 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
+import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GameManager;
 import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.listeners.OnPegClickListener;
+import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.adapters.AdapterRows;
 import com.google.firebase.database.DataSnapshot;
@@ -52,6 +56,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
+    private HashMap<String, Integer> colors;
 
     ValueEventListener valueEventListener;
 
@@ -64,6 +69,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     private String code;
 
     boolean isWaitingForWin;
+    private Drawable theme;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -81,6 +87,12 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         player = bundle.getString("player");
         code = bundle.getString("code");
         hiddenRow = new GameRow();
+
+        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        int useIndex = sharedPreferences.getInt("index", 0);
+        int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
+        theme = this.getResources().getDrawable(themeImg);
+        createColorsMap();
 
         String opponent = bundle.getString("opponent");
 
@@ -128,26 +140,29 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
             }
         });
         String hidden = bundle.getString("opponentHidden");
-        Log.d(TAG, "onCreate: " + hidden + "                    5");
-        Log.d(TAG, "onCreate: " + hiddenRow.toString()+ "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+
+    public void createColorsMap(){
+        colors = new HashMap<>();
+        colors.put("null", R.color.colorTWhite);
+        colors.put("red", R.color.colorRed);
+        colors.put("green", R.color.colorGreen);
+        colors.put("blue", R.color.colorBlue);
+        colors.put("orange", R.color.colorOrange);
+        colors.put("yellow", R.color.colorYellow);
+        colors.put("light", R.color.colorLight);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.d("onCreateView + UserTurn", "onCreateView: ");
         view = inflater.inflate(R.layout.fragment_user_turn, container, false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView = view.findViewById(R.id.user_multi_recyclerView);
         recyclerView.setLayoutManager(layoutManager);
         gameRows = gameManager.getGameRows();
         checkRows = gameManager.getCheckRows();
-//        if (checkRows.get(checkRows.size()-1).isWin()){
-//            Log.d(TAG, "onCreateView: " + "prev win11111111111111111111111111111111111111111111111111");
-//            MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-//            methodCallBack.onCallBack(10, null);
-//        }
         adapterRows = new AdapterRows(gameRows, checkRows,requireActivity(),true);
         recyclerView.setAdapter(adapterRows);
         createHidden();
@@ -160,12 +175,6 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
             }
         });
 
-
-        Log.d(TAG, "onCreateView:_______________ " + gameManager.getCheckRows().toString() + "________________________________________");
-
-
-
-
         context = requireActivity();
         return view;
     }
@@ -174,7 +183,6 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
             checkRows.add(gameManager.getTurn() - 1, gameRows.get(gameManager.getTurn() - 1).checkGameRow(hiddenRow));
             if (gameManager.isWin()){
-                Log.d(TAG, "onClickSubmit: " + player + "(((((((()(())()()()())()()()()()()()()()()(");
                 if (player.equals("Player2")){
                     Toast.makeText(context, "You Win!", Toast.LENGTH_SHORT).show();
                     MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
@@ -186,13 +194,11 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
                     methodCallBack.onCallBack(10, null);
                 }
             }
-            Log.d(TAG, "onClickSubmit: " + gameManager.getCheckRows().toString());
             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
             methodCallBack.onCallBack(9, null);
             recyclerView.smoothScrollToPosition(adapterRows.getItemCount() - 1);
             adapterRows.notifyDataSetChanged();
-
-        }else {
+        } else {
             Toast.makeText(requireActivity(), "", Toast.LENGTH_SHORT).show();
         }
     }
@@ -207,29 +213,9 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         hiddenRowImages[3] = view.findViewById(R.id.user_multi_hidden3);
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenColors.length; i++) {
-            switch (hiddenColors[i]) {
-                case "null":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);
-                    break;
-                case "red":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorRed);
-                    break;
-                case "green":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorGreen);
-                    break;
-                case "blue":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorBlue);
-                    break;
-                case "orange":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorOrange);
-                    break;
-                case "yellow":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorYellow);
-                    break;
-                case "light":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorLight);
-                    break;
-            }
+            this.hiddenRowImages[i].setImageResource(colors.get(hiddenColors[i]));
+            this.hiddenRowImages[i].setForeground(theme);
+            this.hiddenRowImages[i].setVisibility(View.INVISIBLE);
         }
     }
 
@@ -255,29 +241,11 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     };
 
     public void updateCurrImg() {
-        switch (currentSelection) {
-            case "null":
-                current.setImageResource(R.color.colorTWhite);
-                break;
-            case "red":
-                current.setImageResource(R.color.colorRed);
-                break;
-            case "blue":
-                current.setImageResource(R.color.colorBlue);
-                break;
-            case "green":
-                current.setImageResource(R.color.colorGreen);
-                break;
-            case "orange":
-                current.setImageResource(R.color.colorOrange);
-                break;
-            case "yellow":
-                current.setImageResource(R.color.colorYellow);
-                break;
-            case "light":
-                current.setImageResource(R.color.colorLight);
-                break;
-        }
+        current.setImageResource(colors.get(currentSelection));
+        if (!currentSelection.equals("null"))
+            current.setForeground(theme);
+        else
+            current.setForeground(null);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -285,16 +253,22 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         current = view.findViewById(R.id.user_multi_currentSelection);
         red = view.findViewById(R.id.user_multi_red);
         red.setOnTouchListener(onClickColorListener);
+        red.setForeground(theme);
         green = view.findViewById(R.id.user_multi_green);
         green.setOnTouchListener(onClickColorListener);
+        green.setForeground(theme);
         blue = view.findViewById(R.id.user_multi_blue);
         blue.setOnTouchListener(onClickColorListener);
+        blue.setForeground(theme);
         orange = view.findViewById(R.id.user_multi_orange);
         orange.setOnTouchListener(onClickColorListener);
+        orange.setForeground(theme);
         yellow = view.findViewById(R.id.user_multi_yellow);
         yellow.setOnTouchListener(onClickColorListener);
+        yellow.setForeground(theme);
         light = view.findViewById(R.id.user_multi_light);
         light.setOnTouchListener(onClickColorListener);
+        light.setForeground(theme);
         current.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.example.mastermind.R;
+import com.example.mastermind.model.user.CurrentUser;
 
 import java.util.ArrayList;
 
@@ -14,6 +15,7 @@ public class Themes {
     private ArrayList<Theme> allThemes = new ArrayList<>();
     private int usedTheme;
     private Context context;
+
 
     private Themes(){
     }
@@ -28,20 +30,6 @@ public class Themes {
     }
 
     private void loadThemes(){
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = preferences.edit();
-        ArrayList<Boolean> arrayList = new ArrayList<>();
-        editor.putBoolean("" + 0, true);
-        for (int i = 1; i < arrayList.size(); i++) {
-            if (preferences.contains("" + i)) {
-                arrayList.add(i, preferences.getBoolean("" + i, false));
-            } else{
-                editor.putBoolean("" + i, false);
-                editor.apply();
-            }
-        }
-        editor.putInt("index", 0);
-
         allThemes.add(0, new Theme(R.color.transparent, true));
         allThemes.add(1, new Theme(R.drawable.smiley, false));
         allThemes.add(2, new Theme(R.drawable.basketball, false));
@@ -53,7 +41,10 @@ public class Themes {
         allThemes.add(8, new Theme(R.drawable.car, false));
         allThemes.add(9, new Theme(R.drawable.plane, false));
 
-
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("" + 0, true);
+        editor.putInt("index", 0);
         //allThemes.add(, new Theme(R.drawable.butterfly, false));
     }
 

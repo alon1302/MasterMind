@@ -1,6 +1,8 @@
 package com.example.mastermind.ui.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,11 +16,13 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
+import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GameManager;
 import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.SendHiddenToOpponent;
+import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.adapters.AdapterRows;
 import com.google.firebase.database.DataSnapshot;
@@ -27,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -51,6 +56,8 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
     ValueEventListener valueEventListener;
     private GameRow hiddenRow;
 
+    private Drawable theme;
+    private HashMap<String, Integer> colors;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +67,13 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         user2 = (User) bundle.get("user2");
         code = bundle.getString("code");
         player = bundle.getString("player");
+
+        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        int useIndex = sharedPreferences.getInt("index", 0);
+        int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
+        theme = this.getResources().getDrawable(themeImg);
+        createColorsMap();
+
         gameManager = new GameManager();
         hiddenRow = new GameRow();
         for (int i = 0; i < 4; i++) {
@@ -138,6 +152,17 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
 
     }
 
+    public void createColorsMap(){
+        colors = new HashMap<>();
+        colors.put("null", R.color.colorTWhite);
+        colors.put("red", R.color.colorRed);
+        colors.put("green", R.color.colorGreen);
+        colors.put("blue", R.color.colorBlue);
+        colors.put("orange", R.color.colorOrange);
+        colors.put("yellow", R.color.colorYellow);
+        colors.put("light", R.color.colorLight);
+    }
+
     public GameRow convertStringToGameRow(String row) {
         GameRow gameRow = new GameRow();
         if (row != null) {
@@ -179,31 +204,9 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenRowImages.length; i++) {
             hiddenRowImages[i].setClickable(false);
-            switch (hiddenColors[i]) {
-                case "null":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorTWhite);
-                    break;
-                case "red":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorRed);
-                    break;
-                case "green":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorGreen);
-                    break;
-                case "blue":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorBlue);
-                    break;
-                case "orange":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorOrange);
-                    break;
-                case "yellow":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorYellow);
-                    break;
-                case "light":
-                    this.hiddenRowImages[i].setImageResource(R.color.colorLight);
-                    break;
-            }
+            this.hiddenRowImages[i].setForeground(theme);
+            this.hiddenRowImages[i].setImageResource(colors.get(hiddenColors[i]));
         }
-
     }
 
     @Override

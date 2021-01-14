@@ -129,7 +129,7 @@
         app:layout_constraintTop_toTopOf="@+id/textView14" />
 
     <Button
-        android:id="@+id/buyHintButton"
+        android:id="@+id/buyThemeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/main_design"

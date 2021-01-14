@@ -6,10 +6,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mastermind.R;
+import com.example.mastermind.model.Theme;
+import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.game.*;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.model.user.CurrentUser;
@@ -54,6 +60,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private long minutes, seconds;
 
     private TextView tv_coins;
+    private Drawable theme;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -75,6 +82,12 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         adapterRows = new AdapterRows(gameRows, checkRows, this,true);
         recyclerView.setAdapter(adapterRows);
         current = findViewById(R.id.currentSelection);
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        int useIndex = sharedPreferences.getInt("index", 0);
+        int themeImg = Themes.getInstance(getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
+        theme = this.getResources().getDrawable(themeImg);
+
         startTimeRunning();
         createHidden();
         createButtons();
@@ -181,16 +194,22 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     public void createButtons() {
         red = findViewById(R.id.red);
         red.setOnTouchListener(onClickColorListener);
+        red.setForeground(theme);
         green = findViewById(R.id.green);
         green.setOnTouchListener(onClickColorListener);
+        green.setForeground(theme);
         blue = findViewById(R.id.blue);
         blue.setOnTouchListener(onClickColorListener);
+        blue.setForeground(theme);
         orange = findViewById(R.id.orange);
         orange.setOnTouchListener(onClickColorListener);
+        orange.setForeground(theme);
         yellow = findViewById(R.id.yellow);
         yellow.setOnTouchListener(onClickColorListener);
+        yellow.setForeground(theme);
         light = findViewById(R.id.light);
         light.setOnTouchListener(onClickColorListener);
+        light.setForeground(theme);
         current.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -226,6 +245,10 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
     public void updateCurrImg() {
         current.setImageResource(colors.get(currentSelection));
+        if (!currentSelection.equals("null"))
+            current.setForeground(theme);
+        else
+            current.setForeground(null);
     }
 
     public void createHidden() {
@@ -239,6 +262,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         for (int i = 0; i < hiddenColors.length; i++) {
             hiddenRowImages[i].setVisibility(View.INVISIBLE);
             hiddenRowImages[i].setImageResource(colors.get(hiddenColors[i]));
+            hiddenRowImages[i].setForeground(theme);
         }
     }
 }

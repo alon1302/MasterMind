@@ -27,4 +27,12 @@ public class Theme {
     public void setOpened(boolean opened) {
         this.opened = opened;
     }
+
+    @Override
+    public String toString() {
+        return "Theme{" +
+                "pegImage=" + pegImage +
+                ", opened=" + opened +
+                '}';
+    }
 }

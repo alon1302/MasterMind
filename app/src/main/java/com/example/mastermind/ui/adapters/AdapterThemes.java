@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.example.mastermind.R;
 import com.example.mastermind.model.Theme;
 import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.listeners.MethodCallBack;
+import com.example.mastermind.model.user.CurrentUser;
 
 import java.util.ArrayList;
 
@@ -23,7 +25,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesViewHolder> {
     Context context;
-    //int[] colors = {R.color.colorRed, R.color.colorGreen, R.color.colorBlue, R.color.colorOrange, R.color.colorYellow, R.color.colorLight};
 
     public AdapterThemes(Context context) {
         this.context = context;
@@ -38,24 +39,29 @@ public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesView
 
     @Override
     public void onBindViewHolder(@NonNull final ThemesViewHolder holder, final int position) {
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
         ArrayList<Theme> list = Themes.getInstance(context.getApplicationContext()).getAllThemes();
         for (int i = 0; i < holder.imageViews.length; i++) {
             holder.imageViews[i].setForeground(context.getResources().getDrawable(list.get(position).getPegImage()));
         }
-        if (list.get(position).isOpened()){
+        if (sharedPreferences.getBoolean("" + position, false)){
             holder.status.setImageResource(R.drawable.ic_baseline_lock_open_24);
-            if (position == PreferenceManager.getDefaultSharedPreferences(context).getInt("index",0)){
+            if (position == sharedPreferences.getInt("index",0)){
                 holder.status.setImageResource(R.drawable.ic_baseline_check_24);
             }
         }
-        else
+        else {
             holder.status.setImageResource(R.drawable.ic_baseline_lock_24);
+            if (position == sharedPreferences.getInt("index",0)){
+                holder.status.setImageResource(R.drawable.ic_baseline_check_24);
+            }
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MethodCallBack methodCallBack = (MethodCallBack) context;
-                methodCallBack.onCallBack(0, holder.imageViews[0].getForeground());
+                methodCallBack.onCallBack(position, holder.imageViews[0].getForeground());
             }
         });
     }
