@@ -1,27 +1,21 @@
 package com.example.mastermind.ui.fragments;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.mastermind.R;
-import com.example.mastermind.model.firebase.MultiPlayerManager;
-import com.example.mastermind.model.listeners.MethodCallBack;
+import androidx.fragment.app.Fragment;
 
-import java.util.Random;
+import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
+import com.example.mastermind.model.listeners.MethodCallBack;
 
 public class JoinRoomFragment extends Fragment {
 
     private View view;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,8 +23,7 @@ public class JoinRoomFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_join_room, container, false);
         final EditText roomCodeEt = view.findViewById(R.id.roomCodeEt);
@@ -38,15 +31,13 @@ public class JoinRoomFragment extends Fragment {
              @Override
              public void onClick(View v) {
                  String currCode = roomCodeEt.getText().toString();
-                 if (currCode.matches("")){
+                 if (currCode.matches(""))
                      Toast.makeText(requireActivity(), "Please Type Game Code", Toast.LENGTH_SHORT).show();
-                 }
-                 else if(currCode.length()<4 || currCode.length()>5){
+                 else if(currCode.length() < 4 || currCode.length() > 5)
                      Toast.makeText(requireActivity(), "Please Type a Valid Game Code", Toast.LENGTH_SHORT).show();
-                 }
-                 else{
+                 else {
                      MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-                     methodCallBack.onCallBack(1, currCode);
+                     methodCallBack.onCallBack(Const.ACTION_JOIN_ROOM, currCode);
                  }
              }
          });
@@ -54,10 +45,9 @@ public class JoinRoomFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-                methodCallBack.onCallBack(0, null);
-
+                methodCallBack.onCallBack(Const.ACTION_CREATE_ROOM, null);
             }
         });
-         return view;
+        return view;
     }
 }

@@ -5,11 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,22 +14,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
 import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.Themes;
-import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.user.CurrentUser;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.content.ContentValues.TAG;
 
 public class ChooseHiddenFragment extends Fragment {
 
@@ -44,7 +39,7 @@ public class ChooseHiddenFragment extends Fragment {
     Context context;
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
-    String currentSelection = "null";
+    String currentSelection = Const.NULL_COLOR_IN_GAME;
     View view;
     String[] colors;
 
@@ -63,11 +58,11 @@ public class ChooseHiddenFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         rnd = new Random();
-        this.colors = new String[]{"red", "green", "blue", "orange", "yellow", "light"};
+        this.colors = new String[]{Const.RED_COLOR_IN_GAME, Const.GREEN_COLOR_IN_GAME, Const.BLUE_COLOR_IN_GAME, Const.ORANGE_COLOR_IN_GAME, Const.YELLOW_COLOR_IN_GAME, Const.LIGHT_COLOR_IN_GAME,};
         context = requireActivity();
 
-        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        int useIndex = sharedPreferences.getInt("index", 0);
+        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences( Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        int useIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
         int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
         createColorsMap();
@@ -75,7 +70,6 @@ public class ChooseHiddenFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  choose");
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_choose_hidden, container, false);
         createButtons();
@@ -87,7 +81,6 @@ public class ChooseHiddenFragment extends Fragment {
                 onClickSubmit();
             }
         });
-
         countDownText = view.findViewById(R.id.countDownText);
         startTimer();
         return view;
@@ -95,18 +88,18 @@ public class ChooseHiddenFragment extends Fragment {
 
     public void createColorsMap(){
         colorsMap = new HashMap<>();
-        colorsMap.put("null", R.color.colorTWhite);
-        colorsMap.put("red", R.color.colorRed);
-        colorsMap.put("green", R.color.colorGreen);
-        colorsMap.put("blue", R.color.colorBlue);
-        colorsMap.put("orange", R.color.colorOrange);
-        colorsMap.put("yellow", R.color.colorYellow);
-        colorsMap.put("light", R.color.colorLight);
+        colorsMap.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
+        colorsMap.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
+        colorsMap.put(Const.GREEN_COLOR_IN_GAME, R.color.colorGreen);
+        colorsMap.put(Const.BLUE_COLOR_IN_GAME, R.color.colorBlue);
+        colorsMap.put(Const.ORANGE_COLOR_IN_GAME, R.color.colorOrange);
+        colorsMap.put(Const.YELLOW_COLOR_IN_GAME, R.color.colorYellow);
+        colorsMap.put(Const.LIGHT_COLOR_IN_GAME, R.color.colorLight);
     }
 
     public void randomizeHidden() {
         ArrayList<Integer> arrayList = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < Const.ROW_SIZE; i++) {
             int num = rnd.nextInt(6);
             while (arrayList.contains(num)) {
                 num = rnd.nextInt(6);
@@ -129,7 +122,7 @@ public class ChooseHiddenFragment extends Fragment {
                 randomizeHidden();
                 String row = hidden.getNumStringRow();
                 MethodCallBack methodCallBack = (MethodCallBack)context;
-                methodCallBack.onCallBack(4, row);
+                methodCallBack.onCallBack(Const.ACTION_HIDDEN_TO_FIREBASE, row);
             }
         }.start();
     }
@@ -151,18 +144,17 @@ public class ChooseHiddenFragment extends Fragment {
             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
             methodCallBack.onCallBack(4, row);
         }
-        else{
+        else
             Toast.makeText(requireActivity(), "choose your hidden row", Toast.LENGTH_SHORT).show();
-        }
     }
     public void createRow() {
         hidden = new GameRow();
-        hiddenRowImages = new CircleImageView[4];
+        hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
         hiddenRowImages[0] = view.findViewById(R.id.choose_0);
         hiddenRowImages[1] = view.findViewById(R.id.choose_1);
         hiddenRowImages[2] = view.findViewById(R.id.choose_2);
         hiddenRowImages[3] = view.findViewById(R.id.choose_3);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < Const.ROW_SIZE; i++) {
             final int finalI = i;
             hiddenRowImages[i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -175,8 +167,8 @@ public class ChooseHiddenFragment extends Fragment {
 
     public void updateUI(){
         String[] stringGameRow = hidden.getStringRow();
-        for (int i =0; i<4;i++){
-            if (!stringGameRow[i].equals("null"))
+        for (int i = 0; i < Const.ROW_SIZE;i++){
+            if (!stringGameRow[i].equals(Const.NULL_COLOR_IN_GAME))
                 hiddenRowImages[i].setForeground(theme);
             else
                 hiddenRowImages[i].setForeground(null);
@@ -195,19 +187,18 @@ public class ChooseHiddenFragment extends Fragment {
     View.OnTouchListener onClickColorListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (v == red) {
-                currentSelection = "red";
-            } else if (v == green) {
-                currentSelection = "green";
-            } else if (v == blue) {
-                currentSelection = "blue";
-            } else if (v == orange) {
-                currentSelection = "orange";
-            } else if (v == yellow) {
-                currentSelection = "yellow";
-            } else if (v == light) {
-                currentSelection = "light";
-            }
+            if (v == red)
+                currentSelection = Const.RED_COLOR_IN_GAME;
+            else if (v == green)
+                currentSelection = Const.GREEN_COLOR_IN_GAME;
+            else if (v == blue)
+                currentSelection = Const.BLUE_COLOR_IN_GAME;
+            else if (v == orange)
+                currentSelection = Const.ORANGE_COLOR_IN_GAME;
+            else if (v == yellow)
+                currentSelection = Const.YELLOW_COLOR_IN_GAME;
+            else if (v == light)
+                currentSelection = Const.LIGHT_COLOR_IN_GAME;
             updateCurrImg();
             return true;
         }
@@ -237,7 +228,7 @@ public class ChooseHiddenFragment extends Fragment {
         current.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currentSelection = "null";
+                currentSelection = Const.NULL_COLOR_IN_GAME;
                 updateCurrImg();
             }
         });
@@ -245,7 +236,7 @@ public class ChooseHiddenFragment extends Fragment {
 
     public void updateCurrImg() {
         current.setImageResource(colorsMap.get(currentSelection));
-        if (!currentSelection.equals("null"))
+        if (!currentSelection.equals(Const.NULL_COLOR_IN_GAME))
             current.setForeground(theme);
         else
             current.setForeground(null);

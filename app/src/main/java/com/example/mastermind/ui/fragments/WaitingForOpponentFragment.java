@@ -2,21 +2,19 @@ package com.example.mastermind.ui.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.listeners.SendUsersCallBack;
-import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,17 +35,15 @@ public class WaitingForOpponentFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
-        code = bundle.getString("code");
-
+        code = bundle.getString(Const.INTENT_EXTRA_KEY_CODE);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             final Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_waiting_for_opponent, container, false);
         ((TextView)(view.findViewById(R.id.codeTv))).setText("Game Code: " + code);
         this.thisActivity = requireActivity();
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Player1").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.PLAYER1_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -56,21 +52,19 @@ public class WaitingForOpponentFragment extends Fragment {
                         Glide.with(thisActivity).load(user1.getImgUrl()).into((CircleImageView) (view.findViewById(R.id.PlayerOne_image)));
                         if (user1 != null && user2 != null){
                             ((TextView)(view.findViewById(R.id.codeTv))).setText("Starting Game");
-                            Log.d("!!!!!!!!!!", "onDataChange: " + requireActivity().toString()+ " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-                            methodCallBack.onCallBack(3, null);
+                            methodCallBack.onCallBack(Const.ACTION_CHOOSE_HIDDEN, null);
                             SendUsersCallBack sendUsersCallBack = (SendUsersCallBack)requireActivity();
                             sendUsersCallBack.sendUsers(user1, user2);
                         }
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) {}
                 }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Player2").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.PLAYER2_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -80,11 +74,11 @@ public class WaitingForOpponentFragment extends Fragment {
                         if (user1 != null && user2 != null){
                             ((TextView)(view.findViewById(R.id.codeTv))).setText("Starting Game");
                             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-                            methodCallBack.onCallBack(3, null);
+                            methodCallBack.onCallBack(Const.ACTION_CHOOSE_HIDDEN, null);
                             SendUsersCallBack sendUsersCallBack = (SendUsersCallBack)requireActivity();
                             sendUsersCallBack.sendUsers(user1, user2);
                         }
-                    }catch (Exception ignored){}
+                    } catch (Exception ignored){}
                 }
             }
             @Override
@@ -93,5 +87,4 @@ public class WaitingForOpponentFragment extends Fragment {
         });
         return view;
     }
-
 }

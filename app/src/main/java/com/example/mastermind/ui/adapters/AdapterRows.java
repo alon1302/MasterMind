@@ -12,10 +12,11 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.Themes;
-import com.example.mastermind.model.game.*;
+import com.example.mastermind.model.game.CheckRow;
+import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.model.user.CurrentUser;
 
@@ -41,23 +42,23 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         this.context = context;
         this.clickable = clickable;
         createColorsMap();
-        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        int useIndex = sharedPreferences.getInt("index", 0);
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        int useIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
         int themeImg = Themes.getInstance(context.getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = context.getResources().getDrawable(themeImg);
     }
 
     public void createColorsMap(){
         colors = new HashMap<>();
-        colors.put("null", R.color.colorTWhite);
-        colors.put("black", R.color.colorBlack);
-        colors.put("white", R.color.colorWhite);
-        colors.put("red", R.color.colorRed);
-        colors.put("green", R.color.colorGreen);
-        colors.put("blue", R.color.colorBlue);
-        colors.put("orange", R.color.colorOrange);
-        colors.put("yellow", R.color.colorYellow);
-        colors.put("light", R.color.colorLight);
+        colors.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
+        colors.put(Const.BLACK_COLOR_IN_GAME, R.color.colorBlack);
+        colors.put(Const.WHITE_COLOR_IN_GAME, R.color.colorWhite);
+        colors.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
+        colors.put(Const.GREEN_COLOR_IN_GAME, R.color.colorGreen);
+        colors.put(Const.BLUE_COLOR_IN_GAME, R.color.colorBlue);
+        colors.put(Const.ORANGE_COLOR_IN_GAME, R.color.colorOrange);
+        colors.put(Const.YELLOW_COLOR_IN_GAME, R.color.colorYellow);
+        colors.put(Const.LIGHT_COLOR_IN_GAME, R.color.colorLight);
     }
 
     @NonNull
@@ -74,15 +75,15 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         CheckRow currCheckRow = checkRows.get(position);
         String[] colorCheckRow = currCheckRow.getStringRow();
         colorCheckRow = sortCheckRow(colorCheckRow);
-        for (int i = 0; i < holder.SIZE; i++) {
+        for (int i = 0; i < Const.ROW_SIZE; i++) {
             holder.check[i].setImageResource(colors.get(colorCheckRow[i]));
-            if (colorCheckRow[i].equals("null"))
+            if (colorCheckRow[i].equals(Const.NULL_COLOR_IN_GAME))
                 holder.check[i].setVisibility(View.INVISIBLE);
             else
                 holder.check[i].setVisibility(View.VISIBLE);
         }
         String[] colorGameRow = currGameRow.getStringRow();
-        for (int i = 0; i < holder.SIZE; i++) {
+        for (int i = 0; i < Const.ROW_SIZE; i++) {
             final int finalI = i;
             if (clickable) {
                 holder.game[i].setOnClickListener(new View.OnClickListener() {
@@ -94,7 +95,7 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
                 });
             }
             holder.game[i].setImageResource(colors.get(colorGameRow[i]));
-            if (!colorGameRow[i].equals("null"))
+            if (!colorGameRow[i].equals(Const.NULL_COLOR_IN_GAME))
                 holder.game[i].setForeground(theme);
             else
                 holder.game[i].setForeground(null);
@@ -102,20 +103,19 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
     }
 
     public String[] sortCheckRow(String[] arr) {
-        String[] newArr = new String[4];
+        String[] newArr = new String[Const.ROW_SIZE];
         int black = 0, white = 0;
         for (int i = 0; i < arr.length; i++)
-            newArr[i] = "null";
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i].equals("black"))
+            newArr[i] = Const.NULL_COLOR_IN_GAME;
+        for (int i = 0; i < arr.length; i++)
+            if (arr[i].equals(Const.BLACK_COLOR_IN_GAME))
                 black++;
-            else if (arr[i].equals("white"))
+            else if (arr[i].equals(Const.WHITE_COLOR_IN_GAME))
                 white++;
-        }
         for (int i = 0; i < black; i++)
-            newArr[i] = "black";
+            newArr[i] = Const.BLACK_COLOR_IN_GAME;
         for (int i = black; i < black + white; i++)
-            newArr[i] = "white";
+            newArr[i] = Const.WHITE_COLOR_IN_GAME;
         return newArr;
     }
 
@@ -124,19 +124,17 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         return gameRows.size();
     }
 
-
     public class ViewHolder extends RecyclerView.ViewHolder {
-        int SIZE = 4;
         public CircleImageView[] game;
         public CircleImageView[] check;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            game = new CircleImageView[SIZE];
+            game = new CircleImageView[Const.ROW_SIZE];
             game[0] = itemView.findViewById(R.id.game_0);
             game[1] = itemView.findViewById(R.id.game_1);
             game[2] = itemView.findViewById(R.id.game_2);
             game[3] = itemView.findViewById(R.id.game_3);
-            check = new CircleImageView[SIZE];
+            check = new CircleImageView[Const.ROW_SIZE];
             check[0] = itemView.findViewById(R.id.check_0);
             check[1] = itemView.findViewById(R.id.check_1);
             check[2] = itemView.findViewById(R.id.check_2);

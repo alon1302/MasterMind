@@ -5,21 +5,20 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GameManager;
@@ -40,8 +39,6 @@ import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.content.ContentValues.TAG;
-
 
 public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
@@ -61,7 +58,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     ValueEventListener valueEventListener;
 
     GameRow hiddenRow;
-    String currentSelection = "null";
+    String currentSelection = Const.NULL_COLOR_IN_GAME;
     View view;
     User user1, user2;
     String player;
@@ -70,92 +67,51 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
     boolean isWaitingForWin;
     private Drawable theme;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        Log.d(TAG, "onAttach: +++++++++++++++++++++++++++++++++++++++++++++");
-
-    }
+    private HashMap<Character, String> charToColorMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
-        user1 = (User) bundle.get("user1");
-        user2 = (User) bundle.get("user2");
-        player = bundle.getString("player");
-        code = bundle.getString("code");
+        user1 = (User) bundle.get(Const.INTENT_EXTRA_KEY_USER1);
+        user2 = (User) bundle.get(Const.INTENT_EXTRA_KEY_USER2);
+        player = bundle.getString(Const.INTENT_EXTRA_KEY_PLAYER);
+        code = bundle.getString(Const.INTENT_EXTRA_KEY_CODE);
         hiddenRow = new GameRow();
 
-        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences("ThemesPrefs:" + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        int useIndex = sharedPreferences.getInt("index", 0);
+        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+        int useIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
         int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
         createColorsMap();
+        createCharToColorMap();
 
-        String opponent = bundle.getString("opponent");
-
-        if (player.equals("Player1"))
-            opponent = "Player2";
+        String opponent;
+        if (player.equals(Const.PLAYER1))
+            opponent = Const.PLAYER2;
         else
-            opponent = "Player1";
-        FirebaseDatabase.getInstance().getReference().child("Rooms").child(code).child("Game").child(opponent + "Hidden").addValueEventListener(new ValueEventListener() {
+            opponent = Const.PLAYER1;
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(opponent + Const.HIDDEN_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     hiddenRow= new GameRow();
-                    for (int i = 0; i < 4; i++) {
-                        switch (snapshot.getValue(String.class).charAt(i)) {
-                            case 'n':
-                                hiddenRow.addPeg(new GamePeg("null", i));
-                                break;
-                            case '0':
-                                hiddenRow.addPeg(new GamePeg("red", i));
-                                break;
-                            case '1':
-                                hiddenRow.addPeg(new GamePeg("green", i));
-                                break;
-                            case '2':
-                                hiddenRow.addPeg(new GamePeg("blue", i));
-                                break;
-                            case '3':
-                                hiddenRow.addPeg(new GamePeg("orange", i));
-                                break;
-                            case '4':
-                                hiddenRow.addPeg(new GamePeg("yellow", i));
-                                break;
-                            case '5':
-                                hiddenRow.addPeg(new GamePeg("light", i));
-                                break;
-                        }
-                    }
+                    for (int i = 0; i < Const.ROW_SIZE; i++)
+                        hiddenRow.addPeg(new GamePeg(charToColorMap.get(snapshot.getValue(String.class).charAt(i)), i));
                     gameManager.setHidden(hiddenRow);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
-        String hidden = bundle.getString("opponentHidden");
     }
 
-    public void createColorsMap(){
-        colors = new HashMap<>();
-        colors.put("null", R.color.colorTWhite);
-        colors.put("red", R.color.colorRed);
-        colors.put("green", R.color.colorGreen);
-        colors.put("blue", R.color.colorBlue);
-        colors.put("orange", R.color.colorOrange);
-        colors.put("yellow", R.color.colorYellow);
-        colors.put("light", R.color.colorLight);
-    }
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_user_turn, container, false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
@@ -174,7 +130,6 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
                 onClickSubmit();
             }
         });
-
         context = requireActivity();
         return view;
     }
@@ -183,30 +138,23 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
             checkRows.add(gameManager.getTurn() - 1, gameRows.get(gameManager.getTurn() - 1).checkGameRow(hiddenRow));
             if (gameManager.isWin()){
-                if (player.equals("Player2")){
+                if (player.equals(Const.PLAYER2))
                     Toast.makeText(context, "You Win!", Toast.LENGTH_SHORT).show();
-                    MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-                    methodCallBack.onCallBack(10, null);
-                }
-                else{
+                else
                     Toast.makeText(context, "You Win! but wait for the last turn", Toast.LENGTH_SHORT).show();
-                    MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-                    methodCallBack.onCallBack(10, null);
-                }
+                MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+                methodCallBack.onCallBack(Const.ACTION_WAITING_TO_WIN, null);
             }
             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-            methodCallBack.onCallBack(9, null);
+            methodCallBack.onCallBack(Const.ACTION_TURN_ROTATION, null);
             recyclerView.smoothScrollToPosition(adapterRows.getItemCount() - 1);
             adapterRows.notifyDataSetChanged();
-        } else {
+        } else
             Toast.makeText(requireActivity(), "", Toast.LENGTH_SHORT).show();
-        }
     }
 
-
-
     public void createHidden() {
-        hiddenRowImages = new CircleImageView[4];
+        hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
         hiddenRowImages[0] = view.findViewById(R.id.user_multi_hidden0);
         hiddenRowImages[1] = view.findViewById(R.id.user_multi_hidden1);
         hiddenRowImages[2] = view.findViewById(R.id.user_multi_hidden2);
@@ -222,19 +170,18 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     View.OnTouchListener onClickColorListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (v == red) {
-                currentSelection = "red";
-            } else if (v == green) {
-                currentSelection = "green";
-            } else if (v == blue) {
-                currentSelection = "blue";
-            } else if (v == orange) {
-                currentSelection = "orange";
-            } else if (v == yellow) {
-                currentSelection = "yellow";
-            } else if (v == light) {
-                currentSelection = "light";
-            }
+            if (v == red)
+                currentSelection = Const.RED_COLOR_IN_GAME;
+            else if (v == green)
+                currentSelection = Const.GREEN_COLOR_IN_GAME;
+            else if (v == blue)
+                currentSelection = Const.BLUE_COLOR_IN_GAME;
+            else if (v == orange)
+                currentSelection = Const.ORANGE_COLOR_IN_GAME;
+            else if (v == yellow)
+                currentSelection = Const.YELLOW_COLOR_IN_GAME;
+            else if (v == light)
+                currentSelection = Const.LIGHT_COLOR_IN_GAME;
             updateCurrImg();
             return true;
         }
@@ -242,7 +189,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
     public void updateCurrImg() {
         current.setImageResource(colors.get(currentSelection));
-        if (!currentSelection.equals("null"))
+        if (!currentSelection.equals(Const.NULL_COLOR_IN_GAME))
             current.setForeground(theme);
         else
             current.setForeground(null);
@@ -272,21 +219,42 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         current.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currentSelection = "null";
+                currentSelection = Const.NULL_COLOR_IN_GAME;
                 updateCurrImg();
             }
         });
     }
 
+    private void createCharToColorMap() {
+        charToColorMap = new HashMap<>();
+        charToColorMap.put(Const.NULL_CHAR_IN_GAME, Const.NULL_COLOR_IN_GAME);
+        charToColorMap.put(Const.RED_CHAR_IN_GAME, Const.RED_COLOR_IN_GAME);
+        charToColorMap.put(Const.GREEN_CHAR_IN_GAME, Const.GREEN_COLOR_IN_GAME);
+        charToColorMap.put(Const.BLUE_CHAR_IN_GAME, Const.BLUE_COLOR_IN_GAME);
+        charToColorMap.put(Const.ORANGE_CHAR_IN_GAME, Const.ORANGE_COLOR_IN_GAME);
+        charToColorMap.put(Const.YELLOW_CHAR_IN_GAME, Const.YELLOW_COLOR_IN_GAME);
+        charToColorMap.put(Const.LIGHT_CHAR_IN_GAME, Const.LIGHT_COLOR_IN_GAME);
+    }
+
+    public void createColorsMap(){
+        colors = new HashMap<>();
+        colors.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
+        colors.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
+        colors.put(Const.GREEN_COLOR_IN_GAME, R.color.colorGreen);
+        colors.put(Const.BLUE_COLOR_IN_GAME, R.color.colorBlue);
+        colors.put(Const.ORANGE_COLOR_IN_GAME, R.color.colorOrange);
+        colors.put(Const.YELLOW_COLOR_IN_GAME, R.color.colorYellow);
+        colors.put(Const.LIGHT_COLOR_IN_GAME, R.color.colorLight);
+    }
+
     @Override
     public void onPositionClicked(int position) {
-        Log.d(TAG, "onPositionClicked: " + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         String lastSelection = gameRows.get(gameManager.getTurn() - 1).getColorByPosition(position);
         gameManager.pegToGameRow(currentSelection, position);
         currentSelection = lastSelection;
         updateCurrImg();
         MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
-        methodCallBack.onCallBack(7,gameRows.get(gameManager.getTurn()-1).getNumStringRow() + "|"+(gameManager.getTurn()-1));
+        methodCallBack.onCallBack(Const.ACTION_UPLOAD_ROW_CHANGES,gameRows.get(gameManager.getTurn()-1).getNumStringRow() + "|" + (gameManager.getTurn()-1));
         adapterRows.notifyDataSetChanged();
     }
 
