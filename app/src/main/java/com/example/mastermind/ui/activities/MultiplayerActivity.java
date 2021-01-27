@@ -272,12 +272,6 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         super.onBackPressed();
         deleteFromFirebase();
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        deleteFromFirebase();
-    }
 }
 
 

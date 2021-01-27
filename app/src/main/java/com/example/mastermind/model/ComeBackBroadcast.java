@@ -9,15 +9,16 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.mastermind.R;
-import com.example.mastermind.ui.activities.HomeActivity;
+import com.example.mastermind.model.user.CurrentUser;
+import com.example.mastermind.ui.activities.NotificationIntent;
 
 public class ComeBackBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent resultIntent = new Intent(context, HomeActivity.class);
-        resultIntent.putExtra(Const.INTENT_EXTRA_KEY_FROM, 1);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(context,1, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        CurrentUser.resetNotification();
+        Intent resultIntent = new Intent(context, NotificationIntent.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(context,1, resultIntent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Const.NOTIFICATION_CHANNEL_NAME)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setContentTitle("Master Mind")

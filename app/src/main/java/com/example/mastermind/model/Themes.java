@@ -39,7 +39,9 @@ public class Themes {
         SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("" + 0, true);
-        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
+        if (!sharedPreferences.contains(Const.SHARED_PREFERENCES_KEY_INDEX))
+            editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
+        editor.apply();
     }
 
     private void setContext(Context context) {

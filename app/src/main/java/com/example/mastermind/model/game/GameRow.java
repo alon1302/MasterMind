@@ -103,8 +103,8 @@ public class GameRow {
         colorToCharMap = new HashMap<>();
         colorToCharMap.put(Const.NULL_COLOR_IN_GAME, Const.NULL_CHAR_IN_GAME);
         colorToCharMap.put(Const.RED_COLOR_IN_GAME, Const.RED_CHAR_IN_GAME);
-        colorToCharMap.put(Const.BLUE_COLOR_IN_GAME, Const.GREEN_CHAR_IN_GAME);
-        colorToCharMap.put(Const.GREEN_COLOR_IN_GAME, Const.BLUE_CHAR_IN_GAME);
+        colorToCharMap.put(Const.BLUE_COLOR_IN_GAME, Const.BLUE_CHAR_IN_GAME);
+        colorToCharMap.put(Const.GREEN_COLOR_IN_GAME, Const.GREEN_CHAR_IN_GAME);
         colorToCharMap.put(Const.ORANGE_COLOR_IN_GAME, Const.ORANGE_CHAR_IN_GAME);
         colorToCharMap.put(Const.YELLOW_COLOR_IN_GAME, Const.YELLOW_CHAR_IN_GAME);
         colorToCharMap.put(Const.LIGHT_COLOR_IN_GAME, Const.LIGHT_CHAR_IN_GAME);

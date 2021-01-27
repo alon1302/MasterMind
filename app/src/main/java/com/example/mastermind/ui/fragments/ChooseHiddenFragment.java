@@ -50,9 +50,6 @@ public class ChooseHiddenFragment extends Fragment {
     private Drawable theme;
     private HashMap<String, Integer> colorsMap;
 
-    public ChooseHiddenFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

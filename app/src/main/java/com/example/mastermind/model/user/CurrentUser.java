@@ -12,6 +12,7 @@ public class CurrentUser {
 
     private static User instance = null;
     private static int userCoins;
+    private static int notification = 0;
 
     private CurrentUser() {
     }
@@ -46,8 +47,37 @@ public class CurrentUser {
     }
 
     public static void addCoins(int coins){
-        FirebaseDatabase.getInstance().getReference().child("Users/" + instance.getId()+ "/Collection/Coins").setValue(userCoins + coins);
+        FirebaseDatabase.getInstance().getReference().child("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Collection/Coins").setValue(userCoins + coins);
         userCoins = userCoins + coins;
+    }
+    public static void addCoinsNotification(final int coins) {
+        if (notification == 0) {
+            FirebaseDatabase.getInstance().getReference()
+                    .child("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    int tAmount = coins;
+                    if (!snapshot.child("Collection").exists()) {
+                        FirebaseDatabase.getInstance().getReference().child("Users/" + instance.getId() + "/Collection/Coins").setValue(0);
+                    } else {
+                        tAmount += snapshot.child("Collection/Coins").getValue(Integer.class);
+                    }
+                    FirebaseDatabase.getInstance().getReference()
+                            .child("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Collection/Coins")
+                            .setValue(tAmount);
+                    notification = 1;
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    public static void resetNotification(){
+        notification = 0;
     }
 
     public static void setUserCoins(int userCoins) {

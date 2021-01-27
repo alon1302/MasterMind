@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,14 +21,11 @@ import com.example.mastermind.model.Const;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -37,8 +33,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
-    private StorageReference mStorageRef;
 
     FirebaseDatabase database;
     DatabaseReference myRef;
@@ -46,7 +40,6 @@ public class HomeActivity extends AppCompatActivity {
     TextView tv_name;
     TextView tv_coins;
     CircleImageView circleImageView;
-    int from;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -56,10 +49,8 @@ public class HomeActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
-        mStorageRef = FirebaseStorage.getInstance().getReference();
 
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
         user = CurrentUser.getInstance();
         tv_name = findViewById(R.id.tv_name);
         tv_name.setText(user.getName());
@@ -68,9 +59,6 @@ public class HomeActivity extends AppCompatActivity {
         Glide.with(this).load(user.getImgUrl()).into(circleImageView);
 
         createNotificationChannel();
-
-        from = getIntent().getIntExtra("from", 0);
-        getIntent().removeExtra("from");
         showCoins();
     }
 
@@ -84,11 +72,6 @@ public class HomeActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         int coins = snapshot.getValue(Integer.class);
                         CurrentUser.setUserCoins(coins);
-                        if (from == 1) {
-                            CurrentUser.addCoins(300);
-                            from = 0;
-                            Toast.makeText(HomeActivity.this, "Congrats, You got 300 More Coins", Toast.LENGTH_SHORT).show();
-                        }
                         tv_coins.setText("" + coins);
                     } else {
                         FirebaseDatabase.getInstance().getReference().child(Const.USERS_IN_FIREBASE).child(CurrentUser.getInstance().getId()).child(Const.COLLECTION_IN_FIREBASE).child(Const.COINS_IN_FIREBASE).setValue(0);
@@ -128,8 +111,8 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         mAuth.signOut();
         CurrentUser.logout();
-        currentUser = null;
         startActivity(intent);
+        finish();
     }
 
     public void onClickHowToPlay(View view) {
