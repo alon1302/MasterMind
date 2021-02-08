@@ -1,6 +1,7 @@
 package com.example.mastermind.ui.activities;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mastermind.R;
+import com.example.mastermind.model.BackMusicService;
 import com.example.mastermind.model.Const;
 import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.game.CheckRow;
@@ -63,6 +66,9 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private TextView tv_coins;
     private Drawable theme;
 
+    private ImageView iv_musicOnOff;
+    private boolean playing;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +98,41 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         startTimeRunning();
         createHidden();
         createButtons();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        iv_musicOnOff = findViewById(R.id.btn_Music);
+        if (isMyServiceRunning(BackMusicService.class)){
+            playing = true;
+            iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
+        } else {
+            playing = false;
+            iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
+        }
+        iv_musicOnOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!playing){
+                    startService(new Intent(OnePlayerActivity.this, BackMusicService.class));
+                    iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
+                    playing = true;
+                } else {
+                    stopService(new Intent(OnePlayerActivity.this, BackMusicService.class));
+                    iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
+                    playing = false;
+                }
+            }
+        });
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+            if (serviceClass.getName().equals(service.service.getClassName()))
+                return true;
+        return false;
     }
 
     public void createColorsMap(){

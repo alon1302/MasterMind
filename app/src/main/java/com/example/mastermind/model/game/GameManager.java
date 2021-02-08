@@ -36,7 +36,7 @@ public class GameManager {
         ArrayList<Integer> arrayList = new ArrayList<>();
         for (int i = 0; i < Const.ROW_SIZE; i++) {
             int num = rnd.nextInt(colors.length);
-            while (arrayList.contains(colors.length))
+            while (arrayList.contains(num))
                 num = rnd.nextInt(colors.length);
             hidden.addPeg(new GamePeg(this.colors[num], i));
             arrayList.add(num);

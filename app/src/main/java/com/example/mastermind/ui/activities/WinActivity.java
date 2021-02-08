@@ -140,7 +140,7 @@ public class WinActivity extends AppCompatActivity {
                 int currRecord = recordsSorted.indexOf(record);
                 HashMap<String,Object> hashMap = getSortedMap(recordsSorted);
                 FirebaseDatabase.getInstance().getReference().child(Const.RECORDS_IN_FIREBASE).setValue(hashMap);
-                recyclerView.smoothScrollToPosition(currRecord);
+                //recyclerView.smoothScrollToPosition(currRecord);
             }
 
             @Override

@@ -1,14 +1,17 @@
 package com.example.mastermind.ui.activities;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
+import com.example.mastermind.model.BackMusicService;
 import com.example.mastermind.model.ComeBackBroadcast;
 import com.example.mastermind.model.Const;
 import com.example.mastermind.model.user.CurrentUser;
@@ -31,7 +35,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity {
 
-
     private FirebaseAuth mAuth;
 
     FirebaseDatabase database;
@@ -39,7 +42,10 @@ public class HomeActivity extends AppCompatActivity {
     User user;
     TextView tv_name;
     TextView tv_coins;
-    CircleImageView circleImageView;
+    CircleImageView iv_userImage;
+
+    ImageView iv_musicOnOff;
+    boolean playing;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -55,11 +61,38 @@ public class HomeActivity extends AppCompatActivity {
         tv_name = findViewById(R.id.tv_name);
         tv_name.setText(user.getName());
 
-        circleImageView = findViewById(R.id.iv_image);
-        Glide.with(this).load(user.getImgUrl()).into(circleImageView);
+        iv_userImage = findViewById(R.id.iv_image);
+        Glide.with(this).load(user.getImgUrl()).into(iv_userImage);
 
         createNotificationChannel();
         showCoins();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        iv_musicOnOff = findViewById(R.id.btn_Music);
+        if (isMyServiceRunning(BackMusicService.class)){
+            playing = true;
+            iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
+        } else {
+            playing = false;
+            iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
+        }
+        iv_musicOnOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!playing){
+                    startService(new Intent(HomeActivity.this, BackMusicService.class));
+                    iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
+                    playing = true;
+                } else {
+                    stopService(new Intent(HomeActivity.this, BackMusicService.class));
+                    iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
+                    playing = false;
+                }
+            }
+        });
     }
 
     public void showCoins() {
@@ -120,6 +153,11 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onClickThemes(View v) {
+        Intent intent = new Intent(this, ThemesActivity.class);
+        startActivity(intent);
+    }
+
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String name = Const.NOTIFICATION_CHANNEL_NAME;
@@ -132,9 +170,12 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickThemes(View v) {
-        Intent intent = new Intent(this, ThemesActivity.class);
-        startActivity(intent);
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+            if (serviceClass.getName().equals(service.service.getClassName()))
+                return true;
+        return false;
     }
 
     @Override
@@ -146,5 +187,11 @@ public class HomeActivity extends AppCompatActivity {
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         long currentTime = System.currentTimeMillis();
         alarmManager.set(AlarmManager.RTC_WAKEUP, currentTime + Const.NOTIFICATION_TIME, pendingIntent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this,BackMusicService.class));
     }
 }

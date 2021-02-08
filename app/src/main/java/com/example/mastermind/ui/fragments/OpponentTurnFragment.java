@@ -1,12 +1,16 @@
 package com.example.mastermind.ui.fragments;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -15,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
+import com.example.mastermind.model.BackMusicService;
 import com.example.mastermind.model.Const;
 import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.game.CheckRow;
@@ -60,6 +65,9 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
     private HashMap<String, Integer> colors;
     private HashMap<Character, String> charToColorMap;
 
+    private ImageView iv_musicOnOff;
+    private boolean playing;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,8 +97,7 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_opponent_turn, container, false);
         Glide.with(requireActivity()).load(user2.getImgUrl()).into((CircleImageView) view.findViewById(R.id.opponent_multi_img));
@@ -125,6 +132,43 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         });
         createRow();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        iv_musicOnOff = view.findViewById(R.id.btn_Music);
+        if (isMyServiceRunning(BackMusicService.class)){
+            playing = true;
+            iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
+        } else {
+            playing = false;
+            iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
+        }
+        iv_musicOnOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!playing){
+                    getActivity().startService(new Intent(getActivity(), BackMusicService.class));
+                    iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
+                    playing = true;
+                    Toast.makeText(getActivity(), "Service Start", Toast.LENGTH_SHORT).show();
+                } else {
+                    getActivity().stopService(new Intent(getActivity(), BackMusicService.class));
+                    iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
+                    playing = false;
+                    Toast.makeText(getActivity(), "Service Stop", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+            if (serviceClass.getName().equals(service.service.getClassName()))
+                return true;
+        return false;
     }
 
     public GameRow convertStringToGameRow(String row) {

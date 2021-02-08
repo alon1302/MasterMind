@@ -109,8 +109,8 @@
         android:layout_margin="4dp"
         android:layout_marginTop="4dp"
         android:background="@drawable/main_design"
-        android:text="Find Enemy"
         android:onClick="onClickFindEnemy"
+        android:text="Find Enemy"
         android:textAllCaps="false"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -168,14 +168,26 @@
         android:layout_height="85dp"
         android:layout_gravity="center"
         android:layout_margin="4dp"
+        android:layout_marginStart="4dp"
         android:onClick="onClickThemes"
         android:src="@drawable/ic_baseline_color_lens_24"
         android:textAllCaps="false"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/btn_logOut"
         app:layout_constraintTop_toBottomOf="@+id/btn_logOut"
+        app:layout_constraintVertical_bias="0.503"
+        app:tint="#ABF5FF" />
+
+    <ImageView
+        android:id="@+id/btn_Music"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_marginEnd="4dp"
+        android:src="@drawable/ic_baseline_music_note_24"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_Themes"
+        app:layout_constraintEnd_toEndOf="@+id/btn_logOut"
+        app:layout_constraintTop_toTopOf="@+id/btn_Themes"
         app:tint="#ABF5FF" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
