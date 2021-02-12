@@ -48,6 +48,7 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack 
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        recyclerView.startLayoutAnimation();
 
         sharedPreferences = getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -55,8 +56,10 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack 
 
     @Override
     public void onCallBack(final int action, final Object value) {
-        if (sharedPreferences.getBoolean("" + action, false)){
-            editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, action);
+        final int index = action;
+        Drawable theme = (Drawable) value;
+        if (sharedPreferences.getBoolean("" + index, false)){
+            editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
             editor.apply();
             adapter.notifyDataSetChanged();
         } else {
@@ -73,7 +76,7 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack 
             images[4] = d.findViewById(R.id.yellow);
             images[5] = d.findViewById(R.id.light);
             for (int i = 0; i < images.length; i++)
-                images[i].setForeground((Drawable) value);
+                images[i].setForeground(theme);
             d.setCancelable(true);
             d.show();
             d.findViewById(R.id.buyThemeButton).setOnClickListener(new View.OnClickListener() {
@@ -81,13 +84,14 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack 
                 public void onClick(View v) {
                     if (CurrentUser.getUserCoins() >= Const.THEME_COST) {
                         CurrentUser.addCoins(-1 * Const.THEME_COST);
-                        Themes.getInstance(ThemesActivity.this.getApplicationContext()).getAllThemes().get(action).setOpened(true);
+                        Themes.getInstance(ThemesActivity.this.getApplicationContext()).getAllThemes().get(index).setOpened(true);
                         d.dismiss();
                         textViewCoins.setText("" + CurrentUser.getUserCoins());
-                        editor.putBoolean("" + action, true);
-                        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, action);
+                        editor.putBoolean("" + index, true);
+                        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
                         editor.apply();
                         adapter.notifyDataSetChanged();
+                        recyclerView.startLayoutAnimation();
                     } else
                         Toast.makeText(ThemesActivity.this, "You Have Not Enough Coins", Toast.LENGTH_SHORT).show();
                 }
