@@ -10,14 +10,14 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.example.mastermind.R;
 import com.example.mastermind.model.user.CurrentUser;
-import com.example.mastermind.ui.activities.NotificationIntent;
+import com.example.mastermind.ui.activities.NotificationActivity;
 
 public class ComeBackBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
         CurrentUser.resetNotification();
-        Intent resultIntent = new Intent(context, NotificationIntent.class);
+        Intent resultIntent = new Intent(context, NotificationActivity.class);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(context,1, resultIntent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Const.NOTIFICATION_CHANNEL_NAME)
                 .setSmallIcon(R.mipmap.ic_launcher_round)

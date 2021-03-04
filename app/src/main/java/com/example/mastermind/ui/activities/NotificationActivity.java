@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.mastermind.R;
 import com.example.mastermind.model.user.CurrentUser;
 
-public class NotificationIntent extends AppCompatActivity {
+public class NotificationActivity extends AppCompatActivity {
 
     private static int DELAY = 1500;
     @Override
@@ -24,7 +24,7 @@ public class NotificationIntent extends AppCompatActivity {
             public void run() {
                 DELAY = 0;
                 finish();
-                startActivity(new Intent(NotificationIntent.this, HomeActivity.class));
+                startActivity(new Intent(NotificationActivity.this, HomeActivity.class));
             }
         }, DELAY);
     }
