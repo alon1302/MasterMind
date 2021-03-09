@@ -8,12 +8,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mastermind.R;
 import com.example.mastermind.model.Const;
-import com.example.mastermind.model.firebase.FindEnemyManager;
-import com.example.mastermind.model.firebase.MultiPlayerManager;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.model.listeners.SendHiddenToOpponent;
 import com.example.mastermind.model.listeners.SendUsersCallBack;
+import com.example.mastermind.model.multiGame.FindEnemyManager;
+import com.example.mastermind.model.multiGame.MultiPlayerManager;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.fragments.ChooseHiddenFragment;

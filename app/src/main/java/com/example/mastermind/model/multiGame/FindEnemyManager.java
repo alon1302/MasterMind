@@ -1,4 +1,4 @@
-package com.example.mastermind.model.firebase;
+package com.example.mastermind.model.multiGame;
 
 import android.app.Activity;
 

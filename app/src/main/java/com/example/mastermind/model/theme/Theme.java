@@ -1,6 +1,4 @@
-package com.example.mastermind.model;
-
-import android.graphics.drawable.Drawable;
+package com.example.mastermind.model.theme;
 
 public class Theme {
 

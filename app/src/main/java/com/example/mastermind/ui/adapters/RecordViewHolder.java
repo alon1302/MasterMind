@@ -22,6 +22,5 @@ public class RecordViewHolder extends RecyclerView.ViewHolder {
         name = itemView.findViewById(R.id.name);
         time = itemView.findViewById(R.id.time);
         sn = itemView.findViewById(R.id.sn);
-
     }
 }

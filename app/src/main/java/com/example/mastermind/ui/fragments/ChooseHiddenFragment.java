@@ -18,10 +18,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.mastermind.R;
 import com.example.mastermind.model.Const;
-import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.MethodCallBack;
+import com.example.mastermind.model.theme.Themes;
 import com.example.mastermind.model.user.CurrentUser;
 
 import java.util.ArrayList;

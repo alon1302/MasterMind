@@ -1,4 +1,4 @@
-package com.example.mastermind.model;
+package com.example.mastermind.model.serviceAndBroadcast;
 
 import android.app.Service;
 import android.content.Intent;

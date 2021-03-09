@@ -34,8 +34,8 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".model.BackMusicService"/>
-        <receiver android:name=".model.ComeBackBroadcast" />
+        <service android:name=".model.serviceAndBroadcast.BackMusicService"/>
+        <receiver android:name=".model.serviceAndBroadcast.ComeBackBroadcast" />
 
         <activity android:name=".ui.activities.HowToPlayActivity" />
     </application>

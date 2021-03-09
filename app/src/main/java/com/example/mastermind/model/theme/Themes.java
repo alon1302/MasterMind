@@ -1,9 +1,10 @@
-package com.example.mastermind.model;
+package com.example.mastermind.model.theme;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.user.CurrentUser;
 
 import java.util.ArrayList;

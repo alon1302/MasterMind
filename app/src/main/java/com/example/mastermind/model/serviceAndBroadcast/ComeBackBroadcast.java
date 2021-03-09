@@ -1,4 +1,4 @@
-package com.example.mastermind.model;
+package com.example.mastermind.model.serviceAndBroadcast;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -9,6 +9,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.mastermind.R;
+import com.example.mastermind.model.Const;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.ui.activities.NotificationActivity;
 

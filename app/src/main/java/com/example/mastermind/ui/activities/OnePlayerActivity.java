@@ -23,13 +23,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mastermind.R;
-import com.example.mastermind.model.BackMusicService;
 import com.example.mastermind.model.Const;
-import com.example.mastermind.model.Themes;
 import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GameManager;
 import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.OnPegClickListener;
+import com.example.mastermind.model.serviceAndBroadcast.BackMusicService;
+import com.example.mastermind.model.theme.Themes;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.ui.adapters.AdapterRows;
 

@@ -19,9 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
-import com.example.mastermind.model.BackMusicService;
-import com.example.mastermind.model.ComeBackBroadcast;
 import com.example.mastermind.model.Const;
+import com.example.mastermind.model.serviceAndBroadcast.BackMusicService;
+import com.example.mastermind.model.serviceAndBroadcast.ComeBackBroadcast;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.google.firebase.auth.FirebaseAuth;
