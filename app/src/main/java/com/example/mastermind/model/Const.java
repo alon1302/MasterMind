@@ -77,7 +77,7 @@ public class Const {
     public static final String INTENT_EXTRA_VALUE_WITH_CODE = "withCode";
     public static final String INTENT_EXTRA_VALUE_FIND_ENEMY = "findEnemy";
 
-    public static final long NOTIFICATION_TIME = 10000;
+    public static final long NOTIFICATION_TIME = 7200000;
 
     public static final String FRAGMENT_TITLE_ABOUT = "About";
     public static final String FRAGMENT_TITLE_RULES = "Rules";

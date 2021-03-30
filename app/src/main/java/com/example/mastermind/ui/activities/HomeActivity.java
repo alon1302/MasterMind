@@ -100,10 +100,12 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
         if (mode == Const.ONLINE){
             findViewById(R.id.btn_twoPlayers).setVisibility(View.VISIBLE);
             findViewById(R.id.btn_findEnemy).setVisibility(View.VISIBLE);
+            findViewById(R.id.btn_Themes).setClickable(true);
             Toast.makeText(this, "You're Back Online", Toast.LENGTH_SHORT).show();
         } else if (mode == Const.OFFLINE) {
             findViewById(R.id.btn_twoPlayers).setVisibility(View.INVISIBLE);
             findViewById(R.id.btn_findEnemy).setVisibility(View.INVISIBLE);
+            findViewById(R.id.btn_Themes).setClickable(false);
             Toast.makeText(this, "You're Offline", Toast.LENGTH_SHORT).show();
         }
     }
