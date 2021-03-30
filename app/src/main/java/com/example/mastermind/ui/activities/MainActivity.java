@@ -3,6 +3,8 @@ package com.example.mastermind.ui.activities;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.mastermind.R;
 import com.example.mastermind.model.Const;
 import com.example.mastermind.model.listeners.ImageUploadListener;
+import com.example.mastermind.model.listeners.MethodCallBack;
+import com.example.mastermind.model.serviceAndBroadcast.NetworkChangeReceiver;
 import com.example.mastermind.model.user.CurrentUser;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -45,10 +49,10 @@ import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements ImageUploadListener {
+public class MainActivity extends AppCompatActivity implements ImageUploadListener, MethodCallBack {
 
-    static int PICK_IMAGE = 100;
-    static int GOOGLE = 1;
+    private static final int PICK_IMAGE = 100;
+    private static final int GOOGLE = 1;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -104,6 +108,9 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                 signInWithGoogle();
             }
         });
+
+        NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver(this);
+        registerReceiver(networkChangeReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     //////////////////////////////// Google ////////////////////////////////////
@@ -338,5 +345,32 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
     public void openGallery(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_IMAGE);
+    }
+
+    private void toggleIsOnline(int mode){
+        if (mode == Const.ONLINE){
+            findViewById(R.id.btn_OfflineMode).setVisibility(View.INVISIBLE);
+            findViewById(R.id.signInButton).setVisibility(View.VISIBLE);
+            findViewById(R.id.btn_register).setVisibility(View.VISIBLE);
+            findViewById(R.id.btn_login).setVisibility(View.VISIBLE);
+            Toast.makeText(this, "You're Back Online", Toast.LENGTH_SHORT).show();
+        } else if (mode == Const.OFFLINE) {
+            findViewById(R.id.btn_OfflineMode).setVisibility(View.VISIBLE);
+            findViewById(R.id.signInButton).setVisibility(View.INVISIBLE);
+            findViewById(R.id.btn_register).setVisibility(View.INVISIBLE);
+            findViewById(R.id.btn_login).setVisibility(View.INVISIBLE);
+            Toast.makeText(this, "You're Offline", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onCallBack(int action, Object value) {
+        toggleIsOnline(action);
+    }
+
+    public void onClickOfflineMode (View v){
+        Intent intent = new Intent(this, OnePlayerActivity.class);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_CONNECTIVITY ,Const.OFFLINE);
+        startActivity(intent);
     }
 }

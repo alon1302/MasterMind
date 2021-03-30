@@ -69,16 +69,25 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private ImageView iv_musicOnOff;
     private boolean playing;
 
-    @SuppressLint("SetTextI18n")
+    boolean isOnline;
+    int connectivityMode;
+
+    @SuppressLint({"SetTextI18n", "UseCompatLoadingForDrawables"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one_player);
-
+        connectivityMode = getIntent().getIntExtra(Const.INTENT_EXTRA_KEY_CONNECTIVITY,Const.ONLINE);
+        isOnline = connectivityMode == Const.ONLINE;
         createColorsMap();
         chronometer = findViewById(R.id.chronometer);
-        tv_coins = findViewById(R.id.textView_coinsGame);
-        tv_coins.setText("" + CurrentUser.getUserCoins());
+
+        if (isOnline) {
+            tv_coins = findViewById(R.id.textView_coinsGame);
+            tv_coins.setText("" + CurrentUser.getUserCoins());
+        } else
+            findViewById(R.id.imageView_hint).setVisibility(View.INVISIBLE);
+
         tookHint = false;
         gameManager = new GameManager();
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -276,6 +285,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
     private void openWinnerActivity() {
         Intent intent = new Intent(this, WinActivity.class);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_CONNECTIVITY,this.connectivityMode);
         intent.putExtra(Const.INTENT_EXTRA_KEY_MINUTES, minutes);
         intent.putExtra(Const.INTENT_EXTRA_KEY_SECONDS, seconds);
         intent.putExtra(Const.INTENT_EXTRA_KEY_TIME, timeInMillis);

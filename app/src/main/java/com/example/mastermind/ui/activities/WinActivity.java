@@ -47,46 +47,54 @@ public class WinActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
 
+    int connectivityMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_win);
 
-        currentUser = CurrentUser.getInstance();
-        tv_name = findViewById(R.id.winner_name);
+        connectivityMode = getIntent().getIntExtra(Const.INTENT_EXTRA_KEY_CONNECTIVITY,Const.OFFLINE);
+
+
+
+        if (connectivityMode == Const.ONLINE) {
+            currentUser = CurrentUser.getInstance();
+            profileImage = findViewById(R.id.profile_image);
+            calculateCoins();
+
+            recyclerView = findViewById(R.id.recyclerView_records);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(layoutManager);
+
+            Query ref = FirebaseDatabase.getInstance().getReference().child(Const.RECORDS_IN_FIREBASE);
+            options = new FirebaseRecyclerOptions.Builder<Record>().setQuery(ref, Record.class).build();
+            FirebaseRecyclerAdapter<Record, RecordViewHolder> adapter = new FirebaseRecyclerAdapter<Record, RecordViewHolder>(options) {
+                @SuppressLint("DefaultLocale")
+                @Override
+                protected void onBindViewHolder(@NonNull RecordViewHolder holder, int position, @NonNull Record model) {
+                    Glide.with(WinActivity.this).load(model.getImgUrl()).into(holder.img);
+                    holder.name.setText(model.getName());
+                    long minutes = (model.getTime() / 1000) / 60;
+                    long seconds = (model.getTime() / 1000) % 60;
+                    holder.time.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
+                    holder.sn.setText(String.format("%d", position + 1));
+                }
+
+                @NonNull
+                @Override
+                public RecordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                    View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_record, parent, false);
+                    return new RecordViewHolder(view);
+                }
+            };
+            adapter.startListening();
+            recyclerView.setAdapter(adapter);
+        }
         tv_time = findViewById(R.id.winner_Time);
-        profileImage = findViewById(R.id.profile_image);
+        tv_name = findViewById(R.id.winner_name);
         getData();
-        calculateCoins();
-
-        recyclerView = findViewById(R.id.recyclerView_records);
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(layoutManager);
-
-        Query ref = FirebaseDatabase.getInstance().getReference().child(Const.RECORDS_IN_FIREBASE);
-        options = new FirebaseRecyclerOptions.Builder<Record>().setQuery(ref, Record.class).build();
-        FirebaseRecyclerAdapter<Record, RecordViewHolder> adapter = new FirebaseRecyclerAdapter<Record, RecordViewHolder>(options) {
-            @SuppressLint("DefaultLocale")
-            @Override
-            protected void onBindViewHolder(@NonNull RecordViewHolder holder, int position, @NonNull Record model) {
-                Glide.with(WinActivity.this).load(model.getImgUrl()).into(holder.img);
-                holder.name.setText(model.getName());
-                long minutes = (model.getTime() / 1000) / 60;
-                long seconds = (model.getTime() / 1000) % 60;
-                holder.time.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
-                holder.sn.setText(String.format("%d", position + 1));
-            }
-
-            @NonNull
-            @Override
-            public RecordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_record, parent, false);
-                return new RecordViewHolder(view);
-            }
-        };
-        adapter.startListening();
-        recyclerView.setAdapter(adapter);
     }
 
     private void calculateCoins() {
@@ -111,7 +119,10 @@ public class WinActivity extends AppCompatActivity {
     }
 
     public void onClickHome(View view) {
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this,MainActivity.class);
+        if (connectivityMode == Const.ONLINE) {
+            intent = new Intent(this, HomeActivity.class);
+        }
         startActivity(intent);
         finish();
     }
@@ -121,10 +132,14 @@ public class WinActivity extends AppCompatActivity {
         minutes = intent.getLongExtra(Const.INTENT_EXTRA_KEY_MINUTES, 0);
         seconds = intent.getLongExtra(Const.INTENT_EXTRA_KEY_SECONDS, 0);
         time = intent.getLongExtra(Const.INTENT_EXTRA_KEY_TIME, 0);
-        tv_name.setText(currentUser.getName());
         tv_time.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
-        Glide.with(this).load(currentUser.getImgUrl()).into(profileImage);
-        addRecord();
+        if (connectivityMode == Const.ONLINE) {
+            tv_name.setText(currentUser.getName());
+            Glide.with(this).load(currentUser.getImgUrl()).into(profileImage);
+            addRecord();
+        } else {
+            tv_name.setText("");
+        }
     }
 
     private void addRecord() {

@@ -24,4 +24,5 @@
     <string name="want_to_buy_hint">Want To Buy Hint?</string>
     <string name="reveal_one_peg">Reveal One Peg -</string>
     <string name="your_opponent_wants_rematch">Your Opponent Wants Rematch</string>
+    <string name="offline_mode">Offline Mode</string>
 </resources>

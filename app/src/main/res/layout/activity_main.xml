@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
@@ -64,15 +63,15 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_register" />
 
     <Button
-        android:id="@+id/btn_game"
+        android:id="@+id/btn_OfflineMode"
         android:layout_width="250dp"
         android:layout_height="48dp"
         android:layout_gravity="center"
         android:layout_margin="4dp"
         android:layout_marginStart="80dp"
         android:background="@drawable/main_design"
-        android:onClick="onClickDebug"
-        android:text="game debug"
+        android:onClick="onClickOfflineMode"
+        android:text="@string/offline_mode"
         android:textAllCaps="false"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent "

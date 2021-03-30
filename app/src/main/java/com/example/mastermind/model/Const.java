@@ -98,4 +98,9 @@ public class Const {
 
     public static final int HINT_COST = 500;
     public static final int THEME_COST = 1500;
+
+    public static final int ONLINE = 0;
+    public static final int OFFLINE = 1;
+
+    public static final String INTENT_EXTRA_KEY_CONNECTIVITY = "connectivity";
 }

@@ -8,11 +8,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,31 +23,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.mastermind.R;
 import com.example.mastermind.model.Const;
+import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.serviceAndBroadcast.BackMusicService;
 import com.example.mastermind.model.serviceAndBroadcast.ComeBackBroadcast;
+import com.example.mastermind.model.serviceAndBroadcast.NetworkChangeReceiver;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements MethodCallBack {
 
     private FirebaseAuth mAuth;
+    private NetworkChangeReceiver networkChangeReceiver;
 
-    FirebaseDatabase database;
-    DatabaseReference myRef;
-    User user;
-    TextView tv_name;
-    TextView tv_coins;
-    CircleImageView iv_userImage;
+    private TextView tv_coins;
+    private ImageView iv_musicOnOff;
 
-    ImageView iv_musicOnOff;
     boolean playing;
 
     @SuppressLint("SetTextI18n")
@@ -53,16 +53,16 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference();
-
         mAuth = FirebaseAuth.getInstance();
-        user = CurrentUser.getInstance();
-        tv_name = findViewById(R.id.tv_name);
+        User user = CurrentUser.getInstance();
+        TextView tv_name = findViewById(R.id.tv_name);
         tv_name.setText(user.getName());
 
-        iv_userImage = findViewById(R.id.iv_image);
+        CircleImageView iv_userImage = findViewById(R.id.iv_image);
         Glide.with(this).load(user.getImgUrl()).into(iv_userImage);
+
+        networkChangeReceiver = new NetworkChangeReceiver(this);
+        registerReceiver(networkChangeReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         createNotificationChannel();
         showCoins();
@@ -93,6 +93,19 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         });
+
+    }
+
+    private void toggleIsOnline(int mode){
+        if (mode == Const.ONLINE){
+            findViewById(R.id.btn_twoPlayers).setVisibility(View.VISIBLE);
+            findViewById(R.id.btn_findEnemy).setVisibility(View.VISIBLE);
+            Toast.makeText(this, "You're Back Online", Toast.LENGTH_SHORT).show();
+        } else if (mode == Const.OFFLINE) {
+            findViewById(R.id.btn_twoPlayers).setVisibility(View.INVISIBLE);
+            findViewById(R.id.btn_findEnemy).setVisibility(View.INVISIBLE);
+            Toast.makeText(this, "You're Offline", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void showCoins() {
@@ -193,5 +206,11 @@ public class HomeActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this,BackMusicService.class));
+        unregisterReceiver(networkChangeReceiver);
+    }
+
+    @Override
+    public void onCallBack(int action, Object value) {
+        toggleIsOnline(action);
     }
 }
