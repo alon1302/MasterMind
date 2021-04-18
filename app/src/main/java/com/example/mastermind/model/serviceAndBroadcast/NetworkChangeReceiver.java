@@ -36,8 +36,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            return networkInfo!= null && (networkInfo.isConnected()||networkInfo.isAvailable());
-        }catch (Exception e){
+            return networkInfo != null && (networkInfo.isConnected() || networkInfo.isAvailable());
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

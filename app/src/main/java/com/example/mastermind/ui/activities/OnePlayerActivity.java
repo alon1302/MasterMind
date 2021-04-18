@@ -70,15 +70,13 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private boolean playing;
 
     boolean isOnline;
-    int connectivityMode;
 
     @SuppressLint({"SetTextI18n", "UseCompatLoadingForDrawables"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one_player);
-        connectivityMode = getIntent().getIntExtra(Const.INTENT_EXTRA_KEY_CONNECTIVITY,Const.ONLINE);
-        isOnline = connectivityMode == Const.ONLINE;
+        isOnline = getIntent().getBooleanExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE,false);
         createColorsMap();
         chronometer = findViewById(R.id.chronometer);
 
@@ -285,7 +283,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
 
     private void openWinnerActivity() {
         Intent intent = new Intent(this, WinActivity.class);
-        intent.putExtra(Const.INTENT_EXTRA_KEY_CONNECTIVITY,this.connectivityMode);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, isOnline);
         intent.putExtra(Const.INTENT_EXTRA_KEY_MINUTES, minutes);
         intent.putExtra(Const.INTENT_EXTRA_KEY_SECONDS, seconds);
         intent.putExtra(Const.INTENT_EXTRA_KEY_TIME, timeInMillis);

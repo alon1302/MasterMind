@@ -74,6 +74,7 @@ public class Const {
     public static final String INTENT_EXTRA_KEY_MINUTES = "minutes";
     public static final String INTENT_EXTRA_KEY_SECONDS = "seconds";
     public static final String INTENT_EXTRA_KEY_TIME = "time";
+    public static final String INTENT_EXTRA_KEY_IS_ONLINE = "isOnline";
     public static final String INTENT_EXTRA_VALUE_WITH_CODE = "withCode";
     public static final String INTENT_EXTRA_VALUE_FIND_ENEMY = "findEnemy";
 
@@ -102,5 +103,5 @@ public class Const {
     public static final int ONLINE = 0;
     public static final int OFFLINE = 1;
 
-    public static final String INTENT_EXTRA_KEY_CONNECTIVITY = "connectivity";
+
 }

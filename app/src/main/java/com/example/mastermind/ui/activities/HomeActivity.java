@@ -3,6 +3,7 @@ package com.example.mastermind.ui.activities;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,9 +14,9 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +48,9 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
 
     boolean playing;
 
+    Dialog offlineDialog;
+    Button btnOfflineMode;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,14 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
 
         createNotificationChannel();
         showCoins();
+        createOfflineDialog();
+    }
+
+    public void createOfflineDialog(){
+        offlineDialog = new Dialog(this);
+        offlineDialog.setContentView(R.layout.dialog_offline);
+        btnOfflineMode = offlineDialog.findViewById(R.id.offlineModeBtn);
+        offlineDialog.setCancelable(false);
     }
 
     @Override
@@ -97,16 +109,18 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
     }
 
     private void toggleIsOnline(int mode){
-        if (mode == Const.ONLINE){
-            findViewById(R.id.btn_twoPlayers).setVisibility(View.VISIBLE);
-            findViewById(R.id.btn_findEnemy).setVisibility(View.VISIBLE);
-            findViewById(R.id.btn_Themes).setClickable(true);
-            Toast.makeText(this, "You're Back Online", Toast.LENGTH_SHORT).show();
-        } else if (mode == Const.OFFLINE) {
-            findViewById(R.id.btn_twoPlayers).setVisibility(View.INVISIBLE);
-            findViewById(R.id.btn_findEnemy).setVisibility(View.INVISIBLE);
-            findViewById(R.id.btn_Themes).setClickable(false);
-            Toast.makeText(this, "You're Offline", Toast.LENGTH_SHORT).show();
+        if (mode == Const.ONLINE)
+            offlineDialog.dismiss();
+        else if (mode == Const.OFFLINE) {
+            offlineDialog.show();
+            btnOfflineMode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(HomeActivity.this, OnePlayerActivity.class);
+                    intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, false);
+                    startActivity(intent);
+                }
+            });
         }
     }
 
@@ -139,6 +153,7 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
 
     public void onClickOnePlayer(View view) {
         Intent intent = new Intent(this, OnePlayerActivity.class);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, true);
         startActivity(intent);
     }
 

@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
 
     ProgressDialog progressDialogUpload;
 
+    Dialog offlineDialog;
+    Button btnOfflineMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
 
         NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver(this);
         registerReceiver(networkChangeReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+
     }
 
     //////////////////////////////// Google ////////////////////////////////////
@@ -312,6 +317,10 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
         register_dialog = new Dialog(this);
         register_dialog.setContentView(R.layout.dialog_register);
         register_dialog.setCancelable(true);
+        offlineDialog = new Dialog(this);
+        offlineDialog.setContentView(R.layout.dialog_offline);
+        btnOfflineMode = offlineDialog.findViewById(R.id.offlineModeBtn);
+        offlineDialog.setCancelable(false);
     }
 
     public void createLoginDialog(View view) {
@@ -348,18 +357,18 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
     }
 
     private void toggleIsOnline(int mode){
-        if (mode == Const.ONLINE){
-            findViewById(R.id.btn_OfflineMode).setVisibility(View.INVISIBLE);
-            findViewById(R.id.signInButton).setVisibility(View.VISIBLE);
-            findViewById(R.id.btn_register).setVisibility(View.VISIBLE);
-            findViewById(R.id.btn_login).setVisibility(View.VISIBLE);
-            Toast.makeText(this, "You're Back Online", Toast.LENGTH_SHORT).show();
-        } else if (mode == Const.OFFLINE) {
-            findViewById(R.id.btn_OfflineMode).setVisibility(View.VISIBLE);
-            findViewById(R.id.signInButton).setVisibility(View.INVISIBLE);
-            findViewById(R.id.btn_register).setVisibility(View.INVISIBLE);
-            findViewById(R.id.btn_login).setVisibility(View.INVISIBLE);
-            Toast.makeText(this, "You're Offline", Toast.LENGTH_SHORT).show();
+        if (mode == Const.ONLINE)
+            offlineDialog.dismiss();
+        else if (mode == Const.OFFLINE) {
+            offlineDialog.show();
+            btnOfflineMode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, OnePlayerActivity.class);
+                    intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, false);
+                    startActivity(intent);
+                }
+            });
         }
     }
 
@@ -370,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
 
     public void onClickOfflineMode (View v){
         Intent intent = new Intent(this, OnePlayerActivity.class);
-        intent.putExtra(Const.INTENT_EXTRA_KEY_CONNECTIVITY ,Const.OFFLINE);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE ,false);
         startActivity(intent);
     }
 }

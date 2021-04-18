@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Master Mind"
-        android:textColor="@color/colorTWhite"
+        android:textColor="@color/colorWhite"
         android:textSize="50sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
@@ -61,22 +61,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_register" />
-
-    <Button
-        android:id="@+id/btn_OfflineMode"
-        android:layout_width="250dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:layout_margin="4dp"
-        android:layout_marginStart="80dp"
-        android:background="@drawable/main_design"
-        android:onClick="onClickOfflineMode"
-        android:text="@string/offline_mode"
-        android:textAllCaps="false"
-        android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent "
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_howToPlay" />
 
     <Button
         android:id="@+id/btn_howToPlay"

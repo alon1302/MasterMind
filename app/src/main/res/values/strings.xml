@@ -25,4 +25,7 @@
     <string name="reveal_one_peg">Reveal One Peg -</string>
     <string name="your_opponent_wants_rematch">Your Opponent Wants Rematch</string>
     <string name="offline_mode">Offline Mode</string>
+    <string name="you_are_offline_please_reconnect">You Are Offline</string>
+    <string name="please_reconnect_to_the_internet">Please reconnect to the internet</string>
+    <string name="play_offline_mode">Play Offline Mode</string>
 </resources>

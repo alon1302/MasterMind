@@ -47,18 +47,18 @@ public class WinActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
 
-    int connectivityMode;
+    boolean isOnline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_win);
 
-        connectivityMode = getIntent().getIntExtra(Const.INTENT_EXTRA_KEY_CONNECTIVITY,Const.OFFLINE);
+        isOnline = getIntent().getBooleanExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, false);
 
 
 
-        if (connectivityMode == Const.ONLINE) {
+        if (isOnline) {
             currentUser = CurrentUser.getInstance();
             profileImage = findViewById(R.id.profile_image);
             calculateCoins();
@@ -120,9 +120,8 @@ public class WinActivity extends AppCompatActivity {
 
     public void onClickHome(View view) {
         Intent intent = new Intent(this,MainActivity.class);
-        if (connectivityMode == Const.ONLINE) {
+        if (isOnline)
             intent = new Intent(this, HomeActivity.class);
-        }
         startActivity(intent);
         finish();
     }
@@ -133,13 +132,12 @@ public class WinActivity extends AppCompatActivity {
         seconds = intent.getLongExtra(Const.INTENT_EXTRA_KEY_SECONDS, 0);
         time = intent.getLongExtra(Const.INTENT_EXTRA_KEY_TIME, 0);
         tv_time.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
-        if (connectivityMode == Const.ONLINE) {
+        if (isOnline) {
             tv_name.setText(currentUser.getName());
             Glide.with(this).load(currentUser.getImgUrl()).into(profileImage);
             addRecord();
-        } else {
+        } else
             tv_name.setText("");
-        }
     }
 
     private void addRecord() {
@@ -152,9 +150,9 @@ public class WinActivity extends AppCompatActivity {
                 for (DataSnapshot dSnapshot: snapshot.getChildren())
                     records.add(dSnapshot.getValue(Record.class));
                 ArrayList<Record> recordsSorted = sortAndAdd(records,record);
-                int currRecord = recordsSorted.indexOf(record);
                 HashMap<String,Object> hashMap = getSortedMap(recordsSorted);
                 FirebaseDatabase.getInstance().getReference().child(Const.RECORDS_IN_FIREBASE).setValue(hashMap);
+                int currRecord = recordsSorted.indexOf(record);
                 //recyclerView.smoothScrollToPosition(currRecord);
             }
 
