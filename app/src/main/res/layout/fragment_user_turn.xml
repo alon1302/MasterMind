@@ -11,25 +11,26 @@
         android:id="@+id/user_multi_img"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_marginTop="8dp"
         android:src="@color/colorWhite"
         app:civ_border_color="@color/colorBlack"
         app:civ_border_width="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/user_multi_chronometer"
-        app:layout_constraintEnd_toStartOf="@+id/user_multi_chronometer"
+        app:layout_constraintEnd_toStartOf="@+id/btn_Music"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/user_multi_chronometer" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/user_multi_linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/game_design"
         android:orientation="horizontal"
         android:padding="1.5dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_multi_chronometer">
+        app:layout_constraintTop_toBottomOf="@+id/user_multi_img">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_multi_hidden0"
@@ -79,17 +80,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/user_multi_linearLayout2"
         app:layout_constraintTop_toTopOf="@+id/user_multi_linearLayout2" />
-
-    <Chronometer
-        android:id="@+id/user_multi_chronometer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/colorBlack"
-        android:textSize="45sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_multi_recyclerView"
@@ -196,10 +186,11 @@
         android:layout_height="55dp"
         android:layout_gravity="center"
         android:src="@drawable/ic_baseline_music_note_24"
-        app:layout_constraintBottom_toBottomOf="@+id/user_multi_chronometer"
+        app:layout_constraintBottom_toBottomOf="@+id/user_multi_img"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/user_multi_chronometer"
-        app:layout_constraintTop_toTopOf="@+id/user_multi_chronometer"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/user_multi_img"
+        app:layout_constraintTop_toTopOf="@+id/user_multi_img"
         app:tint="@color/colorBlack" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
