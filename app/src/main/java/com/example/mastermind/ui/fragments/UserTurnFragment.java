@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,7 +29,6 @@ import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.model.serviceAndBroadcast.BackMusicService;
 import com.example.mastermind.model.theme.Themes;
-import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.example.mastermind.ui.adapters.AdapterRows;
 import com.google.firebase.database.DataSnapshot;
@@ -86,8 +84,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         code = bundle.getString(Const.INTENT_EXTRA_KEY_CODE);
         hiddenRow = new GameRow();
 
-        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        int useIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
+        int useIndex =Themes.getInstance(requireActivity().getApplicationContext()).getCurrentThemeIndex();
         int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
         createColorsMap();

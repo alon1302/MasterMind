@@ -1,5 +1,6 @@
 package com.example.mastermind.model.theme;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -12,44 +13,94 @@ import java.util.ArrayList;
 public class Themes {
 
     private static Themes instance = null;
-    private ArrayList<Theme> allThemes = new ArrayList<>();
+    private final ArrayList<Theme> allThemes = new ArrayList<>();
     private Context context;
-    private Themes(){
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
+    private int currentThemeIndex;
+
+    private Themes() {
     }
 
-    public static Themes getInstance(Context context){
-        if (instance == null){
+    @SuppressLint("CommitPrefEdits")
+    public static Themes getInstance(Context context) {
+        if (instance == null) {
             instance = new Themes();
             instance.setContext(context);
+            instance.sharedPreferences = context.getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
+            instance.editor = instance.sharedPreferences.edit();
             instance.loadThemes();
         }
         return instance;
     }
 
-    private void loadThemes(){
-        allThemes.add(0, new Theme(R.color.transparent, true));
-        allThemes.add(1, new Theme(R.drawable.smiley, false));
-        allThemes.add(2, new Theme(R.drawable.basketball, false));
-        allThemes.add(3, new Theme(R.drawable.football, false));
-        allThemes.add(4, new Theme(R.drawable.star, false));
-        allThemes.add(5, new Theme(R.drawable.pokeball, false));
-        allThemes.add(6, new Theme(R.drawable.heart, false));
-        allThemes.add(7, new Theme(R.drawable.flower, false));
-        allThemes.add(8, new Theme(R.drawable.car, false));
-        allThemes.add(9, new Theme(R.drawable.plane, false));
-        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("" + 0, true);
+    private void loadThemes() {
+        if (!sharedPreferences.contains("" + 0) || !sharedPreferences.getBoolean("" + 0, false)) {
+            editor.putBoolean("" + 0, true);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            allThemes.add(i, getTheme(i, sharedPreferences.getBoolean("" + i, false)));
+        }
+
         if (!sharedPreferences.contains(Const.SHARED_PREFERENCES_KEY_INDEX))
             editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
+
+        currentThemeIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
+
         editor.apply();
+    }
+
+    private Theme getTheme(int index, boolean isOpen) {
+        switch (index) {
+            default:
+                return null;
+            case 0:
+                return new Theme(R.color.transparent, isOpen);
+            case 1:
+                return new Theme(R.drawable.smiley, isOpen);
+            case 2:
+                return new Theme(R.drawable.basketball, isOpen);
+            case 3:
+                return new Theme(R.drawable.football, isOpen);
+            case 4:
+                return new Theme(R.drawable.star, isOpen);
+            case 5:
+                return new Theme(R.drawable.pokeball, isOpen);
+            case 6:
+                return new Theme(R.drawable.heart, isOpen);
+            case 7:
+                return new Theme(R.drawable.flower, isOpen);
+            case 8:
+                return new Theme(R.drawable.car, isOpen);
+            case 9:
+                return new Theme(R.drawable.plane, isOpen);
+        }
     }
 
     private void setContext(Context context) {
         this.context = context;
     }
 
+    public void openATheme(int index) {
+        editor.putBoolean("" + index, true);
+        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
+        getAllThemes().get(index).setOpened(true);
+        currentThemeIndex = index;
+        editor.apply();
+    }
+
+    public void setCurrentThemeIndex(int index){
+        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
+        editor.apply();
+        currentThemeIndex = index;
+    }
+
     public ArrayList<Theme> getAllThemes() {
         return allThemes;
+    }
+
+    public int getCurrentThemeIndex() {
+        return currentThemeIndex;
     }
 }

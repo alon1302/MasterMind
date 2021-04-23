@@ -1,5 +1,6 @@
 package com.example.mastermind.ui.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,6 +21,8 @@ import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.theme.Themes;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.ui.adapters.AdapterThemes;
+
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -54,18 +57,15 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack 
         editor = sharedPreferences.edit();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onCallBack(final int action, final Object value) {
         final int index = action;
         Drawable theme = (Drawable) value;
-        if (sharedPreferences.getBoolean("" + index, false)){
-            editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
-            editor.apply();
-            adapter.notifyDataSetChanged();
-        } else {
+        if (!Themes.getInstance(ThemesActivity.this.getApplicationContext()).getAllThemes().get(index).isOpened()) {
             final Dialog d = new Dialog(this);
             d.setContentView(R.layout.dialog_get_theme);
-            d.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            Objects.requireNonNull(d.getWindow()).setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             final TextView coins = d.findViewById(R.id.textView_coinsGetTheme);
             coins.setText("" + CurrentUser.getUserCoins());
             CircleImageView[] images = new CircleImageView[6];
@@ -77,8 +77,10 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack 
             images[5] = d.findViewById(R.id.light);
             for (int i = 0; i < images.length; i++)
                 images[i].setForeground(theme);
+
             d.setCancelable(true);
             d.show();
+
             d.findViewById(R.id.buyThemeButton).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -87,15 +89,17 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack 
                         Themes.getInstance(ThemesActivity.this.getApplicationContext()).getAllThemes().get(index).setOpened(true);
                         d.dismiss();
                         textViewCoins.setText("" + CurrentUser.getUserCoins());
-                        editor.putBoolean("" + index, true);
-                        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
-                        editor.apply();
+                        Themes.getInstance(ThemesActivity.this).openATheme(index);
                         adapter.notifyDataSetChanged();
                         recyclerView.startLayoutAnimation();
                     } else
                         Toast.makeText(ThemesActivity.this, "You Have Not Enough Coins", Toast.LENGTH_SHORT).show();
                 }
             });
+        }else {
+            Themes.getInstance(ThemesActivity.this.getApplicationContext()).setCurrentThemeIndex(index);
         }
+        adapter.notifyDataSetChanged();
+        //}
     }
 }

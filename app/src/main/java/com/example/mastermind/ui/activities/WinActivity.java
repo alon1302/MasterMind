@@ -119,7 +119,7 @@ public class WinActivity extends AppCompatActivity {
     }
 
     public void onClickHome(View view) {
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         if (isOnline)
             intent = new Intent(this, HomeActivity.class);
         startActivity(intent);

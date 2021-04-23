@@ -40,7 +40,7 @@ public class FindEnemyManager extends MultiPlayerManager{
                     FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(player).setValue(CurrentUser.getInstance());
                     FirebaseDatabase.getInstance().getReference().child(Const.AVAILABLE_ROOMS_IN_FIREBASE).child(code).setValue(code);
                     MethodCallBack methodCallBack = (MethodCallBack)context;
-                    methodCallBack.onCallBack(2, null);
+                    methodCallBack.onCallBack(Const.ACTION_ROOM_CREATED, null);
                     codeCreated = true;
                 }
             }

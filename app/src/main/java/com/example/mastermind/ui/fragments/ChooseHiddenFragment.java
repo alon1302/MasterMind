@@ -2,7 +2,6 @@ package com.example.mastermind.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -22,7 +21,6 @@ import com.example.mastermind.model.game.GamePeg;
 import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.theme.Themes;
-import com.example.mastermind.model.user.CurrentUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,15 +56,14 @@ public class ChooseHiddenFragment extends Fragment {
         this.colors = new String[]{Const.RED_COLOR_IN_GAME, Const.GREEN_COLOR_IN_GAME, Const.BLUE_COLOR_IN_GAME, Const.ORANGE_COLOR_IN_GAME, Const.YELLOW_COLOR_IN_GAME, Const.LIGHT_COLOR_IN_GAME,};
         context = requireActivity();
 
-        SharedPreferences sharedPreferences = requireActivity().getApplicationContext().getSharedPreferences( Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        int useIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
+        int useIndex = Themes.getInstance(requireActivity().getApplicationContext()).getCurrentThemeIndex();
         int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
         createColorsMap();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_choose_hidden, container, false);
         createButtons();
@@ -83,7 +80,7 @@ public class ChooseHiddenFragment extends Fragment {
         return view;
     }
 
-    public void createColorsMap(){
+    public void createColorsMap() {
         colorsMap = new HashMap<>();
         colorsMap.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
         colorsMap.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
@@ -106,7 +103,7 @@ public class ChooseHiddenFragment extends Fragment {
         }
     }
 
-    public void startTimer(){
+    public void startTimer() {
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
             public void onTick(long l) {
@@ -118,7 +115,7 @@ public class ChooseHiddenFragment extends Fragment {
             public void onFinish() {
                 randomizeHidden();
                 String row = hidden.getNumStringRow();
-                MethodCallBack methodCallBack = (MethodCallBack)context;
+                MethodCallBack methodCallBack = (MethodCallBack) context;
                 methodCallBack.onCallBack(Const.ACTION_HIDDEN_TO_FIREBASE, row);
             }
         }.start();
@@ -134,16 +131,16 @@ public class ChooseHiddenFragment extends Fragment {
         countDownText.setText(timer);
     }
 
-    private void onClickSubmit(){
-        if (hidden.isFull()){
+    private void onClickSubmit() {
+        if (hidden.isFull()) {
             countDownTimer.cancel();
             String row = hidden.getNumStringRow();
-            MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
+            MethodCallBack methodCallBack = (MethodCallBack) requireActivity();
             methodCallBack.onCallBack(4, row);
-        }
-        else
+        } else
             Toast.makeText(requireActivity(), "choose your hidden row", Toast.LENGTH_SHORT).show();
     }
+
     public void createRow() {
         hidden = new GameRow();
         hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
@@ -162,9 +159,9 @@ public class ChooseHiddenFragment extends Fragment {
         }
     }
 
-    public void updateUI(){
+    public void updateUI() {
         String[] stringGameRow = hidden.getStringRow();
-        for (int i = 0; i < Const.ROW_SIZE;i++){
+        for (int i = 0; i < Const.ROW_SIZE; i++) {
             if (!stringGameRow[i].equals(Const.NULL_COLOR_IN_GAME))
                 hiddenRowImages[i].setForeground(theme);
             else

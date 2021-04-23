@@ -141,6 +141,9 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         WaitingForOpponentFragment waitingForOpponentFragment = new WaitingForOpponentFragment();
         Bundle bundle = new Bundle();
         bundle.putString(Const.INTENT_EXTRA_KEY_CODE, multiPlayerManager.getCode());
+        if (getIntent().getStringExtra(Const.INTENT_EXTRA_KEY_TYPE).equals(Const.INTENT_EXTRA_VALUE_FIND_ENEMY)){
+            bundle.putBoolean(Const.INTENT_EXTRA_KEY_TYPE,false);
+        }
         waitingForOpponentFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, waitingForOpponentFragment).commit();
     }

@@ -43,6 +43,12 @@ public class WaitingForOpponentFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_waiting_for_opponent, container, false);
         ((TextView)(view.findViewById(R.id.codeTv))).setText("Game Code: " + code);
         this.thisActivity = requireActivity();
+
+        if (getArguments()!= null && getArguments().containsKey(Const.INTENT_EXTRA_KEY_TYPE) && !getArguments().getBoolean(Const.INTENT_EXTRA_KEY_TYPE))
+            ((TextView)(view.findViewById(R.id.codeTv))).setText("Searching Opponent...");
+
+
+
         FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.PLAYER1_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

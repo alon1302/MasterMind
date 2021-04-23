@@ -5,7 +5,6 @@ import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -97,8 +96,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         recyclerView.setAdapter(adapterRows);
         current = findViewById(R.id.currentSelection);
 
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        int useIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
+        int useIndex = Themes.getInstance(getApplicationContext()).getCurrentThemeIndex();
         int themeImg = Themes.getInstance(getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
 

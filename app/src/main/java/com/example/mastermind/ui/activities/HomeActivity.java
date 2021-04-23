@@ -171,7 +171,7 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
 
 
     public void onClickLogOut(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         mAuth.signOut();
         CurrentUser.logout();
         startActivity(intent);

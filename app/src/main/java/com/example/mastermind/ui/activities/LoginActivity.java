@@ -49,7 +49,7 @@ import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements ImageUploadListener, MethodCallBack {
+public class LoginActivity extends AppCompatActivity implements ImageUploadListener, MethodCallBack {
 
     private static final int PICK_IMAGE = 100;
     private static final int GOOGLE = 1;
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
         btn_howToPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, HowToPlayActivity.class);
+                Intent intent = new Intent(LoginActivity.this, HowToPlayActivity.class);
                 startActivity(intent);
             }
         });
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(MainActivity.this, "Authentication succeed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Authentication succeed", Toast.LENGTH_SHORT).show();
                             CurrentUser.logout();
                             myRef.child(Const.USERS_IN_FIREBASE).child(currentUser.getUid()).setValue(CurrentUser.getInstance());
                             openHomeActivity();
@@ -364,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements ImageUploadListen
             btnOfflineMode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(MainActivity.this, OnePlayerActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, OnePlayerActivity.class);
                     intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, false);
                     startActivity(intent);
                 }
