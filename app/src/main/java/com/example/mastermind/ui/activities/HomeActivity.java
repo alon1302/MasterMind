@@ -10,6 +10,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -76,6 +77,7 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
     public void createOfflineDialog(){
         offlineDialog = new Dialog(this);
         offlineDialog.setContentView(R.layout.dialog_offline);
+        offlineDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         btnOfflineMode = offlineDialog.findViewById(R.id.offlineModeBtn);
         offlineDialog.setCancelable(false);
     }

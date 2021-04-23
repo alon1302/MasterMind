@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -318,6 +319,7 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
         register_dialog.setContentView(R.layout.dialog_register);
         register_dialog.setCancelable(true);
         offlineDialog = new Dialog(this);
+        offlineDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         offlineDialog.setContentView(R.layout.dialog_offline);
         btnOfflineMode = offlineDialog.findViewById(R.id.offlineModeBtn);
         offlineDialog.setCancelable(false);
