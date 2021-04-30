@@ -57,7 +57,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         choosed = false;
 
         d = new Dialog(this);
-        d.setContentView(R.layout.wait_to_opponent_dialog);
+        d.setContentView(R.layout.waiting_dialog);
         d.setCancelable(false);
         Objects.requireNonNull(d.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
         winner = GAME_NOT_OVER;

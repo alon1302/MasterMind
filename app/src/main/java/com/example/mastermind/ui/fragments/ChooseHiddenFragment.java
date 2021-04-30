@@ -23,7 +23,6 @@ import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.theme.Themes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -46,7 +45,6 @@ public class ChooseHiddenFragment extends Fragment {
     private long timeLeftInMillis = 30000;
 
     private Drawable theme;
-    private HashMap<String, Integer> colorsMap;
 
 
     @Override
@@ -59,7 +57,6 @@ public class ChooseHiddenFragment extends Fragment {
         int useIndex = Themes.getInstance(requireActivity().getApplicationContext()).getCurrentThemeIndex();
         int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
-        createColorsMap();
     }
 
     @Override
@@ -80,24 +77,12 @@ public class ChooseHiddenFragment extends Fragment {
         return view;
     }
 
-    public void createColorsMap() {
-        colorsMap = new HashMap<>();
-        colorsMap.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
-        colorsMap.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
-        colorsMap.put(Const.GREEN_COLOR_IN_GAME, R.color.colorGreen);
-        colorsMap.put(Const.BLUE_COLOR_IN_GAME, R.color.colorBlue);
-        colorsMap.put(Const.ORANGE_COLOR_IN_GAME, R.color.colorOrange);
-        colorsMap.put(Const.YELLOW_COLOR_IN_GAME, R.color.colorYellow);
-        colorsMap.put(Const.LIGHT_COLOR_IN_GAME, R.color.colorLight);
-    }
-
     public void randomizeHidden() {
         ArrayList<Integer> arrayList = new ArrayList<>();
         for (int i = 0; i < Const.ROW_SIZE; i++) {
             int num = rnd.nextInt(6);
-            while (arrayList.contains(num)) {
+            while (arrayList.contains(num))
                 num = rnd.nextInt(6);
-            }
             hidden.addPeg(new GamePeg(this.colors[num], i));
             arrayList.add(num);
         }
@@ -166,7 +151,7 @@ public class ChooseHiddenFragment extends Fragment {
                 hiddenRowImages[i].setForeground(theme);
             else
                 hiddenRowImages[i].setForeground(null);
-            hiddenRowImages[i].setImageResource(colorsMap.get(stringGameRow[i]));
+            hiddenRowImages[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(stringGameRow[i]));
         }
     }
 
@@ -229,7 +214,7 @@ public class ChooseHiddenFragment extends Fragment {
     }
 
     public void updateCurrImg() {
-        current.setImageResource(colorsMap.get(currentSelection));
+        current.setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(currentSelection));
         if (!currentSelection.equals(Const.NULL_COLOR_IN_GAME))
             current.setForeground(theme);
         else

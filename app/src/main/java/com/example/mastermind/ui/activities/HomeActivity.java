@@ -1,13 +1,11 @@
 package com.example.mastermind.ui.activities;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
@@ -48,6 +46,7 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
     private ImageView iv_musicOnOff;
 
     boolean playing;
+    Intent service;
 
     Dialog offlineDialog;
     Button btnOfflineMode;
@@ -85,8 +84,9 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
     @Override
     protected void onStart() {
         super.onStart();
+        service = new Intent(getApplicationContext(), BackMusicService.class);
         iv_musicOnOff = findViewById(R.id.btn_Music);
-        if (isMyServiceRunning(BackMusicService.class)){
+        if (BackMusicService.isPlaying){
             playing = true;
             iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
         } else {
@@ -97,17 +97,16 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
             @Override
             public void onClick(View v) {
                 if (!playing){
-                    startService(new Intent(HomeActivity.this, BackMusicService.class));
+                    startService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
                     playing = true;
                 } else {
-                    stopService(new Intent(HomeActivity.this, BackMusicService.class));
+                    stopService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
                     playing = false;
                 }
             }
         });
-
     }
 
     private void toggleIsOnline(int mode){
@@ -202,13 +201,6 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
         }
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
-            if (serviceClass.getName().equals(service.service.getClassName()))
-                return true;
-        return false;
-    }
 
     @Override
     protected void onStop() {
@@ -224,10 +216,10 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this,BackMusicService.class));
-        unregisterReceiver(networkChangeReceiver);
+        if (!BackMusicService.isPlaying) {
+            stopService(service);
+        }
     }
-
     @Override
     public void onCallBack(int action, Object value) {
         toggleIsOnline(action);

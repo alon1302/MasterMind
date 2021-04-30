@@ -1,6 +1,5 @@
 package com.example.mastermind.ui.fragments;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -9,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -34,7 +32,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,15 +50,14 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
 
     CircleImageView[] hiddenRowImages;
 
+    Intent service;
+
     String code, player;
     private Context context;
 
-    ValueEventListener valueEventListener;
     private GameRow hiddenRow;
 
     private Drawable theme;
-    private HashMap<String, Integer> colors;
-    private HashMap<Character, String> charToColorMap;
 
     private ImageView iv_musicOnOff;
     private boolean playing;
@@ -78,13 +74,11 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         int useIndex =Themes.getInstance(requireActivity().getApplicationContext()).getCurrentThemeIndex();
         int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
-        createColorsMap();
-        createCharToColorMap();
 
         gameManager = new GameManager();
         hiddenRow = new GameRow();
         for (int i = 0; i < 4; i++)
-            hiddenRow.addPeg(new GamePeg(charToColorMap.get(hidden.charAt(i)), i));
+            hiddenRow.addPeg(new GamePeg((String) Const.CHAR_TO_STRING_MAP.get(hidden.charAt(i)), i));
         gameManager.setHidden(hiddenRow);
         gameManager = new GameManager();
         gameRows = gameManager.getGameRows();
@@ -134,8 +128,9 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
     @Override
     public void onStart() {
         super.onStart();
+        service = new Intent(requireActivity().getApplicationContext(), BackMusicService.class);
         iv_musicOnOff = view.findViewById(R.id.btn_Music);
-        if (isMyServiceRunning(BackMusicService.class)){
+        if (BackMusicService.isPlaying){
             playing = true;
             iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
         } else {
@@ -146,33 +141,24 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
             @Override
             public void onClick(View v) {
                 if (!playing){
-                    getActivity().startService(new Intent(getActivity(), BackMusicService.class));
+                    requireActivity().startService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
                     playing = true;
-                    Toast.makeText(getActivity(), "Service Start", Toast.LENGTH_SHORT).show();
                 } else {
-                    getActivity().stopService(new Intent(getActivity(), BackMusicService.class));
+                    requireActivity().stopService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
                     playing = false;
-                    Toast.makeText(getActivity(), "Service Stop", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
-            if (serviceClass.getName().equals(service.service.getClassName()))
-                return true;
-        return false;
-    }
 
     public GameRow convertStringToGameRow(String row) {
         GameRow gameRow = new GameRow();
         if (row != null)
             for (int i = 0; i < Const.ROW_SIZE; i++)
-                gameRow.addPeg(new GamePeg(charToColorMap.get(row.charAt(i)), i));
+                gameRow.addPeg(new GamePeg((String) Const.CHAR_TO_STRING_MAP.get(row.charAt(i)), i));
         return gameRow;
     }
 
@@ -186,30 +172,8 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         for (int i = 0; i < hiddenRowImages.length; i++) {
             hiddenRowImages[i].setClickable(false);
             this.hiddenRowImages[i].setForeground(theme);
-            this.hiddenRowImages[i].setImageResource(colors.get(hiddenColors[i]));
+            this.hiddenRowImages[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(hiddenColors[i]));
         }
-    }
-
-    private void createCharToColorMap() {
-        charToColorMap = new HashMap<>();
-        charToColorMap.put(Const.NULL_CHAR_IN_GAME, Const.NULL_COLOR_IN_GAME);
-        charToColorMap.put(Const.RED_CHAR_IN_GAME, Const.RED_COLOR_IN_GAME);
-        charToColorMap.put(Const.GREEN_CHAR_IN_GAME, Const.GREEN_COLOR_IN_GAME);
-        charToColorMap.put(Const.BLUE_CHAR_IN_GAME, Const.BLUE_COLOR_IN_GAME);
-        charToColorMap.put(Const.ORANGE_CHAR_IN_GAME, Const.ORANGE_COLOR_IN_GAME);
-        charToColorMap.put(Const.YELLOW_CHAR_IN_GAME, Const.YELLOW_COLOR_IN_GAME);
-        charToColorMap.put(Const.LIGHT_CHAR_IN_GAME, Const.LIGHT_COLOR_IN_GAME);
-    }
-
-    public void createColorsMap() {
-        colors = new HashMap<>();
-        colors.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
-        colors.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
-        colors.put(Const.GREEN_COLOR_IN_GAME, R.color.colorGreen);
-        colors.put(Const.BLUE_COLOR_IN_GAME, R.color.colorBlue);
-        colors.put(Const.ORANGE_COLOR_IN_GAME, R.color.colorOrange);
-        colors.put(Const.YELLOW_COLOR_IN_GAME, R.color.colorYellow);
-        colors.put(Const.LIGHT_COLOR_IN_GAME, R.color.colorLight);
     }
 
     @Override
@@ -220,5 +184,13 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
     @Override
     public void sendHidden(String hidden) {
         this.hidden = hidden;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (!BackMusicService.isPlaying) {
+            requireActivity().stopService(service);
+        }
     }
 }

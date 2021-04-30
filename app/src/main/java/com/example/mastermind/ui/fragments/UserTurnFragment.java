@@ -1,7 +1,6 @@
 package com.example.mastermind.ui.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -37,7 +36,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -55,9 +53,6 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
-    private HashMap<String, Integer> colors;
-
-    ValueEventListener valueEventListener;
 
     GameRow hiddenRow;
     String currentSelection = Const.NULL_COLOR_IN_GAME;
@@ -70,9 +65,9 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     private ImageView iv_musicOnOff;
     private boolean playing;
 
-    boolean isWaitingForWin;
+    Intent service;
+
     private Drawable theme;
-    private HashMap<Character, String> charToColorMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,8 +82,6 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         int useIndex =Themes.getInstance(requireActivity().getApplicationContext()).getCurrentThemeIndex();
         int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
-        createColorsMap();
-        createCharToColorMap();
 
         String opponent;
         if (player.equals(Const.PLAYER1))
@@ -101,7 +94,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
                 if (snapshot.exists()) {
                     hiddenRow= new GameRow();
                     for (int i = 0; i < Const.ROW_SIZE; i++)
-                        hiddenRow.addPeg(new GamePeg(charToColorMap.get(snapshot.getValue(String.class).charAt(i)), i));
+                        hiddenRow.addPeg(new GamePeg((String) Const.CHAR_TO_STRING_MAP.get(snapshot.getValue(String.class).charAt(i)), i));
                     gameManager.setHidden(hiddenRow);
                 }
             }
@@ -139,8 +132,9 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     @Override
     public void onStart() {
         super.onStart();
+        service = new Intent(requireActivity().getApplicationContext(), BackMusicService.class);
         iv_musicOnOff = view.findViewById(R.id.btn_Music);
-        if (isMyServiceRunning(BackMusicService.class)){
+        if (BackMusicService.isPlaying){
             playing = true;
             iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
         } else {
@@ -151,27 +145,18 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
             @Override
             public void onClick(View v) {
                 if (!playing){
-                    getActivity().startService(new Intent(getActivity(), BackMusicService.class));
+                    requireActivity().startService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
                     playing = true;
-                    Toast.makeText(getActivity(), "Service Start", Toast.LENGTH_SHORT).show();
                 } else {
-                    getActivity().stopService(new Intent(getActivity(), BackMusicService.class));
+                    requireActivity().stopService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
                     playing = false;
-                    Toast.makeText(getActivity(), "Service Stop", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
-            if (serviceClass.getName().equals(service.service.getClassName()))
-                return true;
-        return false;
-    }
 
     public void onClickSubmit() {
         if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
@@ -200,7 +185,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         hiddenRowImages[3] = view.findViewById(R.id.user_multi_hidden3);
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenColors.length; i++) {
-            this.hiddenRowImages[i].setImageResource(colors.get(hiddenColors[i]));
+            this.hiddenRowImages[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(hiddenColors[i]));
             this.hiddenRowImages[i].setForeground(theme);
             this.hiddenRowImages[i].setVisibility(View.INVISIBLE);
         }
@@ -227,7 +212,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     };
 
     public void updateCurrImg() {
-        current.setImageResource(colors.get(currentSelection));
+        current.setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(currentSelection));
         if (!currentSelection.equals(Const.NULL_COLOR_IN_GAME))
             current.setForeground(theme);
         else
@@ -264,28 +249,6 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         });
     }
 
-    private void createCharToColorMap() {
-        charToColorMap = new HashMap<>();
-        charToColorMap.put(Const.NULL_CHAR_IN_GAME, Const.NULL_COLOR_IN_GAME);
-        charToColorMap.put(Const.RED_CHAR_IN_GAME, Const.RED_COLOR_IN_GAME);
-        charToColorMap.put(Const.GREEN_CHAR_IN_GAME, Const.GREEN_COLOR_IN_GAME);
-        charToColorMap.put(Const.BLUE_CHAR_IN_GAME, Const.BLUE_COLOR_IN_GAME);
-        charToColorMap.put(Const.ORANGE_CHAR_IN_GAME, Const.ORANGE_COLOR_IN_GAME);
-        charToColorMap.put(Const.YELLOW_CHAR_IN_GAME, Const.YELLOW_COLOR_IN_GAME);
-        charToColorMap.put(Const.LIGHT_CHAR_IN_GAME, Const.LIGHT_COLOR_IN_GAME);
-    }
-
-    public void createColorsMap(){
-        colors = new HashMap<>();
-        colors.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
-        colors.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
-        colors.put(Const.GREEN_COLOR_IN_GAME, R.color.colorGreen);
-        colors.put(Const.BLUE_COLOR_IN_GAME, R.color.colorBlue);
-        colors.put(Const.ORANGE_COLOR_IN_GAME, R.color.colorOrange);
-        colors.put(Const.YELLOW_COLOR_IN_GAME, R.color.colorYellow);
-        colors.put(Const.LIGHT_COLOR_IN_GAME, R.color.colorLight);
-    }
-
     @Override
     public void onPositionClicked(int position) {
         String lastSelection = gameRows.get(gameManager.getTurn() - 1).getColorByPosition(position);
@@ -300,5 +263,12 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (!BackMusicService.isPlaying) {
+            requireActivity().stopService(service);
+        }
     }
 }

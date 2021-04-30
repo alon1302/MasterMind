@@ -1,9 +1,7 @@
 package com.example.mastermind.ui.activities;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -33,7 +31,6 @@ import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.ui.adapters.AdapterRows;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -54,13 +51,14 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private GameManager gameManager;
 
     String currentSelection = Const.NULL_COLOR_IN_GAME;
-    private HashMap<String, Integer> colors;
 
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
 
     private long timeInMillis;
     private long minutes, seconds;
+
+    Intent service;
 
     private TextView tv_coins;
     private Drawable theme;
@@ -76,7 +74,6 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one_player);
         isOnline = getIntent().getBooleanExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE,false);
-        createColorsMap();
         chronometer = findViewById(R.id.chronometer);
 
         if (isOnline) {
@@ -108,8 +105,10 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     @Override
     public void onStart() {
         super.onStart();
+
+        service = new Intent(getApplicationContext(), BackMusicService.class);
         iv_musicOnOff = findViewById(R.id.btn_Music);
-        if (isMyServiceRunning(BackMusicService.class)){
+        if (BackMusicService.isPlaying){
             playing = true;
             iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
         } else {
@@ -120,35 +119,17 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
             @Override
             public void onClick(View v) {
                 if (!playing){
-                    startService(new Intent(OnePlayerActivity.this, BackMusicService.class));
+                    startService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
                     playing = true;
                 } else {
-                    stopService(new Intent(OnePlayerActivity.this, BackMusicService.class));
+                    stopService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
                     playing = false;
                 }
             }
         });
-    }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
-            if (serviceClass.getName().equals(service.service.getClassName()))
-                return true;
-        return false;
-    }
-
-    public void createColorsMap(){
-        colors = new HashMap<>();
-        colors.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
-        colors.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
-        colors.put(Const.GREEN_COLOR_IN_GAME, R.color.colorGreen);
-        colors.put(Const.BLUE_COLOR_IN_GAME, R.color.colorBlue);
-        colors.put(Const.ORANGE_COLOR_IN_GAME, R.color.colorOrange);
-        colors.put(Const.YELLOW_COLOR_IN_GAME, R.color.colorYellow);
-        colors.put(Const.LIGHT_COLOR_IN_GAME, R.color.colorLight);
     }
 
     @SuppressLint("SetTextI18n")
@@ -290,7 +271,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     }
 
     public void updateCurrImg() {
-        current.setImageResource(colors.get(currentSelection));
+        current.setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(currentSelection));
         if (!currentSelection.equals(Const.NULL_COLOR_IN_GAME))
             current.setForeground(theme);
         else
@@ -307,8 +288,16 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenColors.length; i++) {
             hiddenRowImages[i].setVisibility(View.INVISIBLE);
-            hiddenRowImages[i].setImageResource(colors.get(hiddenColors[i]));
+            hiddenRowImages[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(hiddenColors[i]));
             hiddenRowImages[i].setForeground(theme);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!BackMusicService.isPlaying) {
+            stopService(service);
         }
     }
 }

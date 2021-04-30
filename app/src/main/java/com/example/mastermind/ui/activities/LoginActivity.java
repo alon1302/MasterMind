@@ -77,7 +77,7 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         progressDialogUpload = new ProgressDialog(this, android.R.style.Theme_DeviceDefault_Dialog);
 

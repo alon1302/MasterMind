@@ -35,20 +35,40 @@ public class Themes {
     }
 
     private void loadThemes() {
-        if (!sharedPreferences.contains("" + 0) || !sharedPreferences.getBoolean("" + 0, false)) {
+        if (!sharedPreferences.contains("" + 0) || !sharedPreferences.getBoolean("" + 0, false))
             editor.putBoolean("" + 0, true);
-        }
-
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++)
             allThemes.add(i, getTheme(i, sharedPreferences.getBoolean("" + i, false)));
-        }
-
         if (!sharedPreferences.contains(Const.SHARED_PREFERENCES_KEY_INDEX))
             editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
-
         currentThemeIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
-
         editor.apply();
+    }
+
+    private void setContext(Context context) {
+        this.context = context;
+    }
+
+    public void openATheme(int index) {
+        editor.putBoolean("" + index, true);
+        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
+        getAllThemes().get(index).setOpened(true);
+        currentThemeIndex = index;
+        editor.apply();
+    }
+
+    public void setCurrentThemeIndex(int index){
+        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
+        editor.apply();
+        currentThemeIndex = index;
+    }
+
+    public ArrayList<Theme> getAllThemes() {
+        return allThemes;
+    }
+
+    public int getCurrentThemeIndex() {
+        return currentThemeIndex;
     }
 
     private Theme getTheme(int index, boolean isOpen) {
@@ -76,31 +96,5 @@ public class Themes {
             case 9:
                 return new Theme(R.drawable.plane, isOpen);
         }
-    }
-
-    private void setContext(Context context) {
-        this.context = context;
-    }
-
-    public void openATheme(int index) {
-        editor.putBoolean("" + index, true);
-        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
-        getAllThemes().get(index).setOpened(true);
-        currentThemeIndex = index;
-        editor.apply();
-    }
-
-    public void setCurrentThemeIndex(int index){
-        editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, index);
-        editor.apply();
-        currentThemeIndex = index;
-    }
-
-    public ArrayList<Theme> getAllThemes() {
-        return allThemes;
-    }
-
-    public int getCurrentThemeIndex() {
-        return currentThemeIndex;
     }
 }

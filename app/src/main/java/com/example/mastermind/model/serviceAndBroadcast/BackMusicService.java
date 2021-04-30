@@ -9,9 +9,11 @@ import androidx.annotation.Nullable;
 
 import com.example.mastermind.R;
 
+
 public class BackMusicService extends Service {
 
-    private MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer = null;
+    public static boolean isPlaying = false;
 
     @Nullable
     @Override
@@ -21,15 +23,23 @@ public class BackMusicService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mediaPlayer = MediaPlayer.create(this, R.raw.mastermind);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
-        return START_STICKY;
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(this, R.raw.mastermind);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.start();
+            isPlaying = true;
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mediaPlayer.stop();
+        if (mediaPlayer!=null){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+            isPlaying = false;
+        }
     }
 }

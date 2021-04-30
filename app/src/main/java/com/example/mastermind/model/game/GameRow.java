@@ -3,28 +3,20 @@ package com.example.mastermind.model.game;
 import com.example.mastermind.model.Const;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class GameRow {
 
     private GamePeg[] row;
-    private int currNum;
-    private HashMap<String, Character> colorToCharMap;
 
     public GameRow(){
         row = new GamePeg[Const.ROW_SIZE];
-        for (int i = 0; i < Const.ROW_SIZE; i++) {
+        for (int i = 0; i < Const.ROW_SIZE; i++)
             row[i] = new GamePeg(Const.NULL_COLOR_IN_GAME, i);
-        }
-        currNum = 0;
-        createMap();
     }
 
     public void addPeg(GamePeg peg) {
         if (this.exist(peg))
             removePeg(peg.getColor());
-        if (this.row[peg.getPosition()] == null)
-            this.currNum++;
         this.row[peg.getPosition()] = peg;
     }
 
@@ -83,7 +75,7 @@ public class GameRow {
             stringRow[i] = this.row[i].getColor();
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < Const.ROW_SIZE; i++)
-            s.append(colorToCharMap.get(stringRow[i]));
+            s.append(Const.STRING_TO_CHAR_MAP.get(stringRow[i]));
         return s.toString();
     }
 
@@ -94,19 +86,6 @@ public class GameRow {
     @Override
     public String toString() {
         return "GameRow{" +
-                "row=" + Arrays.toString(row) +
-                ", currNum=" + currNum +
-                '}';
-    }
-
-    private void createMap(){
-        colorToCharMap = new HashMap<>();
-        colorToCharMap.put(Const.NULL_COLOR_IN_GAME, Const.NULL_CHAR_IN_GAME);
-        colorToCharMap.put(Const.RED_COLOR_IN_GAME, Const.RED_CHAR_IN_GAME);
-        colorToCharMap.put(Const.BLUE_COLOR_IN_GAME, Const.BLUE_CHAR_IN_GAME);
-        colorToCharMap.put(Const.GREEN_COLOR_IN_GAME, Const.GREEN_CHAR_IN_GAME);
-        colorToCharMap.put(Const.ORANGE_COLOR_IN_GAME, Const.ORANGE_CHAR_IN_GAME);
-        colorToCharMap.put(Const.YELLOW_COLOR_IN_GAME, Const.YELLOW_CHAR_IN_GAME);
-        colorToCharMap.put(Const.LIGHT_COLOR_IN_GAME, Const.LIGHT_CHAR_IN_GAME);
+                "row=" + Arrays.toString(row) + '}';
     }
 }

@@ -21,7 +21,6 @@ import com.example.mastermind.model.theme.Themes;
 import com.example.mastermind.model.user.CurrentUser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -31,9 +30,6 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
     private Context context;
     public LinearLayout fullRow;
     boolean clickable;
-
-    private HashMap<String, Integer> colors;
-
     Drawable theme;
 
     public AdapterRows(ArrayList<GameRow> gameRows, ArrayList<CheckRow> checkRows, Context context, boolean clickable) {
@@ -41,24 +37,10 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         this.checkRows = checkRows;
         this.context = context;
         this.clickable = clickable;
-        createColorsMap();
         SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
         int useIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
         int themeImg = Themes.getInstance(context.getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = context.getResources().getDrawable(themeImg);
-    }
-
-    public void createColorsMap(){
-        colors = new HashMap<>();
-        colors.put(Const.NULL_COLOR_IN_GAME, R.color.colorTWhite);
-        colors.put(Const.BLACK_COLOR_IN_GAME, R.color.colorBlack);
-        colors.put(Const.WHITE_COLOR_IN_GAME, R.color.colorWhite);
-        colors.put(Const.RED_COLOR_IN_GAME, R.color.colorRed);
-        colors.put(Const.GREEN_COLOR_IN_GAME, R.color.colorGreen);
-        colors.put(Const.BLUE_COLOR_IN_GAME, R.color.colorBlue);
-        colors.put(Const.ORANGE_COLOR_IN_GAME, R.color.colorOrange);
-        colors.put(Const.YELLOW_COLOR_IN_GAME, R.color.colorYellow);
-        colors.put(Const.LIGHT_COLOR_IN_GAME, R.color.colorLight);
     }
 
     @NonNull
@@ -76,7 +58,7 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         String[] colorCheckRow = currCheckRow.getStringRow();
         colorCheckRow = sortCheckRow(colorCheckRow);
         for (int i = 0; i < Const.ROW_SIZE; i++) {
-            holder.check[i].setImageResource(colors.get(colorCheckRow[i]));
+            holder.check[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(colorCheckRow[i]));
             if (colorCheckRow[i].equals(Const.NULL_COLOR_IN_GAME))
                 holder.check[i].setVisibility(View.INVISIBLE);
             else
@@ -94,7 +76,7 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
                     }
                 });
             }
-            holder.game[i].setImageResource(colors.get(colorGameRow[i]));
+            holder.game[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(colorGameRow[i]));
             if (!colorGameRow[i].equals(Const.NULL_COLOR_IN_GAME))
                 holder.game[i].setForeground(theme);
             else

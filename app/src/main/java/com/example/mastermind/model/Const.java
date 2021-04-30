@@ -1,5 +1,9 @@
 package com.example.mastermind.model;
 
+import com.example.mastermind.R;
+
+import java.util.HashMap;
+
 public class Const {
 
     public static final String ROOMS_IN_FIREBASE = "Rooms";
@@ -103,5 +107,39 @@ public class Const {
     public static final int ONLINE = 0;
     public static final int OFFLINE = 1;
 
+    public static final HashMap STRING_TO_COLOR_MAP = new HashMap<String, Integer>()
+    {{
+        put(NULL_COLOR_IN_GAME, R.color.colorTWhite);
+        put(BLACK_COLOR_IN_GAME, R.color.colorBlack);
+        put(WHITE_COLOR_IN_GAME, R.color.colorWhite);
+        put(RED_COLOR_IN_GAME, R.color.colorRed);
+        put(GREEN_COLOR_IN_GAME, R.color.colorGreen);
+        put(BLUE_COLOR_IN_GAME, R.color.colorBlue);
+        put(ORANGE_COLOR_IN_GAME, R.color.colorOrange);
+        put(YELLOW_COLOR_IN_GAME, R.color.colorYellow);
+        put(LIGHT_COLOR_IN_GAME, R.color.colorLight);
+    }};
+
+    public static final HashMap CHAR_TO_STRING_MAP = new HashMap<Character, String>()
+    {{
+        put(NULL_CHAR_IN_GAME, NULL_COLOR_IN_GAME);
+        put(RED_CHAR_IN_GAME, RED_COLOR_IN_GAME);
+        put(GREEN_CHAR_IN_GAME, GREEN_COLOR_IN_GAME);
+        put(BLUE_CHAR_IN_GAME, BLUE_COLOR_IN_GAME);
+        put(ORANGE_CHAR_IN_GAME, ORANGE_COLOR_IN_GAME);
+        put(YELLOW_CHAR_IN_GAME, YELLOW_COLOR_IN_GAME);
+        put(LIGHT_CHAR_IN_GAME, LIGHT_COLOR_IN_GAME);
+    }};
+
+    public static final HashMap STRING_TO_CHAR_MAP = new HashMap<String,Character>()
+    {{
+        put(NULL_COLOR_IN_GAME, NULL_CHAR_IN_GAME);
+        put(RED_COLOR_IN_GAME, RED_CHAR_IN_GAME);
+        put(BLUE_COLOR_IN_GAME, BLUE_CHAR_IN_GAME);
+        put(GREEN_COLOR_IN_GAME, GREEN_CHAR_IN_GAME);
+        put(ORANGE_COLOR_IN_GAME, ORANGE_CHAR_IN_GAME);
+        put(YELLOW_COLOR_IN_GAME, YELLOW_CHAR_IN_GAME);
+        put(LIGHT_COLOR_IN_GAME, LIGHT_CHAR_IN_GAME);
+    }};
 
 }

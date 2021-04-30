@@ -56,7 +56,7 @@ public class EndGameFragment extends Fragment {
         final int situation = getArguments().getInt(Const.INTENT_EXTRA_KEY_WHO_IS_WIN);
         String winner = "Something Went Wrong";
         if (situation == Const.END_GAME_SITUATION_TIE){
-            winner = "Its a Tie";
+            winner = "It's a Tie";
             lottieAnimationView.setVisibility(View.INVISIBLE);
             Glide.with(this.requireActivity()).load(user1.getImgUrl()).into(winnerIV);
             Glide.with(this.requireActivity()).load(user2.getImgUrl()).into(loserIV);
