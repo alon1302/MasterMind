@@ -32,17 +32,16 @@ import java.util.Objects;
 public class MultiplayerActivity extends AppCompatActivity implements MethodCallBack, OnPegClickListener, SendUsersCallBack {
 
     public static final int GAME_NOT_OVER = -1;
-    MultiPlayerManager multiPlayerManager;
+    private MultiPlayerManager multiPlayerManager;
     private UserTurnFragment userTurnFragment;
     private OpponentTurnFragment opponentTurnFragment;
-    EndGameFragment endGameFragment;
+    private EndGameFragment endGameFragment;
     private boolean entered = false;
     private boolean entered2 = false;
-    User user1, user2;
-    Dialog d;
-    private boolean choosed;
+    private User user1, user2;
+    private Dialog d;
+    private boolean isChose;
     private int winner;
-    String winnerString = "";
     private boolean isWaitingForWin;
     boolean allow;
 
@@ -54,7 +53,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         allow = true;
         userTurnFragment = new UserTurnFragment();
         opponentTurnFragment = new OpponentTurnFragment();
-        choosed = false;
+        isChose = false;
 
         d = new Dialog(this);
         d.setContentView(R.layout.waiting_dialog);
@@ -85,7 +84,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
             if (snapshot.exists()) {
-                winnerString = snapshot.getValue(String.class);
+                String winnerString = snapshot.getValue(String.class);
                 String currPlayer = multiPlayerManager.getPlayer();
                 if (winnerString.equals(Const.PLAYER2)) {
                     if (!isWaitingForWin) {
@@ -189,7 +188,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             toChooseFragment();
             createWinnerListener();
         } else if (action == Const.ACTION_HIDDEN_TO_FIREBASE) {
-            choosed = true;
+            isChose = true;
             d.show();
             multiPlayerManager.setHiddenInFirebase((String) value);
             multiPlayerManager.retrieveHidden();
@@ -247,7 +246,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String turn = snapshot.getValue(String.class);
                 multiPlayerManager.setPlayerTurn(turn);
-                if (choosed && turn != null) {
+                if (isChose && turn != null) {
                     if (!turn.equals(multiPlayerManager.getPlayer()))
                         toOpponentFragment();
                     else

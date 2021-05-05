@@ -2,8 +2,6 @@ package com.example.mastermind.ui.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -28,14 +26,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ThemesActivity extends AppCompatActivity implements MethodCallBack {
 
-    TextView textViewCoins;
+    private TextView textViewCoins;
 
-    RecyclerView recyclerView;
-    LinearLayoutManager layoutManager;
-    AdapterThemes adapter;
-
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
+    private RecyclerView recyclerView;
+    private AdapterThemes adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,15 +40,12 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack 
         textViewCoins.setText("" + CurrentUser.getUserCoins());
 
         recyclerView = findViewById(R.id.recyclerView_themes);
-        layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         adapter = new AdapterThemes(this);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         recyclerView.startLayoutAnimation();
-
-        sharedPreferences = getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
     }
 
     @SuppressLint("SetTextI18n")
@@ -100,6 +91,5 @@ public class ThemesActivity extends AppCompatActivity implements MethodCallBack 
             Themes.getInstance(ThemesActivity.this.getApplicationContext()).setCurrentThemeIndex(index);
         }
         adapter.notifyDataSetChanged();
-        //}
     }
 }

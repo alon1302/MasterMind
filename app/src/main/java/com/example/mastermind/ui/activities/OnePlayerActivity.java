@@ -50,7 +50,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private CircleImageView[] hiddenRowImages;
     private GameManager gameManager;
 
-    String currentSelection = Const.NULL_COLOR_IN_GAME;
+    private String currentSelection = Const.NULL_COLOR_IN_GAME;
 
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
@@ -58,7 +58,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private long timeInMillis;
     private long minutes, seconds;
 
-    Intent service;
+    private Intent service;
 
     private TextView tv_coins;
     private Drawable theme;
@@ -66,7 +66,7 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private ImageView iv_musicOnOff;
     private boolean playing;
 
-    boolean isOnline;
+    private boolean isOnline;
 
     @SuppressLint({"SetTextI18n", "UseCompatLoadingForDrawables"})
     @Override

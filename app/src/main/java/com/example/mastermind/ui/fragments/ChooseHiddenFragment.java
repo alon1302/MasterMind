@@ -32,13 +32,13 @@ public class ChooseHiddenFragment extends Fragment {
     private static Random rnd;
 
     private CircleImageView[] hiddenRowImages;
-    GameRow hidden;
-    Context context;
+    private GameRow hidden;
+    private Context context;
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
-    String currentSelection = Const.NULL_COLOR_IN_GAME;
-    View view;
-    String[] colors;
+    private String currentSelection = Const.NULL_COLOR_IN_GAME;
+    private View view;
+    private String[] colors;
 
     private TextView countDownText;
     private CountDownTimer countDownTimer;

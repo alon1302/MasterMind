@@ -15,8 +15,6 @@ import com.example.mastermind.model.listeners.MethodCallBack;
 
 public class JoinRoomFragment extends Fragment {
 
-    private View view;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +23,7 @@ public class JoinRoomFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_join_room, container, false);
+        View view = inflater.inflate(R.layout.fragment_join_room, container, false);
         final EditText roomCodeEt = view.findViewById(R.id.roomCodeEt);
         view.findViewById(R.id.joinRoomBtn).setOnClickListener(new View.OnClickListener() {
              @Override

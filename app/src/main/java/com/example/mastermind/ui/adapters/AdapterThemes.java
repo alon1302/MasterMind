@@ -1,5 +1,6 @@
 package com.example.mastermind.ui.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +20,8 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesViewHolder> {
-    Context context;
-    ArrayList<Theme> list;
+    private final Context context;
+    private final ArrayList<Theme> list;
 
     public AdapterThemes(Context context) {
         this.context = context;
@@ -34,6 +35,7 @@ public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesView
         return new ThemesViewHolder(view);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onBindViewHolder(@NonNull final ThemesViewHolder holder, final int position) {
         for (int i = 0; i < holder.imageViews.length; i++)
@@ -50,7 +52,6 @@ public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesView
             public void onClick(View v) {
                 MethodCallBack methodCallBack = (MethodCallBack) context;
                 methodCallBack.onCallBack(position, holder.imageViews[0].getForeground());
-
             }
         });
     }

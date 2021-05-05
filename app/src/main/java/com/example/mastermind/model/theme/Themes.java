@@ -14,7 +14,6 @@ public class Themes {
 
     private static Themes instance = null;
     private final ArrayList<Theme> allThemes = new ArrayList<>();
-    private Context context;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private int currentThemeIndex;
@@ -26,7 +25,6 @@ public class Themes {
     public static Themes getInstance(Context context) {
         if (instance == null) {
             instance = new Themes();
-            instance.setContext(context);
             instance.sharedPreferences = context.getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
             instance.editor = instance.sharedPreferences.edit();
             instance.loadThemes();
@@ -43,10 +41,6 @@ public class Themes {
             editor.putInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
         currentThemeIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
         editor.apply();
-    }
-
-    private void setContext(Context context) {
-        this.context = context;
     }
 
     public void openATheme(int index) {

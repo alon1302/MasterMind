@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class GameRow {
 
-    private GamePeg[] row;
+    private final GamePeg[] row;
 
     public GameRow(){
         row = new GamePeg[Const.ROW_SIZE];

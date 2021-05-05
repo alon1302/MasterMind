@@ -57,22 +57,21 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    FirebaseDatabase database;
-    DatabaseReference myRef;
+    private DatabaseReference myRef;
 
-    Dialog register_dialog;
-    Dialog login_dialog;
+    private Dialog register_dialog;
+    private Dialog login_dialog;
 
-    String uName;
+    private String uName;
 
     private GoogleSignInClient mGoogleSignInClient;
 
-    Uri imageUri;
+    private Uri imageUri;
 
-    ProgressDialog progressDialogUpload;
+    private ProgressDialog progressDialogUpload;
 
-    Dialog offlineDialog;
-    Button btnOfflineMode;
+    private Dialog offlineDialog;
+    private Button btnOfflineMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +83,7 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
         mAuth = FirebaseAuth.getInstance();
         //mAuth.signOut();
         currentUser = mAuth.getCurrentUser();
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference();
+        myRef = FirebaseDatabase.getInstance().getReference();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()

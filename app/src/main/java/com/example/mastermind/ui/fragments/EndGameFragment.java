@@ -28,21 +28,19 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EndGameFragment extends Fragment {
 
-    User user1,user2;
-    String code;
-    LottieAnimationView lottieAnimationView;
-    CircleImageView winnerIV,loserIV;
-    TextView indication;
-    int rematchResponse = 1;
+    private User user1,user2;
+    private String code;
+    private TextView indication;
+    private int rematchResponse = 1;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_end_game, container, false);
-        lottieAnimationView = view.findViewById(R.id.lottie_winner);
-        winnerIV = view.findViewById(R.id.Winner_image);
-        loserIV = view.findViewById(R.id.Loser_image);
+        LottieAnimationView lottieAnimationView = view.findViewById(R.id.lottie_winner);
+        CircleImageView winnerIV = view.findViewById(R.id.Winner_image);
+        CircleImageView loserIV = view.findViewById(R.id.Loser_image);
         indication = view.findViewById(R.id.indication);
         if (getArguments() != null) {
             user1 = (User) getArguments().getSerializable(Const.INTENT_EXTRA_KEY_USER1);

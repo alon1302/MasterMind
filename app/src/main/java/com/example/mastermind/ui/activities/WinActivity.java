@@ -36,18 +36,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class WinActivity extends AppCompatActivity {
 
-    User currentUser;
-    TextView tv_name;
-    TextView tv_time;
-    CircleImageView profileImage;
-    long minutes, seconds;
-    long time;
+    private User currentUser;
+    private TextView tv_name;
+    private TextView tv_time;
+    private CircleImageView profileImage;
+    private long time;
 
     private FirebaseRecyclerOptions<Record> options;
-    private RecyclerView recyclerView;
-    LinearLayoutManager layoutManager;
 
-    boolean isOnline;
+    private boolean isOnline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +60,8 @@ public class WinActivity extends AppCompatActivity {
             profileImage = findViewById(R.id.profile_image);
             calculateCoins();
 
-            recyclerView = findViewById(R.id.recyclerView_records);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            RecyclerView recyclerView = findViewById(R.id.recyclerView_records);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(layoutManager);
 
@@ -128,8 +125,8 @@ public class WinActivity extends AppCompatActivity {
 
     public void getData() {
         Intent intent = getIntent();
-        minutes = intent.getLongExtra(Const.INTENT_EXTRA_KEY_MINUTES, 0);
-        seconds = intent.getLongExtra(Const.INTENT_EXTRA_KEY_SECONDS, 0);
+        long minutes = intent.getLongExtra(Const.INTENT_EXTRA_KEY_MINUTES, 0);
+        long seconds = intent.getLongExtra(Const.INTENT_EXTRA_KEY_SECONDS, 0);
         time = intent.getLongExtra(Const.INTENT_EXTRA_KEY_TIME, 0);
         tv_time.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
         if (isOnline) {

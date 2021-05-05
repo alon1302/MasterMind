@@ -42,30 +42,28 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserTurnFragment extends Fragment implements OnPegClickListener {
 
-    GameManager gameManager = new GameManager();;
+    private final GameManager gameManager = new GameManager();;
 
     private ArrayList<GameRow> gameRows;
     private ArrayList<CheckRow> checkRows;
 
     private AdapterRows adapterRows;
     private RecyclerView recyclerView;
-    private CircleImageView[] hiddenRowImages;
 
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
 
-    GameRow hiddenRow;
-    String currentSelection = Const.NULL_COLOR_IN_GAME;
-    View view;
-    User user1, user2;
-    String player;
-    Context context;
-    private String code;
+    private GameRow hiddenRow;
+    private String currentSelection = Const.NULL_COLOR_IN_GAME;
+    private View view;
+    private User user1, user2;
+    private String player;
+    private Context context;
 
     private ImageView iv_musicOnOff;
     private boolean playing;
 
-    Intent service;
+    private Intent service;
 
     private Drawable theme;
 
@@ -76,7 +74,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         user1 = (User) bundle.get(Const.INTENT_EXTRA_KEY_USER1);
         user2 = (User) bundle.get(Const.INTENT_EXTRA_KEY_USER2);
         player = bundle.getString(Const.INTENT_EXTRA_KEY_PLAYER);
-        code = bundle.getString(Const.INTENT_EXTRA_KEY_CODE);
+        String code = bundle.getString(Const.INTENT_EXTRA_KEY_CODE);
         hiddenRow = new GameRow();
 
         int useIndex =Themes.getInstance(requireActivity().getApplicationContext()).getCurrentThemeIndex();
@@ -178,16 +176,16 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     }
 
     public void createHidden() {
-        hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
+        CircleImageView[] hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
         hiddenRowImages[0] = view.findViewById(R.id.user_multi_hidden0);
         hiddenRowImages[1] = view.findViewById(R.id.user_multi_hidden1);
         hiddenRowImages[2] = view.findViewById(R.id.user_multi_hidden2);
         hiddenRowImages[3] = view.findViewById(R.id.user_multi_hidden3);
         String[] hiddenColors = hiddenRow.getStringRow();
         for (int i = 0; i < hiddenColors.length; i++) {
-            this.hiddenRowImages[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(hiddenColors[i]));
-            this.hiddenRowImages[i].setForeground(theme);
-            this.hiddenRowImages[i].setVisibility(View.INVISIBLE);
+            hiddenRowImages[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(hiddenColors[i]));
+            hiddenRowImages[i].setForeground(theme);
+            hiddenRowImages[i].setVisibility(View.INVISIBLE);
         }
     }
 

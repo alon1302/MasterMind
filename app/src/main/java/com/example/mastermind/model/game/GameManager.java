@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GameManager {
-    private static Random rnd = new Random();
-    private String[] colors;
-    private ArrayList<GameRow> gameRows;
-    private ArrayList<CheckRow> checkRows;
+    private static final Random rnd = new Random();
+    private final String[] colors;
+    private final ArrayList<GameRow> gameRows;
+    private final ArrayList<CheckRow> checkRows;
     private GameRow hidden;
     private int turn;
 

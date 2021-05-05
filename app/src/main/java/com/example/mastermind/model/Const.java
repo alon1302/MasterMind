@@ -107,7 +107,7 @@ public class Const {
     public static final int ONLINE = 0;
     public static final int OFFLINE = 1;
 
-    public static final HashMap STRING_TO_COLOR_MAP = new HashMap<String, Integer>()
+    public static final HashMap<String, Integer> STRING_TO_COLOR_MAP = new HashMap<String, Integer>()
     {{
         put(NULL_COLOR_IN_GAME, R.color.colorTWhite);
         put(BLACK_COLOR_IN_GAME, R.color.colorBlack);
@@ -120,7 +120,7 @@ public class Const {
         put(LIGHT_COLOR_IN_GAME, R.color.colorLight);
     }};
 
-    public static final HashMap CHAR_TO_STRING_MAP = new HashMap<Character, String>()
+    public static final HashMap<Character, String> CHAR_TO_STRING_MAP = new HashMap<Character, String>()
     {{
         put(NULL_CHAR_IN_GAME, NULL_COLOR_IN_GAME);
         put(RED_CHAR_IN_GAME, RED_COLOR_IN_GAME);
@@ -131,7 +131,7 @@ public class Const {
         put(LIGHT_CHAR_IN_GAME, LIGHT_COLOR_IN_GAME);
     }};
 
-    public static final HashMap STRING_TO_CHAR_MAP = new HashMap<String,Character>()
+    public static final HashMap<String,Character> STRING_TO_CHAR_MAP = new HashMap<String,Character>()
     {{
         put(NULL_COLOR_IN_GAME, NULL_CHAR_IN_GAME);
         put(RED_COLOR_IN_GAME, RED_CHAR_IN_GAME);

@@ -5,7 +5,7 @@ import com.example.mastermind.model.Const;
 import java.util.Arrays;
 
 public class CheckRow {
-    private CheckPeg[] row;
+    private final CheckPeg[] row;
     private int index;
 
     public CheckRow() {

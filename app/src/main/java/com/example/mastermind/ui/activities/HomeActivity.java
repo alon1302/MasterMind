@@ -45,11 +45,11 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
     private TextView tv_coins;
     private ImageView iv_musicOnOff;
 
-    boolean playing;
-    Intent service;
+    private boolean playing;
+    private Intent service;
 
-    Dialog offlineDialog;
-    Button btnOfflineMode;
+    private Dialog offlineDialog;
+    private Button btnOfflineMode;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -219,6 +219,7 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
         if (!BackMusicService.isPlaying) {
             stopService(service);
         }
+        unregisterReceiver(networkChangeReceiver);
     }
     @Override
     public void onCallBack(int action, Object value) {

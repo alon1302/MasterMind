@@ -24,13 +24,15 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.example.mastermind.model.Const.STRING_TO_COLOR_MAP;
+
 public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
-    private ArrayList<GameRow> gameRows;
-    private ArrayList<CheckRow> checkRows;
-    private Context context;
+    private final ArrayList<GameRow> gameRows;
+    private final ArrayList<CheckRow> checkRows;
+    private final Context context;
     public LinearLayout fullRow;
     boolean clickable;
-    Drawable theme;
+    private final Drawable theme;
 
     public AdapterRows(ArrayList<GameRow> gameRows, ArrayList<CheckRow> checkRows, Context context, boolean clickable) {
         this.gameRows = gameRows;
@@ -58,7 +60,7 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         String[] colorCheckRow = currCheckRow.getStringRow();
         colorCheckRow = sortCheckRow(colorCheckRow);
         for (int i = 0; i < Const.ROW_SIZE; i++) {
-            holder.check[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(colorCheckRow[i]));
+            holder.check[i].setImageResource(STRING_TO_COLOR_MAP.get(colorCheckRow[i]));
             if (colorCheckRow[i].equals(Const.NULL_COLOR_IN_GAME))
                 holder.check[i].setVisibility(View.INVISIBLE);
             else
@@ -76,7 +78,7 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
                     }
                 });
             }
-            holder.game[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(colorGameRow[i]));
+            holder.game[i].setImageResource(STRING_TO_COLOR_MAP.get(colorGameRow[i]));
             if (!colorGameRow[i].equals(Const.NULL_COLOR_IN_GAME))
                 holder.game[i].setForeground(theme);
             else

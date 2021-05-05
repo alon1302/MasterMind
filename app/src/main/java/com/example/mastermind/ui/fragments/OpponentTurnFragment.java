@@ -1,6 +1,5 @@
 package com.example.mastermind.ui.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -37,23 +36,20 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OpponentTurnFragment extends Fragment implements SendHiddenToOpponent {
 
-    User user1, user2;
-    View view;
+    private User user1, user2;
+    private View view;
 
-    RecyclerView recyclerView;
-    AdapterRows adapterRows;
+    private AdapterRows adapterRows;
 
-    GameManager gameManager;
-    ArrayList<GameRow> gameRows;
-    ArrayList<CheckRow> checkRows;
-    String hidden;
+    private ArrayList<GameRow> gameRows;
+    private ArrayList<CheckRow> checkRows;
+    private String hidden;
 
-    CircleImageView[] hiddenRowImages;
+    private CircleImageView[] hiddenRowImages;
 
-    Intent service;
+    private Intent service;
 
-    String code, player;
-    private Context context;
+    private String code, player;
 
     private GameRow hiddenRow;
 
@@ -75,7 +71,7 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         int themeImg = Themes.getInstance(requireActivity().getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = this.getResources().getDrawable(themeImg);
 
-        gameManager = new GameManager();
+        GameManager gameManager = new GameManager();
         hiddenRow = new GameRow();
         for (int i = 0; i < 4; i++)
             hiddenRow.addPeg(new GamePeg((String) Const.CHAR_TO_STRING_MAP.get(hidden.charAt(i)), i));
@@ -84,7 +80,6 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         gameRows = gameManager.getGameRows();
         checkRows = gameManager.getCheckRows();
         hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
-        context = requireActivity();
     }
 
     @Override
@@ -94,7 +89,7 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         Glide.with(requireActivity()).load(user2.getImgUrl()).into((CircleImageView) view.findViewById(R.id.opponent_multi_img));
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
 
-        recyclerView = view.findViewById(R.id.opponent_multi_recyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.opponent_multi_recyclerView);
         adapterRows = new AdapterRows(gameRows, checkRows, requireActivity(), false);
         recyclerView.setAdapter(adapterRows);
         recyclerView.setLayoutManager(layoutManager);
