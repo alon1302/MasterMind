@@ -40,16 +40,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class HomeActivity extends AppCompatActivity implements MethodCallBack {
 
     private FirebaseAuth mAuth;
-    private NetworkChangeReceiver networkChangeReceiver;
 
-    private TextView tv_coins;
-    private ImageView iv_musicOnOff;
-
-    private boolean playing;
-    private Intent service;
-
+    private NetworkChangeReceiver networkReceiver;
     private Dialog offlineDialog;
     private Button btnOfflineMode;
+
+    private TextView tv_coins;
+
+    private ImageView iv_musicOnOff;
+    private boolean isPlaying;
+    private Intent service;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -65,20 +65,12 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
         CircleImageView iv_userImage = findViewById(R.id.iv_image);
         Glide.with(this).load(user.getImgUrl()).into(iv_userImage);
 
-        networkChangeReceiver = new NetworkChangeReceiver(this);
-        registerReceiver(networkChangeReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        networkReceiver = new NetworkChangeReceiver(this);
+        registerReceiver(networkReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         createNotificationChannel();
-        showCoins();
         createOfflineDialog();
-    }
-
-    public void createOfflineDialog(){
-        offlineDialog = new Dialog(this);
-        offlineDialog.setContentView(R.layout.dialog_offline);
-        offlineDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        btnOfflineMode = offlineDialog.findViewById(R.id.offlineModeBtn);
-        offlineDialog.setCancelable(false);
+        showCoins();
     }
 
     @Override
@@ -87,43 +79,29 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
         service = new Intent(getApplicationContext(), BackMusicService.class);
         iv_musicOnOff = findViewById(R.id.btn_Music);
         if (BackMusicService.isPlaying){
-            playing = true;
+            isPlaying = true;
             iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
         } else {
-            playing = false;
+            isPlaying = false;
             iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
         }
         iv_musicOnOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!playing){
+                if (!isPlaying){
                     startService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
-                    playing = true;
+                    isPlaying = true;
                 } else {
                     stopService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
-                    playing = false;
+                    isPlaying = false;
                 }
             }
         });
     }
 
-    private void toggleIsOnline(int mode){
-        if (mode == Const.ONLINE)
-            offlineDialog.dismiss();
-        else if (mode == Const.OFFLINE) {
-            offlineDialog.show();
-            btnOfflineMode.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(HomeActivity.this, OnePlayerActivity.class);
-                    intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, false);
-                    startActivity(intent);
-                }
-            });
-        }
-    }
+
 
     public void showCoins() {
         tv_coins = findViewById(R.id.textView_coins);
@@ -201,6 +179,34 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
         }
     }
 
+    @Override
+    public void onCallBack(int action, Object value) {
+        toggleIsOnline(action);
+    }
+
+    private void toggleIsOnline(int mode) {
+        if (mode == Const.ONLINE)
+            offlineDialog.dismiss();
+        else if (mode == Const.OFFLINE) {
+            offlineDialog.show();
+            btnOfflineMode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(HomeActivity.this, OnePlayerActivity.class);
+                    intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, false);
+                    startActivity(intent);
+                }
+            });
+        }
+    }
+
+    public void createOfflineDialog(){
+        offlineDialog = new Dialog(this);
+        offlineDialog.setContentView(R.layout.dialog_offline);
+        offlineDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        btnOfflineMode = offlineDialog.findViewById(R.id.offlineModeBtn);
+        offlineDialog.setCancelable(false);
+    }
 
     @Override
     protected void onStop() {
@@ -219,10 +225,6 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
         if (!BackMusicService.isPlaying) {
             stopService(service);
         }
-        unregisterReceiver(networkChangeReceiver);
-    }
-    @Override
-    public void onCallBack(int action, Object value) {
-        toggleIsOnline(action);
+        unregisterReceiver(networkReceiver);
     }
 }

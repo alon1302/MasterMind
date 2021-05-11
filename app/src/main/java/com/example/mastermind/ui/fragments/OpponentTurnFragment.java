@@ -36,7 +36,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OpponentTurnFragment extends Fragment implements SendHiddenToOpponent {
 
-    private User user1, user2;
+    private User user2;
     private View view;
 
     private AdapterRows adapterRows;
@@ -62,7 +62,6 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
-        user1 = (User) bundle.get(Const.INTENT_EXTRA_KEY_USER1);
         user2 = (User) bundle.get(Const.INTENT_EXTRA_KEY_USER2);
         code = bundle.getString(Const.INTENT_EXTRA_KEY_CODE);
         player = bundle.getString(Const.INTENT_EXTRA_KEY_PLAYER);

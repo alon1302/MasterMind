@@ -30,36 +30,36 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Objects;
 
 public class MultiplayerActivity extends AppCompatActivity implements MethodCallBack, OnPegClickListener, SendUsersCallBack {
-
-    public static final int GAME_NOT_OVER = -1;
+    
     private MultiPlayerManager multiPlayerManager;
-    private UserTurnFragment userTurnFragment;
-    private OpponentTurnFragment opponentTurnFragment;
-    private EndGameFragment endGameFragment;
-    private boolean entered = false;
-    private boolean entered2 = false;
-    private User user1, user2;
-    private Dialog d;
     private boolean isChose;
     private int winner;
     private boolean isWaitingForWin;
-    boolean allow;
+    private boolean gameRunning;
+    
+    private UserTurnFragment userTurnFragment;
+    private OpponentTurnFragment opponentTurnFragment;
+    private EndGameFragment endGameFragment;
+    
+    private boolean entered = false;
+    private boolean entered2 = false;
+    private User user1, user2;
+    
+    private Dialog waitingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
         isWaitingForWin = false;
-        allow = true;
+        gameRunning = true;
         userTurnFragment = new UserTurnFragment();
         opponentTurnFragment = new OpponentTurnFragment();
+        endGameFragment = new EndGameFragment();
         isChose = false;
+        winner = Const.END_GAME_SITUATION_NOT_OVER;
+        createWaitingDialog();
 
-        d = new Dialog(this);
-        d.setContentView(R.layout.waiting_dialog);
-        d.setCancelable(false);
-        Objects.requireNonNull(d.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
-        winner = GAME_NOT_OVER;
         if (getIntent().getStringExtra(Const.INTENT_EXTRA_KEY_CODE) != null) {
             user1 = (User) getIntent().getSerializableExtra(Const.INTENT_EXTRA_KEY_PLAYER1);
             user2 = (User) getIntent().getSerializableExtra(Const.INTENT_EXTRA_KEY_PLAYER2);
@@ -77,7 +77,6 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, new ChooseHiddenFragment()).commit();
             this.multiPlayerManager = (MultiPlayerManager) findEnemyManager;
         }
-        endGameFragment = new EndGameFragment();
     }
 
     ValueEventListener winnerListener = new ValueEventListener() {
@@ -105,35 +104,15 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         }
     };
 
+    public void createWaitingDialog() {
+        waitingDialog = new Dialog(this);
+        waitingDialog.setContentView(R.layout.waiting_dialog);
+        waitingDialog.setCancelable(false);
+        Objects.requireNonNull(waitingDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
+    }
+
     public void createWinnerListener() {
         FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(multiPlayerManager.getCode()).child(Const.WINNER_IN_FIREBASE).addValueEventListener(winnerListener);
-    }
-
-    public void checkWinner() {
-        if (winner != Const.END_GAME_SITUATION_TIE) {
-            if (isWaitingForWin && multiPlayerManager.getPlayerTurn().equals(Const.PLAYER1)) {
-                if (multiPlayerManager.getPlayer().equals(Const.PLAYER2))
-                    winner = Const.END_GAME_SITUATION_LOSE;
-                else
-                    winner = Const.END_GAME_SITUATION_WIN;
-                toEndGameFragment();
-            }
-        }
-    }
-
-
-    private void toEndGameFragment() {
-        endGameFragment = new EndGameFragment();
-        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(multiPlayerManager.getCode()).child(Const.WINNER_IN_FIREBASE).removeEventListener(winnerListener);
-        allow = false;
-        Bundle bundle = new Bundle();
-        bundle.putInt(Const.INTENT_EXTRA_KEY_WHO_IS_WIN, winner);
-        bundle.putString(Const.INTENT_EXTRA_KEY_CODE, multiPlayerManager.getCode());
-        bundle.putSerializable(Const.INTENT_EXTRA_KEY_USER1, user1);
-        bundle.putSerializable(Const.INTENT_EXTRA_KEY_USER2, user2);
-        bundle.putString(Const.INTENT_EXTRA_KEY_PLAYER, multiPlayerManager.getPlayer());
-        endGameFragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, endGameFragment).commitAllowingStateLoss();
     }
 
     public void toWaitingFragment() {
@@ -159,18 +138,44 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     }
 
     public void toUserFragment() {
-        if (allow)
+        if (gameRunning)
             getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, userTurnFragment).commit();
         checkWinner();
     }
 
     public void toOpponentFragment() {
-        if (allow) {
+        if (gameRunning) {
             SendHiddenToOpponent sendHiddenToOpponent = (SendHiddenToOpponent) opponentTurnFragment;
             sendHiddenToOpponent.sendHidden(multiPlayerManager.getHidden());
             getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, opponentTurnFragment).commit();
         }
         checkWinner();
+    }
+
+    public void checkWinner() {
+        if (winner != Const.END_GAME_SITUATION_TIE) {
+            if (isWaitingForWin && multiPlayerManager.getPlayerTurn().equals(Const.PLAYER1)) {
+                if (multiPlayerManager.getPlayer().equals(Const.PLAYER2))
+                    winner = Const.END_GAME_SITUATION_LOSE;
+                else
+                    winner = Const.END_GAME_SITUATION_WIN;
+                toEndGameFragment();
+            }
+        }
+    }
+
+    private void toEndGameFragment() {
+        endGameFragment = new EndGameFragment();
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(multiPlayerManager.getCode()).child(Const.WINNER_IN_FIREBASE).removeEventListener(winnerListener);
+        gameRunning = false;
+        Bundle bundle = new Bundle();
+        bundle.putInt(Const.INTENT_EXTRA_KEY_WHO_IS_WIN, winner);
+        bundle.putString(Const.INTENT_EXTRA_KEY_CODE, multiPlayerManager.getCode());
+        bundle.putSerializable(Const.INTENT_EXTRA_KEY_USER1, user1);
+        bundle.putSerializable(Const.INTENT_EXTRA_KEY_USER2, user2);
+        bundle.putString(Const.INTENT_EXTRA_KEY_PLAYER, multiPlayerManager.getPlayer());
+        endGameFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, endGameFragment).commitAllowingStateLoss();
     }
 
     @Override
@@ -189,14 +194,14 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
             createWinnerListener();
         } else if (action == Const.ACTION_HIDDEN_TO_FIREBASE) {
             isChose = true;
-            d.show();
+            waitingDialog.show();
             multiPlayerManager.setHiddenInFirebase((String) value);
             multiPlayerManager.retrieveHidden();
         } else if (action == Const.ACTION_TO_USER_TURN) {
-            if (winner == GAME_NOT_OVER)
+            if (winner == Const.END_GAME_SITUATION_NOT_OVER)
                 toUserFragment();
         } else if (action == Const.ACTION_TO_OPPONENT_TURN) {
-            if (winner == GAME_NOT_OVER)
+            if (winner == Const.END_GAME_SITUATION_NOT_OVER)
                 toOpponentFragment();
         } else if (action == Const.ACTION_UPLOAD_ROW_CHANGES) {
             String row = ((String) value).substring(0, 4);
@@ -212,7 +217,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         } else if (action == Const.ACTION_WAITING_TO_WIN) {
             multiPlayerManager.setWinnerInFirebase();
         } else if (action == Const.ACTION_DISMISS_WAITING_DIALOG) {
-            d.dismiss();
+            waitingDialog.dismiss();
         }
     }
 
@@ -261,18 +266,18 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
         FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(multiPlayerManager.getCode()).child(Const.WHOS_TURN_IN_FIREBASE).addValueEventListener(valueEventListener);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        deleteFromFirebase();
+    }
+
     private void deleteFromFirebase() {
         if (multiPlayerManager instanceof FindEnemyManager) {
             FindEnemyManager findEnemyManager = (FindEnemyManager) multiPlayerManager;
             findEnemyManager.deleteRoom();
         } else
             multiPlayerManager.deleteRoom();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        deleteFromFirebase();
     }
 }
 

@@ -8,10 +8,19 @@ public class GameRow {
 
     private final GamePeg[] row;
 
-    public GameRow(){
+    public GameRow() {
         row = new GamePeg[Const.ROW_SIZE];
         for (int i = 0; i < Const.ROW_SIZE; i++)
             row[i] = new GamePeg(Const.NULL_COLOR_IN_GAME, i);
+    }
+
+    public boolean exist(GamePeg peg) {
+        if (peg.getColor().equals(Const.NULL_COLOR_IN_GAME))
+            return false;
+        for (int i = 0; i < Const.ROW_SIZE; i++)
+            if (this.row[i].equalsColor(peg))
+                return true;
+        return false;
     }
 
     public void addPeg(GamePeg peg) {
@@ -28,23 +37,7 @@ public class GameRow {
         }
     }
 
-    public boolean exist(GamePeg peg) {
-        if (peg.getColor().equals(Const.NULL_COLOR_IN_GAME))
-            return false;
-        for (int i = 0; i < Const.ROW_SIZE; i++)
-            if (this.row[i].equalsColor(peg))
-                return true;
-        return false;
-    }
-
-    public boolean isFull() {
-        for (int i = 0; i < Const.ROW_SIZE; i++)
-            if (this.row[i].getColor().equals(Const.NULL_COLOR_IN_GAME))
-                return false;
-        return true;
-    }
-
-    public int check(GamePeg peg) { // 1-black , 2-white, 3-none
+    public int check(GamePeg peg) {
         for (int i = 0; i < Const.ROW_SIZE; i++) {
             GamePeg curr = this.row[i];
             if (curr.equals(peg))
@@ -62,6 +55,13 @@ public class GameRow {
         return checkRow;
     }
 
+    public boolean isFull() {
+        for (int i = 0; i < Const.ROW_SIZE; i++)
+            if (this.row[i].getColor().equals(Const.NULL_COLOR_IN_GAME))
+                return false;
+        return true;
+    }
+
     public String[] getStringRow() {
         String[] s = new String[Const.ROW_SIZE];
         for (int i = 0; i < s.length; i++)
@@ -70,9 +70,7 @@ public class GameRow {
     }
 
     public String getNumStringRow() {
-        String[] stringRow = new String[Const.ROW_SIZE];
-        for (int i = 0; i < stringRow.length; i++)
-            stringRow[i] = this.row[i].getColor();
+        String[] stringRow = getStringRow();
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < Const.ROW_SIZE; i++)
             s.append(Const.STRING_TO_CHAR_MAP.get(stringRow[i]));

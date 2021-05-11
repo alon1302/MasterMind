@@ -20,14 +20,14 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        try{
+        try {
             MethodCallBack methodCallBack = (MethodCallBack) this.context;
             if (isOnline(context))
                 methodCallBack.onCallBack(Const.ONLINE,null);
             else
                 methodCallBack.onCallBack(Const.OFFLINE,null);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

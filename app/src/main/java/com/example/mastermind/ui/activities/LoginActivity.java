@@ -52,9 +52,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class LoginActivity extends AppCompatActivity implements ImageUploadListener, MethodCallBack {
 
-    private static final int PICK_IMAGE = 100;
-    private static final int GOOGLE = 1;
-
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference myRef;
@@ -68,7 +65,7 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
 
     private Uri imageUri;
 
-    private ProgressDialog progressDialogUpload;
+    private ProgressDialog progressDialog;
 
     private Dialog offlineDialog;
     private Button btnOfflineMode;
@@ -78,7 +75,7 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        progressDialogUpload = new ProgressDialog(this, android.R.style.Theme_DeviceDefault_Dialog);
+        progressDialog = new ProgressDialog(this, android.R.style.Theme_DeviceDefault_Dialog);
 
         mAuth = FirebaseAuth.getInstance();
         //mAuth.signOut();
@@ -113,11 +110,14 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
 
         NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver(this);
         registerReceiver(networkChangeReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
-
     }
 
     //////////////////////////////// Google ////////////////////////////////////
+    private void signInWithGoogle() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, Const.GOOGLE);
+    }
+
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -145,11 +145,6 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
         FirebaseDatabase.getInstance().getReference().child(Const.USERS_IN_FIREBASE).child(user.getUid()).updateChildren(map);
     }
 
-    private void signInWithGoogle() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, GOOGLE);
-    }
-
     //////////////////////// Email //////////////////////////////////
     private void signUpWithEmail(final String name, String email, String password) {
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
@@ -174,23 +169,6 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
                                     }
                                 });
                             }
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void onImageUploaded() {
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(uName).build();
-        currentUser.updateProfile(profileUpdates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Authentication succeed", Toast.LENGTH_SHORT).show();
-                            CurrentUser.logout();
-                            myRef.child(Const.USERS_IN_FIREBASE).child(currentUser.getUid()).setValue(CurrentUser.getInstance());
-                            openHomeActivity();
                         }
                     }
                 });
@@ -232,8 +210,24 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
         });
     }
 
+    @Override
+    public void onImageUploaded() {
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(uName).build();
+        currentUser.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Authentication succeed", Toast.LENGTH_SHORT).show();
+                            CurrentUser.logout();
+                            myRef.child(Const.USERS_IN_FIREBASE).child(currentUser.getUid()).setValue(CurrentUser.getInstance());
+                            openHomeActivity();
+                        }
+                    }
+                });
+    }
+
     public void onClickRegister(View view) {
-        ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setTitle("Creating Your Account, Please Wait...");
         EditText displayET = register_dialog.findViewById(R.id.register_et_Name);
@@ -248,6 +242,22 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
             progressDialog.show();
             signUpWithEmail(display, email, pass);
         }
+    }
+
+    public void onClickLogin(View view) {
+        EditText login_et_Mail = login_dialog.findViewById(R.id.login_et_Mail);
+        EditText login_et_Pass = login_dialog.findViewById(R.id.login_et_Pass);
+        String email = login_et_Mail.getText().toString();
+        String pass = login_et_Pass.getText().toString();
+        if (!email.equals("") && !pass.equals(""))
+            loginUser(email, pass);
+        else
+            Toast.makeText(this, "Please Type All Fields", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onClickDismiss(View view) {
+        login_dialog.dismiss();
+        register_dialog.dismiss();
     }
 
     private boolean validateSignUp(String display, String email, String pass, String passConfirm) {
@@ -265,22 +275,6 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
             return false;
         }
         return true;
-    }
-
-    public void onClickLogin(View view) {
-        EditText login_et_Mail = login_dialog.findViewById(R.id.login_et_Mail);
-        EditText login_et_Pass = login_dialog.findViewById(R.id.login_et_Pass);
-        String email = login_et_Mail.getText().toString();
-        String pass = login_et_Pass.getText().toString();
-        if (!email.equals("") && !pass.equals(""))
-            loginUser(email, pass);
-        else
-            Toast.makeText(this, "Please Type All Fields", Toast.LENGTH_SHORT).show();
-    }
-
-    public void onClickDismiss(View view) {
-        login_dialog.dismiss();
-        register_dialog.dismiss();
     }
 
     private void loginUser(String email, String password) {
@@ -303,10 +297,56 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
     }
 
     public void openHomeActivity() {
-        progressDialogUpload.dismiss();
+        progressDialog.dismiss();
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    public void openGallery(View view) {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(intent, Const.PICK_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Const.PICK_IMAGE)
+            if (resultCode == RESULT_OK) {
+                CircleImageView iv = register_dialog.findViewById(R.id.register_iv_image);
+                iv.setImageURI(data.getData());
+                imageUri = data.getData();
+            }
+        if (requestCode == Const.GOOGLE) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                Toast.makeText(getApplicationContext(), "Authentication failed, Try Again", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onCallBack(int action, Object value) {
+        toggleIsOnline(action);
+    }
+
+    private void toggleIsOnline(int mode) {
+        if (mode == Const.ONLINE)
+            offlineDialog.dismiss();
+        else if (mode == Const.OFFLINE) {
+            offlineDialog.show();
+            btnOfflineMode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(LoginActivity.this, OnePlayerActivity.class);
+                    intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, false);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     private void createDialogs() {
@@ -323,63 +363,11 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
         offlineDialog.setCancelable(false);
     }
 
-    public void createLoginDialog(View view) {
-        login_dialog.show();
-    }
-
-    public void createRegisterDialog(View view) {
+    public void showRegisterDialog(View view) {
         register_dialog.show();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE)
-            if (resultCode == RESULT_OK) {
-                CircleImageView iv = register_dialog.findViewById(R.id.register_iv_image);
-                iv.setImageURI(data.getData());
-                imageUri = data.getData();
-            }
-        if (requestCode == GOOGLE) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (ApiException e) {
-                Toast.makeText(getApplicationContext(), "Authentication failed, Try Again", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    public void openGallery(View view) {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICK_IMAGE);
-    }
-
-    private void toggleIsOnline(int mode){
-        if (mode == Const.ONLINE)
-            offlineDialog.dismiss();
-        else if (mode == Const.OFFLINE) {
-            offlineDialog.show();
-            btnOfflineMode.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(LoginActivity.this, OnePlayerActivity.class);
-                    intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, false);
-                    startActivity(intent);
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onCallBack(int action, Object value) {
-        toggleIsOnline(action);
-    }
-
-    public void onClickOfflineMode (View v){
-        Intent intent = new Intent(this, OnePlayerActivity.class);
-        intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE ,false);
-        startActivity(intent);
+    public void showLoginDialog(View view) {
+        login_dialog.show();
     }
 }

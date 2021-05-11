@@ -56,7 +56,7 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
     private GameRow hiddenRow;
     private String currentSelection = Const.NULL_COLOR_IN_GAME;
     private View view;
-    private User user1, user2;
+    private User user1;
     private String player;
     private Context context;
 
@@ -72,7 +72,6 @@ public class UserTurnFragment extends Fragment implements OnPegClickListener {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         user1 = (User) bundle.get(Const.INTENT_EXTRA_KEY_USER1);
-        user2 = (User) bundle.get(Const.INTENT_EXTRA_KEY_USER2);
         player = bundle.getString(Const.INTENT_EXTRA_KEY_PLAYER);
         String code = bundle.getString(Const.INTENT_EXTRA_KEY_CODE);
         hiddenRow = new GameRow();

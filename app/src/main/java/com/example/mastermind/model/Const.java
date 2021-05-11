@@ -50,9 +50,10 @@ public class Const {
     public static final char YELLOW_CHAR_IN_GAME = '4';
     public static final char LIGHT_CHAR_IN_GAME = '5';
 
+    public static final int END_GAME_SITUATION_NOT_OVER = -1;
+    public static final int END_GAME_SITUATION_TIE = 0;
     public static final int END_GAME_SITUATION_WIN = 1;
     public static final int END_GAME_SITUATION_LOSE = 2;
-    public static final int END_GAME_SITUATION_TIE = 0;
 
     public static final int REF_TO_BLACK_COLOR = 1;
     public static final int REF_TO_WHITE_COLOR = 2;
@@ -106,6 +107,9 @@ public class Const {
 
     public static final int ONLINE = 0;
     public static final int OFFLINE = 1;
+
+    public static final int PICK_IMAGE = 100;
+    public static final int GOOGLE = 1;
 
     public static final HashMap<String, Integer> STRING_TO_COLOR_MAP = new HashMap<String, Integer>()
     {{

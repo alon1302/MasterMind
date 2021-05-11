@@ -52,9 +52,6 @@ public class WinActivity extends AppCompatActivity {
         setContentView(R.layout.activity_win);
 
         isOnline = getIntent().getBooleanExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, false);
-
-
-
         if (isOnline) {
             currentUser = CurrentUser.getInstance();
             profileImage = findViewById(R.id.profile_image);
@@ -70,11 +67,11 @@ public class WinActivity extends AppCompatActivity {
             FirebaseRecyclerAdapter<Record, RecordViewHolder> adapter = new FirebaseRecyclerAdapter<Record, RecordViewHolder>(options) {
                 @SuppressLint("DefaultLocale")
                 @Override
-                protected void onBindViewHolder(@NonNull RecordViewHolder holder, int position, @NonNull Record model) {
-                    Glide.with(WinActivity.this).load(model.getImgUrl()).into(holder.img);
-                    holder.name.setText(model.getName());
-                    long minutes = (model.getTime() / 1000) / 60;
-                    long seconds = (model.getTime() / 1000) % 60;
+                protected void onBindViewHolder(@NonNull RecordViewHolder holder, int position, @NonNull Record record) {
+                    Glide.with(WinActivity.this).load(record.getImgUrl()).into(holder.img);
+                    holder.name.setText(record.getName());
+                    long minutes = (record.getTime() / 1000) / 60;
+                    long seconds = (record.getTime() / 1000) % 60;
                     holder.time.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
                     holder.sn.setText(String.format("%d", position + 1));
                 }
@@ -149,7 +146,7 @@ public class WinActivity extends AppCompatActivity {
                 ArrayList<Record> recordsSorted = sortAndAdd(records,record);
                 HashMap<String,Object> hashMap = getSortedMap(recordsSorted);
                 FirebaseDatabase.getInstance().getReference().child(Const.RECORDS_IN_FIREBASE).setValue(hashMap);
-                int currRecord = recordsSorted.indexOf(record);
+                //int currRecord = recordsSorted.indexOf(record);
                 //recyclerView.smoothScrollToPosition(currRecord);
             }
 
@@ -157,13 +154,6 @@ public class WinActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-    }
-
-    private HashMap<String,Object> getSortedMap(ArrayList<Record> records){
-        HashMap<String,Object> hashMap = new HashMap<>();
-        for (int i = 0; i < records.size(); i++)
-            hashMap.put("" + i, records.get(i));
-        return hashMap;
     }
 
     private ArrayList<Record> sortAndAdd(ArrayList<Record> records ,Record record){
@@ -180,5 +170,12 @@ public class WinActivity extends AppCompatActivity {
             records.remove(index);
         }
         return sorted;
+    }
+
+    private HashMap<String,Object> getSortedMap(ArrayList<Record> records){
+        HashMap<String,Object> hashMap = new HashMap<>();
+        for (int i = 0; i < records.size(); i++)
+            hashMap.put("" + i, records.get(i));
+        return hashMap;
     }
 }

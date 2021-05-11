@@ -24,14 +24,6 @@ public class GameManager {
         this.turn = 1;
     }
 
-    public ArrayList<GameRow> getGameRows() {
-        return gameRows;
-    }
-
-    public ArrayList<CheckRow> getCheckRows() {
-        return checkRows;
-    }
-
     public void randomizeHidden() {
         ArrayList<Integer> arrayList = new ArrayList<>();
         for (int i = 0; i < Const.ROW_SIZE; i++) {
@@ -43,7 +35,20 @@ public class GameManager {
         }
     }
 
-    public boolean nextTurnIsNotWin() {
+    public void pegToGameRow(String color, int position) {
+        GamePeg gamePeg = new GamePeg(color, position);
+        GameRow gameRow = this.gameRows.get(turn - 1);
+        gameRow.addPeg(gamePeg);
+        this.gameRows.set(turn - 1, gameRow);
+    }
+
+    public void nextTurn() {
+        this.turn++;
+        gameRows.add(new GameRow());
+        checkRows.add(new CheckRow());
+    }
+
+    public boolean isGameContinue() {
         checkRows.set(turn - 1, gameRows.get(turn - 1).checkGameRow(hidden));
         if (checkRows.get(turn - 1).isWin())
             return false;
@@ -58,28 +63,24 @@ public class GameManager {
         return win;
     }
 
-    public void nextTurn() {
-        this.turn++;
-        gameRows.add(new GameRow());
-        checkRows.add(new CheckRow());
+    public ArrayList<GameRow> getGameRows() {
+        return gameRows;
+    }
+
+    public ArrayList<CheckRow> getCheckRows() {
+        return checkRows;
     }
 
     public int getTurn() {
         return turn;
     }
 
-    public void pegToGameRow(String color, int position) {
-        GamePeg gamePeg = new GamePeg(color, position);
-        GameRow gameRow = this.gameRows.get(turn - 1);
-        gameRow.addPeg(gamePeg);
-        this.gameRows.set(turn - 1, gameRow);
+    public GameRow getHidden() {
+        return hidden;
     }
 
     public void setHidden(GameRow hidden) {
         this.hidden = hidden;
     }
 
-    public GameRow getHidden() {
-        return hidden;
-    }
 }

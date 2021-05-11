@@ -40,31 +40,29 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     private Chronometer chronometer;
     private long pauseOffset;
     private boolean running;
+    private long timeInMillis;
+    private long minutes, seconds;
+
     private boolean tookHint;
 
+    private GameManager gameManager;
+    private CircleImageView[] hiddenRowImages;
     private AdapterRows adapterRows;
     private RecyclerView recyclerView;
     private ArrayList<GameRow> gameRows;
     private ArrayList<CheckRow> checkRows;
-
-    private CircleImageView[] hiddenRowImages;
-    private GameManager gameManager;
 
     private String currentSelection = Const.NULL_COLOR_IN_GAME;
 
     private CircleImageView red, green, blue, orange, yellow, light;
     private CircleImageView current;
 
-    private long timeInMillis;
-    private long minutes, seconds;
-
-    private Intent service;
-
     private TextView tv_coins;
     private Drawable theme;
 
     private ImageView iv_musicOnOff;
-    private boolean playing;
+    private boolean isPlaying;
+    private Intent service;
 
     private boolean isOnline;
 
@@ -105,31 +103,125 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
     @Override
     public void onStart() {
         super.onStart();
-
         service = new Intent(getApplicationContext(), BackMusicService.class);
         iv_musicOnOff = findViewById(R.id.btn_Music);
         if (BackMusicService.isPlaying){
-            playing = true;
+            isPlaying = true;
             iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
         } else {
-            playing = false;
+            isPlaying = false;
             iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
         }
         iv_musicOnOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!playing){
+                if (!isPlaying){
                     startService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_off_24);
-                    playing = true;
+                    isPlaying = true;
                 } else {
                     stopService(service);
                     iv_musicOnOff.setImageResource(R.drawable.ic_baseline_music_note_24);
-                    playing = false;
+                    isPlaying = false;
                 }
             }
         });
+    }
 
+    public void createHidden() {
+        hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
+        hiddenRowImages[0] = findViewById(R.id.hidden0);
+        hiddenRowImages[1] = findViewById(R.id.hidden1);
+        hiddenRowImages[2] = findViewById(R.id.hidden2);
+        hiddenRowImages[3] = findViewById(R.id.hidden3);
+        GameRow hiddenRow = gameManager.getHidden();
+        String[] hiddenColors = hiddenRow.getStringRow();
+        for (int i = 0; i < hiddenColors.length; i++) {
+            hiddenRowImages[i].setVisibility(View.INVISIBLE);
+            hiddenRowImages[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(hiddenColors[i]));
+            hiddenRowImages[i].setForeground(theme);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    public void createButtons() {
+        red = findViewById(R.id.red);
+        red.setOnTouchListener(onClickColorListener);
+        red.setForeground(theme);
+        green = findViewById(R.id.green);
+        green.setOnTouchListener(onClickColorListener);
+        green.setForeground(theme);
+        blue = findViewById(R.id.blue);
+        blue.setOnTouchListener(onClickColorListener);
+        blue.setForeground(theme);
+        orange = findViewById(R.id.orange);
+        orange.setOnTouchListener(onClickColorListener);
+        orange.setForeground(theme);
+        yellow = findViewById(R.id.yellow);
+        yellow.setOnTouchListener(onClickColorListener);
+        yellow.setForeground(theme);
+        light = findViewById(R.id.light);
+        light.setOnTouchListener(onClickColorListener);
+        light.setForeground(theme);
+        current.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentSelection = Const.NULL_COLOR_IN_GAME;
+                updateCurrImg();
+            }
+        });
+    }
+
+    View.OnTouchListener onClickColorListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (v == red)
+                currentSelection = Const.RED_COLOR_IN_GAME;
+            else if (v == green)
+                currentSelection = Const.GREEN_COLOR_IN_GAME;
+            else if (v == blue)
+                currentSelection = Const.BLUE_COLOR_IN_GAME;
+            else if (v == orange)
+                currentSelection = Const.ORANGE_COLOR_IN_GAME;
+            else if (v == yellow)
+                currentSelection = Const.YELLOW_COLOR_IN_GAME;
+            else if (v == light)
+                currentSelection = Const.LIGHT_COLOR_IN_GAME;
+            updateCurrImg();
+            return true;
+        }
+    };
+
+    public void updateCurrImg() {
+        current.setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(currentSelection));
+        if (!currentSelection.equals(Const.NULL_COLOR_IN_GAME))
+            current.setForeground(theme);
+        else
+            current.setForeground(null);
+    }
+
+    @Override
+    public void onPositionClicked(int position) {
+        String lastSelection = gameRows.get(gameManager.getTurn() - 1).getColorByPosition(position);
+        gameManager.pegToGameRow(currentSelection, position);
+        currentSelection = lastSelection;
+        updateCurrImg();
+        adapterRows.notifyDataSetChanged();
+    }
+
+    public void onClickSubmit(View view) {
+        if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
+            if (!gameManager.isGameContinue()) {
+                for (int i = 0; i < hiddenRowImages.length; i++)
+                    hiddenRowImages[i].setVisibility(View.VISIBLE);
+                Toast.makeText(this, "You Win", Toast.LENGTH_LONG).show();
+                pauseTimeRunning();
+                checkTime();
+                openWinnerActivity();
+            }
+            recyclerView.smoothScrollToPosition(adapterRows.getItemCount() - 1);
+            adapterRows.notifyDataSetChanged();
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -163,6 +255,16 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         }
     }
 
+    private void openWinnerActivity() {
+        Intent intent = new Intent(this, WinActivity.class);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, isOnline);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_MINUTES, minutes);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_SECONDS, seconds);
+        intent.putExtra(Const.INTENT_EXTRA_KEY_TIME, timeInMillis);
+        startActivity(intent);
+        finish();
+    }
+
     //_______________Timer_______________//
     public void startTimeRunning() {
         if (!running) {
@@ -184,113 +286,6 @@ public class OnePlayerActivity extends AppCompatActivity implements OnPegClickLi
         timeInMillis = SystemClock.elapsedRealtime() - chronometer.getBase();
         minutes = (timeInMillis / 1000) / 60;
         seconds = (timeInMillis / 1000) % 60;
-    }
-
-    //_______________Listeners_______________//
-    View.OnTouchListener onClickColorListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if (v == red)
-                currentSelection = Const.RED_COLOR_IN_GAME;
-            else if (v == green)
-                currentSelection = Const.GREEN_COLOR_IN_GAME;
-            else if (v == blue)
-                currentSelection = Const.BLUE_COLOR_IN_GAME;
-            else if (v == orange)
-                currentSelection = Const.ORANGE_COLOR_IN_GAME;
-            else if (v == yellow)
-                currentSelection = Const.YELLOW_COLOR_IN_GAME;
-            else if (v == light)
-                currentSelection = Const.LIGHT_COLOR_IN_GAME;
-            updateCurrImg();
-            return true;
-        }
-    };
-
-    @Override
-    public void onPositionClicked(int position) {
-        String lastSelection = gameRows.get(gameManager.getTurn() - 1).getColorByPosition(position);
-        gameManager.pegToGameRow(currentSelection, position);
-        currentSelection = lastSelection;
-        updateCurrImg();
-        adapterRows.notifyDataSetChanged();
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    public void createButtons() {
-        red = findViewById(R.id.red);
-        red.setOnTouchListener(onClickColorListener);
-        red.setForeground(theme);
-        green = findViewById(R.id.green);
-        green.setOnTouchListener(onClickColorListener);
-        green.setForeground(theme);
-        blue = findViewById(R.id.blue);
-        blue.setOnTouchListener(onClickColorListener);
-        blue.setForeground(theme);
-        orange = findViewById(R.id.orange);
-        orange.setOnTouchListener(onClickColorListener);
-        orange.setForeground(theme);
-        yellow = findViewById(R.id.yellow);
-        yellow.setOnTouchListener(onClickColorListener);
-        yellow.setForeground(theme);
-        light = findViewById(R.id.light);
-        light.setOnTouchListener(onClickColorListener);
-        light.setForeground(theme);
-        current.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                currentSelection = Const.NULL_COLOR_IN_GAME;
-                updateCurrImg();
-            }
-        });
-    }
-
-    public void onClickSubmit(View view) {
-        if (gameRows.get(gameManager.getTurn() - 1).isFull()) {
-            if (!gameManager.nextTurnIsNotWin()) {
-                for (int i = 0; i < hiddenRowImages.length; i++)
-                    hiddenRowImages[i].setVisibility(View.VISIBLE);
-                Toast.makeText(this, "You Win", Toast.LENGTH_LONG).show();
-                pauseTimeRunning();
-                checkTime();
-                openWinnerActivity();
-            }
-            recyclerView.smoothScrollToPosition(adapterRows.getItemCount() - 1);
-            adapterRows.notifyDataSetChanged();
-        }
-    }
-
-    private void openWinnerActivity() {
-        Intent intent = new Intent(this, WinActivity.class);
-        intent.putExtra(Const.INTENT_EXTRA_KEY_IS_ONLINE, isOnline);
-        intent.putExtra(Const.INTENT_EXTRA_KEY_MINUTES, minutes);
-        intent.putExtra(Const.INTENT_EXTRA_KEY_SECONDS, seconds);
-        intent.putExtra(Const.INTENT_EXTRA_KEY_TIME, timeInMillis);
-        startActivity(intent);
-        finish();
-    }
-
-    public void updateCurrImg() {
-        current.setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(currentSelection));
-        if (!currentSelection.equals(Const.NULL_COLOR_IN_GAME))
-            current.setForeground(theme);
-        else
-            current.setForeground(null);
-    }
-
-    public void createHidden() {
-        hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
-        hiddenRowImages[0] = findViewById(R.id.hidden0);
-        hiddenRowImages[1] = findViewById(R.id.hidden1);
-        hiddenRowImages[2] = findViewById(R.id.hidden2);
-        hiddenRowImages[3] = findViewById(R.id.hidden3);
-        GameRow hiddenRow = gameManager.getHidden();
-        String[] hiddenColors = hiddenRow.getStringRow();
-        for (int i = 0; i < hiddenColors.length; i++) {
-            hiddenRowImages[i].setVisibility(View.INVISIBLE);
-            hiddenRowImages[i].setImageResource((Integer) Const.STRING_TO_COLOR_MAP.get(hiddenColors[i]));
-            hiddenRowImages[i].setForeground(theme);
-        }
     }
 
     @Override

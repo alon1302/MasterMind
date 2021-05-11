@@ -16,7 +16,7 @@ public abstract class Peg {
     }
 
     public boolean equalsColor(Peg other) {
-        return this.color == other.color;
+        return this.color.equals(other.color);
     }
 
     @Override
