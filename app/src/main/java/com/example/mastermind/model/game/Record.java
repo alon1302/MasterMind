@@ -5,13 +5,13 @@ public class Record {
     private String name;
     private String imgUrl;
 
-    public Record() {
-    }
-
     public Record(long time, String name, String imgUrl) {
         this.time = time;
         this.name = name;
         this.imgUrl = imgUrl;
+    }
+
+    public Record() {
     }
 
     public long getTime() {

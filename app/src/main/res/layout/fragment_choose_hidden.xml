@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="@drawable/master_mind_back"
-
     android:layout_height="match_parent">
 
     <TextView
@@ -173,7 +172,6 @@
         android:layout_margin="2.5dp"
         android:background="@drawable/game_design"
         android:backgroundTint="@color/colorWhite"
-        android:onClick="onClickSubmit"
         android:text="Submit"
         android:textAllCaps="false"
         android:textSize="16sp"

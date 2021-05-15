@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements ImageUploadListe
             }
         });
 
-        NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver(this);
+        NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver();
         registerReceiver(networkChangeReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 

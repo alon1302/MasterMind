@@ -1,7 +1,6 @@
 package com.example.mastermind.model.theme;
 
 public class Theme {
-
     private int pegImage;
     private boolean opened;
 

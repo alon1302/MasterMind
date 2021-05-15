@@ -34,8 +34,7 @@ public class EndGameFragment extends Fragment {
     private int rematchResponse = 1;
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_end_game, container, false);
         LottieAnimationView lottieAnimationView = view.findViewById(R.id.lottie_winner);

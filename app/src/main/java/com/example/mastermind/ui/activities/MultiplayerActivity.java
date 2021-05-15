@@ -146,7 +146,7 @@ public class MultiplayerActivity extends AppCompatActivity implements MethodCall
     public void toOpponentFragment() {
         if (gameRunning) {
             SendHiddenToOpponent sendHiddenToOpponent = (SendHiddenToOpponent) opponentTurnFragment;
-            sendHiddenToOpponent.sendHidden(multiPlayerManager.getHidden());
+            sendHiddenToOpponent.sendHidden(multiPlayerManager.getUserHidden());
             getSupportFragmentManager().beginTransaction().replace(R.id.multiplayer_container, opponentTurnFragment).commit();
         }
         checkWinner();

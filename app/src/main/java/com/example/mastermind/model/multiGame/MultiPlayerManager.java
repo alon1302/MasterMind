@@ -22,14 +22,16 @@ public class MultiPlayerManager implements Serializable {
 
     protected String code;
     protected boolean codeCreated = false;
+
     protected String player;
+    protected String opponent;
     protected String playerTurn = Const.PLAYER1_IN_FIREBASE;
     protected String userHidden = Const.NULL_ROW_IN_FIREBASE;
     protected String opponentHidden = Const.NULL_ROW_IN_FIREBASE;
-    Activity context;
+
+    protected Activity context;
     protected boolean done;
-    protected String opponent;
-    protected String hidden;
+
 
     public MultiPlayerManager(Activity context) {
         this.code = "";
@@ -50,6 +52,18 @@ public class MultiPlayerManager implements Serializable {
         }
     }
 
+    protected String createStringCode() {
+        StringBuilder code = new StringBuilder();
+        int limit;
+        if (new Random().nextInt(2) == 0)
+            limit = 4;
+        else
+            limit = 5;
+        for (int i = 0; i < limit; i++)
+            code.append(new Random().nextInt(10));
+        return code.toString();
+    }
+
     public void createRoom() {
         final String currCode = createStringCode();
         FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(currCode).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -68,7 +82,7 @@ public class MultiPlayerManager implements Serializable {
                     }
                     FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(player).setValue(CurrentUser.getInstance());
                     MethodCallBack methodCallBack = (MethodCallBack) context;
-                    methodCallBack.onCallBack(2, null);
+                    methodCallBack.onCallBack(Const.ACTION_ROOM_CREATED, null);
                     codeCreated = true;
                 }
             }
@@ -79,24 +93,45 @@ public class MultiPlayerManager implements Serializable {
         });
     }
 
-    public void setHiddenInFirebase(String hidden) {
-        this.hidden = hidden;
-        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(player + Const.HIDDEN_IN_FIREBASE).setValue(hidden);
-        String other = Const.PLAYER1_IN_FIREBASE;
-        if (player.equals(Const.PLAYER1_IN_FIREBASE))
-            other = Const.PLAYER2_IN_FIREBASE;
-
-        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(other + Const.HIDDEN_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
+    public void joinRoom(final String currCode) {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(currCode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                MethodCallBack methodCallBack = (MethodCallBack) context;
-                methodCallBack.onCallBack(8, player);
+                if (!snapshot.exists()) {
+                    Toast.makeText(context, "Please Type a Valid Game Code", Toast.LENGTH_SHORT).show();
+                } else {
+                    setCode(currCode);
+                    player = Const.PLAYER2_IN_FIREBASE;
+                    opponent = Const.PLAYER1_IN_FIREBASE;
+                    FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(player).setValue(CurrentUser.getInstance());
+                    MethodCallBack methodCallBack = (MethodCallBack) context;
+                    methodCallBack.onCallBack(Const.ACTION_ROOM_CREATED, null);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+    }
+
+    public void setHiddenInFirebase(String hidden) {
+        this.userHidden = hidden;
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(player + Const.HIDDEN_IN_FIREBASE).setValue(hidden);
+//        String other = Const.PLAYER1_IN_FIREBASE;
+//        if (player.equals(Const.PLAYER1_IN_FIREBASE))
+//            other = Const.PLAYER2_IN_FIREBASE;
+//
+//        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(other + Const.HIDDEN_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//            }
+//        });
     }
 
     public void retrieveHidden() {
@@ -121,7 +156,8 @@ public class MultiPlayerManager implements Serializable {
                 if (snapshot.exists()) {
                     opponentHidden = snapshot.getValue(String.class);
                     MethodCallBack methodCallBack = (MethodCallBack) context;
-                    methodCallBack.onCallBack(11, null);
+                    methodCallBack.onCallBack(Const.ACTION_DISMISS_WAITING_DIALOG, null);
+                    methodCallBack.onCallBack(Const.ACTION_START_GAME_AFTER_CHOOSE, player);
                 }
             }
 
@@ -129,52 +165,6 @@ public class MultiPlayerManager implements Serializable {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-    }
-
-    protected String createStringCode() {
-        StringBuilder code = new StringBuilder();
-        int limit;
-        if (new Random().nextInt(2) == 0)
-            limit = 4;
-        else
-            limit = 5;
-        for (int i = 0; i < limit; i++)
-            code.append(new Random().nextInt(10));
-        return code.toString();
-    }
-
-    public void joinRoom(final String currCode) {
-        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(currCode).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()) {
-                    Toast.makeText(context, "Please Type a Valid Game Code", Toast.LENGTH_SHORT).show();
-                } else {
-                    setCode(currCode);
-                    player = Const.PLAYER2_IN_FIREBASE;
-                    opponent = Const.PLAYER1_IN_FIREBASE;
-                    FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(player).setValue(CurrentUser.getInstance());
-                    MethodCallBack methodCallBack = (MethodCallBack) context;
-                    methodCallBack.onCallBack(2, null);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public void addUserPeg(String row, String turn) {
-        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(Const.TURNS_IN_FIREBASE).child(turn).child(player).setValue(row);
     }
 
     public void turnRotation() {
@@ -185,47 +175,10 @@ public class MultiPlayerManager implements Serializable {
             playerTurn = Const.PLAYER1_IN_FIREBASE;
             FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.WHOS_TURN_IN_FIREBASE).setValue(Const.PLAYER1_IN_FIREBASE);
         }
-
     }
 
-    public void setPlayerTurn(String playerTurn) {
-        this.playerTurn = playerTurn;
-    }
-
-    public String getPlayer() {
-        return player;
-    }
-
-    public String getPlayerTurn() {
-        return playerTurn;
-    }
-
-    public String getUserHidden() {
-        return userHidden;
-    }
-
-    public String getOpponentHidden() {
-        return opponentHidden;
-    }
-
-    public String getOpponent() {
-        return opponent;
-    }
-
-    public void setOpponentHidden(String opponentHidden) {
-        this.opponentHidden = opponentHidden;
-    }
-
-    public void setOpponent(String opponent) {
-        this.opponent = opponent;
-    }
-
-    public String getHidden() {
-        return hidden;
-    }
-
-    public void setHidden(String hidden) {
-        this.hidden = hidden;
+    public void addUserPeg(String row, String turn) {
+        FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.GAME_IN_FIREBASE).child(Const.TURNS_IN_FIREBASE).child(turn).child(player).setValue(row);
     }
 
     public void setWinnerInFirebase() {
@@ -238,5 +191,45 @@ public class MultiPlayerManager implements Serializable {
             public void onComplete(@NonNull Task<Void> task) {
             }
         });
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getPlayerTurn() {
+        return playerTurn;
+    }
+
+    public void setPlayerTurn(String playerTurn) {
+        this.playerTurn = playerTurn;
+    }
+
+    public String getPlayer() {
+        return player;
+    }
+
+    public String getUserHidden() {
+        return userHidden;
+    }
+
+    public String getOpponentHidden() {
+        return opponentHidden;
+    }
+
+    public void setOpponentHidden(String opponentHidden) {
+        this.opponentHidden = opponentHidden;
+    }
+
+    public String getOpponent() {
+        return opponent;
+    }
+
+    public void setOpponent(String opponent) {
+        this.opponent = opponent;
     }
 }

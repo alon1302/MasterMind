@@ -17,7 +17,7 @@ public class NotificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_noti_intent);
 
-        CurrentUser.addCoinsNotification(300);
+        CurrentUser.addCoinsNotification();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

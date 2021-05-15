@@ -15,12 +15,6 @@ public class BackMusicService extends Service {
     private MediaPlayer mediaPlayer = null;
     public static boolean isPlaying = false;
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (mediaPlayer == null) {
@@ -42,4 +36,10 @@ public class BackMusicService extends Service {
             isPlaying = false;
         }
     }
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
 }

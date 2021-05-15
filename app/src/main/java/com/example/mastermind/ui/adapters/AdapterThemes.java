@@ -19,25 +19,25 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesViewHolder> {
-    private final Context context;
+public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemeViewHolder> {
     private final ArrayList<Theme> list;
+    private final Context context;
 
     public AdapterThemes(Context context) {
         this.context = context;
-         list = Themes.getInstance(context.getApplicationContext()).getAllThemes();
+        this.list = Themes.getInstance(context.getApplicationContext()).getAllThemes();
     }
 
     @NonNull
     @Override
-    public ThemesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ThemeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_theme, parent, false);
-        return new ThemesViewHolder(view);
+        return new ThemeViewHolder(view);
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
-    public void onBindViewHolder(@NonNull final ThemesViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ThemeViewHolder holder, final int position) {
         for (int i = 0; i < holder.imageViews.length; i++)
             holder.imageViews[i].setForeground(context.getResources().getDrawable(list.get(position).getPegImage()));
         if (list.get(position).isOpened())
@@ -61,12 +61,12 @@ public class AdapterThemes extends RecyclerView.Adapter<AdapterThemes.ThemesView
         return Themes.getInstance(context.getApplicationContext()).getAllThemes().size();
     }
 
-    public class ThemesViewHolder extends RecyclerView.ViewHolder {
+    public static class ThemeViewHolder extends RecyclerView.ViewHolder {
 
         public CircleImageView[] imageViews;
         public ImageView status;
 
-        public ThemesViewHolder(View view) {
+        public ThemeViewHolder(View view) {
             super(view);
             imageViews = new CircleImageView[6];
             imageViews[0] = view.findViewById(R.id.red);

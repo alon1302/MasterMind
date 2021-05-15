@@ -29,4 +29,5 @@
     <string name="please_reconnect_to_the_internet">Please reconnect to the internet</string>
     <string name="play_offline_mode">Play Offline Mode</string>
     <string name="or">OR</string>
+    <string name="starting_game">Starting Game</string>
 </resources>

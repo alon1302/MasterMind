@@ -36,25 +36,24 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OpponentTurnFragment extends Fragment implements SendHiddenToOpponent {
 
-    private User user2;
-    private View view;
+    private ArrayList<GameRow> gameRows;
+    private ArrayList<CheckRow> checkRows;
+
+    private GameRow hiddenRow;
+    private String hidden;
+    private CircleImageView[] hiddenRowImages;
 
     private AdapterRows adapterRows;
 
-    private ArrayList<GameRow> gameRows;
-    private ArrayList<CheckRow> checkRows;
-    private String hidden;
+    private User user2;
+    private String player;
 
-    private CircleImageView[] hiddenRowImages;
+    private String code;
 
-    private Intent service;
-
-    private String code, player;
-
-    private GameRow hiddenRow;
-
+    private View view;
     private Drawable theme;
 
+    private Intent service;
     private ImageView iv_musicOnOff;
     private boolean playing;
 
@@ -75,7 +74,6 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         for (int i = 0; i < 4; i++)
             hiddenRow.addPeg(new GamePeg((String) Const.CHAR_TO_STRING_MAP.get(hidden.charAt(i)), i));
         gameManager.setHidden(hiddenRow);
-        gameManager = new GameManager();
         gameRows = gameManager.getGameRows();
         checkRows = gameManager.getCheckRows();
         hiddenRowImages = new CircleImageView[Const.ROW_SIZE];
@@ -115,7 +113,7 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-        createRow();
+        createHidden();
         return view;
     }
 
@@ -147,16 +145,12 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         });
     }
 
-
-    public GameRow convertStringToGameRow(String row) {
-        GameRow gameRow = new GameRow();
-        if (row != null)
-            for (int i = 0; i < Const.ROW_SIZE; i++)
-                gameRow.addPeg(new GamePeg((String) Const.CHAR_TO_STRING_MAP.get(row.charAt(i)), i));
-        return gameRow;
+    @Override
+    public void sendHidden(String hidden) {
+        this.hidden = hidden;
     }
 
-    private void createRow() {
+    private void createHidden() {
         hiddenRowImages[0] = view.findViewById(R.id.opponent_multi_hidden0);
         hiddenRowImages[1] = view.findViewById(R.id.opponent_multi_hidden1);
         hiddenRowImages[2] = view.findViewById(R.id.opponent_multi_hidden2);
@@ -170,14 +164,12 @@ public class OpponentTurnFragment extends Fragment implements SendHiddenToOppone
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
-
-    @Override
-    public void sendHidden(String hidden) {
-        this.hidden = hidden;
+    public GameRow convertStringToGameRow(String row) {
+        GameRow gameRow = new GameRow();
+        if (row != null)
+            for (int i = 0; i < Const.ROW_SIZE; i++)
+                gameRow.addPeg(new GamePeg((String) Const.CHAR_TO_STRING_MAP.get(row.charAt(i)), i));
+        return gameRow;
     }
 
     @Override

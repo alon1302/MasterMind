@@ -25,11 +25,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class WaitingForOpponentFragment extends Fragment {
 
-
-    private  String code;
-    private User user1;
-    private User user2;
-    Activity thisActivity;
+    private String code;
+    private User user1, user2;
+    private Activity thisActivity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,11 +39,12 @@ public class WaitingForOpponentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_waiting_for_opponent, container, false);
-        ((TextView)(view.findViewById(R.id.codeTv))).setText("Game Code: " + code);
+        TextView tv_code = view.findViewById(R.id.codeTv);
+        tv_code.setText("Game Code: " + code);
         this.thisActivity = requireActivity();
 
         if (getArguments()!= null && getArguments().containsKey(Const.INTENT_EXTRA_KEY_TYPE) && !getArguments().getBoolean(Const.INTENT_EXTRA_KEY_TYPE))
-            ((TextView)(view.findViewById(R.id.codeTv))).setText("Searching Opponent...");
+            tv_code.setText("Searching Opponent...");
 
         FirebaseDatabase.getInstance().getReference().child(Const.ROOMS_IN_FIREBASE).child(code).child(Const.PLAYER1_IN_FIREBASE).addValueEventListener(new ValueEventListener() {
             @Override
@@ -55,7 +54,7 @@ public class WaitingForOpponentFragment extends Fragment {
                         user1 = snapshot.getValue(User.class);
                         Glide.with(thisActivity).load(user1.getImgUrl()).into((CircleImageView) (view.findViewById(R.id.PlayerOne_image)));
                         if (user1 != null && user2 != null){
-                            ((TextView)(view.findViewById(R.id.codeTv))).setText("Starting Game");
+                            ((TextView)(view.findViewById(R.id.codeTv))).setText(R.string.starting_game);
                             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
                             methodCallBack.onCallBack(Const.ACTION_CHOOSE_HIDDEN, null);
                             SendUsersCallBack sendUsersCallBack = (SendUsersCallBack)requireActivity();
@@ -76,7 +75,7 @@ public class WaitingForOpponentFragment extends Fragment {
                         user2 = snapshot.getValue(User.class);
                         Glide.with(thisActivity).load(user2.getImgUrl()).into((CircleImageView)(view.findViewById(R.id.PlayerTwo_image)));
                         if (user1 != null && user2 != null){
-                            ((TextView)(view.findViewById(R.id.codeTv))).setText("Starting Game");
+                            ((TextView)(view.findViewById(R.id.codeTv))).setText(R.string.starting_game);
                             MethodCallBack methodCallBack = (MethodCallBack)requireActivity();
                             methodCallBack.onCallBack(Const.ACTION_CHOOSE_HIDDEN, null);
                             SendUsersCallBack sendUsersCallBack = (SendUsersCallBack)requireActivity();

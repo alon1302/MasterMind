@@ -27,11 +27,6 @@ public class Const {
     public static final String USER_ID_IN_FIREBASE = "id";
     public static final String USER_IMG_URL_IN_FIREBASE = "imgUrl";
 
-    public static final String PLAYER1 = "Player1";
-    public static final String PLAYER2 = "Player2";
-
-    public static final String PROFILE_IMG_IN_STORAGE = "Profile Images";
-
     public static final String NULL_COLOR_IN_GAME = "null";
     public static final String RED_COLOR_IN_GAME = "red";
     public static final String GREEN_COLOR_IN_GAME = "green";
@@ -41,6 +36,7 @@ public class Const {
     public static final String LIGHT_COLOR_IN_GAME = "light";
     public static final String BLACK_COLOR_IN_GAME = "black";
     public static final String WHITE_COLOR_IN_GAME = "white";
+    public static final String[] COLORS = new String[]{RED_COLOR_IN_GAME, GREEN_COLOR_IN_GAME, BLUE_COLOR_IN_GAME, ORANGE_COLOR_IN_GAME, YELLOW_COLOR_IN_GAME, LIGHT_COLOR_IN_GAME,};
 
     public static final char NULL_CHAR_IN_GAME = 'n';
     public static final char RED_CHAR_IN_GAME = '0';
@@ -49,21 +45,6 @@ public class Const {
     public static final char ORANGE_CHAR_IN_GAME = '3';
     public static final char YELLOW_CHAR_IN_GAME = '4';
     public static final char LIGHT_CHAR_IN_GAME = '5';
-
-    public static final int END_GAME_SITUATION_NOT_OVER = -1;
-    public static final int END_GAME_SITUATION_TIE = 0;
-    public static final int END_GAME_SITUATION_WIN = 1;
-    public static final int END_GAME_SITUATION_LOSE = 2;
-
-    public static final int REF_TO_BLACK_COLOR = 1;
-    public static final int REF_TO_WHITE_COLOR = 2;
-    public static final int REF_TO_NULL_COLOR = 3;
-
-    public static final int ROW_SIZE = 4;
-
-    public static final String NOTIFICATION_CHANNEL_NAME = "Comeback";
-    public static final String SHARED_PREFERENCES_ID = "ThemesPrefs:";
-    public static final String SHARED_PREFERENCES_KEY_INDEX = "index";
 
     public static final String INTENT_EXTRA_KEY_FROM = "from";
     public static final String INTENT_EXTRA_KEY_TYPE = "type";
@@ -83,12 +64,6 @@ public class Const {
     public static final String INTENT_EXTRA_VALUE_WITH_CODE = "withCode";
     public static final String INTENT_EXTRA_VALUE_FIND_ENEMY = "findEnemy";
 
-    public static final long NOTIFICATION_TIME = 7200000;
-
-    public static final String FRAGMENT_TITLE_ABOUT = "About";
-    public static final String FRAGMENT_TITLE_RULES = "Rules";
-    public static final String FRAGMENT_TITLE_GOAL = "Goal";
-
     public static final int ACTION_CREATE_ROOM = 0;
     public static final int ACTION_JOIN_ROOM = 1;
     public static final int ACTION_ROOM_CREATED = 2;
@@ -102,6 +77,26 @@ public class Const {
     public static final int ACTION_WAITING_TO_WIN = 10;
     public static final int ACTION_DISMISS_WAITING_DIALOG = 11;
 
+    public static final int END_GAME_SITUATION_NOT_OVER = -1;
+    public static final int END_GAME_SITUATION_TIE = 0;
+    public static final int END_GAME_SITUATION_WIN = 1;
+    public static final int END_GAME_SITUATION_LOSE = 2;
+
+    public static final int REF_TO_BLACK_COLOR = 1;
+    public static final int REF_TO_WHITE_COLOR = 2;
+    public static final int REF_TO_NULL_COLOR = 3;
+
+    public static final String FRAGMENT_TITLE_ABOUT = "About";
+    public static final String FRAGMENT_TITLE_RULES = "Rules";
+    public static final String FRAGMENT_TITLE_GOAL = "Goal";
+
+    public static final String NOTIFICATION_CHANNEL_NAME = "Comeback";
+    public static final long NOTIFICATION_TIME = 7200000;
+    public static final int NOTIFICATION_EARN = 300;
+
+    public static final String SHARED_PREFERENCES_ID = "ThemesPrefs:";
+    public static final String SHARED_PREFERENCES_KEY_INDEX = "index";
+
     public static final int HINT_COST = 500;
     public static final int THEME_COST = 1500;
 
@@ -110,6 +105,13 @@ public class Const {
 
     public static final int PICK_IMAGE = 100;
     public static final int GOOGLE = 1;
+
+    public static final String PLAYER1 = "Player1";
+    public static final String PLAYER2 = "Player2";
+
+    public static final String PROFILE_IMG_IN_STORAGE = "Profile Images";
+
+    public static final int ROW_SIZE = 4;
 
     public static final HashMap<String, Integer> STRING_TO_COLOR_MAP = new HashMap<String, Integer>()
     {{
@@ -135,7 +137,7 @@ public class Const {
         put(LIGHT_CHAR_IN_GAME, LIGHT_COLOR_IN_GAME);
     }};
 
-    public static final HashMap<String,Character> STRING_TO_CHAR_MAP = new HashMap<String,Character>()
+    public static final HashMap<String, Character> STRING_TO_CHAR_MAP = new HashMap<String, Character>()
     {{
         put(NULL_COLOR_IN_GAME, NULL_CHAR_IN_GAME);
         put(RED_COLOR_IN_GAME, RED_CHAR_IN_GAME);
@@ -145,5 +147,4 @@ public class Const {
         put(YELLOW_COLOR_IN_GAME, YELLOW_CHAR_IN_GAME);
         put(LIGHT_COLOR_IN_GAME, LIGHT_CHAR_IN_GAME);
     }};
-
 }

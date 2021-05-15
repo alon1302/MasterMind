@@ -2,12 +2,10 @@ package com.example.mastermind.ui.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,7 +16,6 @@ import com.example.mastermind.model.game.CheckRow;
 import com.example.mastermind.model.game.GameRow;
 import com.example.mastermind.model.listeners.OnPegClickListener;
 import com.example.mastermind.model.theme.Themes;
-import com.example.mastermind.model.user.CurrentUser;
 
 import java.util.ArrayList;
 
@@ -26,12 +23,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.mastermind.model.Const.STRING_TO_COLOR_MAP;
 
-public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
+public class AdapterRows extends RecyclerView.Adapter<AdapterRows.RowViewHolder> {
     private final ArrayList<GameRow> gameRows;
     private final ArrayList<CheckRow> checkRows;
     private final Context context;
-    public LinearLayout fullRow;
-    boolean clickable;
+    private final boolean clickable;
     private final Drawable theme;
 
     public AdapterRows(ArrayList<GameRow> gameRows, ArrayList<CheckRow> checkRows, Context context, boolean clickable) {
@@ -39,22 +35,21 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         this.checkRows = checkRows;
         this.context = context;
         this.clickable = clickable;
-        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences(Const.SHARED_PREFERENCES_ID + CurrentUser.getInstance().getId(), Context.MODE_PRIVATE);
-        int useIndex = sharedPreferences.getInt(Const.SHARED_PREFERENCES_KEY_INDEX, 0);
+        int useIndex = Themes.getInstance(context.getApplicationContext()).getCurrentThemeIndex();
         int themeImg = Themes.getInstance(context.getApplicationContext()).getAllThemes().get(useIndex).getPegImage();
         theme = context.getResources().getDrawable(themeImg);
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_row, parent, false);
-        return new ViewHolder(view);
+        return new RowViewHolder(view);
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RowViewHolder holder, int position) {
         GameRow currGameRow = gameRows.get(position);
         CheckRow currCheckRow = checkRows.get(position);
         String[] colorCheckRow = currCheckRow.getStringRow();
@@ -108,10 +103,10 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
         return gameRows.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class RowViewHolder extends RecyclerView.ViewHolder {
         public CircleImageView[] game;
         public CircleImageView[] check;
-        public ViewHolder(@NonNull View itemView) {
+        public RowViewHolder(@NonNull View itemView) {
             super(itemView);
             game = new CircleImageView[Const.ROW_SIZE];
             game[0] = itemView.findViewById(R.id.game_0);
@@ -123,7 +118,7 @@ public class AdapterRows extends RecyclerView.Adapter<AdapterRows.ViewHolder> {
             check[1] = itemView.findViewById(R.id.check_1);
             check[2] = itemView.findViewById(R.id.check_2);
             check[3] = itemView.findViewById(R.id.check_3);
-            fullRow = itemView.findViewById(R.id.fullRow);
+            //LinearLayout fullRow = itemView.findViewById(R.id.fullRow);
         }
     }
 }

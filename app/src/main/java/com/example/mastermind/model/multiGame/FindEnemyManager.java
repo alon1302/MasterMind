@@ -62,13 +62,11 @@ public class FindEnemyManager extends MultiPlayerManager{
                         return;
                     }
                 }
-                else{
+                else
                     createRoom();
-                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }

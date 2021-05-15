@@ -11,17 +11,10 @@ import com.example.mastermind.model.listeners.MethodCallBack;
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
 
-    Context context;
-
-    public NetworkChangeReceiver(Context context) {
-        this.context = context;
-    }
-
     @Override
     public void onReceive(Context context, Intent intent) {
-
         try {
-            MethodCallBack methodCallBack = (MethodCallBack) this.context;
+            MethodCallBack methodCallBack = (MethodCallBack) context;
             if (isOnline(context))
                 methodCallBack.onCallBack(Const.ONLINE,null);
             else

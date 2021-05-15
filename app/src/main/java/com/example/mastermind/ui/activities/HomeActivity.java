@@ -65,7 +65,7 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
         CircleImageView iv_userImage = findViewById(R.id.iv_image);
         Glide.with(this).load(user.getImgUrl()).into(iv_userImage);
 
-        networkReceiver = new NetworkChangeReceiver(this);
+        networkReceiver = new NetworkChangeReceiver();
         registerReceiver(networkReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         createNotificationChannel();

@@ -14,7 +14,7 @@ public class GameManager {
     private int turn;
 
     public GameManager() {
-        this.colors = new String[]{Const.RED_COLOR_IN_GAME, Const.GREEN_COLOR_IN_GAME, Const.BLUE_COLOR_IN_GAME, Const.ORANGE_COLOR_IN_GAME, Const.YELLOW_COLOR_IN_GAME, Const.LIGHT_COLOR_IN_GAME};
+        this.colors = Const.COLORS;
         this.gameRows = new ArrayList<>();
         gameRows.add(new GameRow());
         this.checkRows = new ArrayList<>();
