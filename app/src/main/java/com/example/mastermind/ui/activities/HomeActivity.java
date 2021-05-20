@@ -39,6 +39,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity implements MethodCallBack {
 
+    public static final int ALARM_REQUEST = 0;
+
     private FirebaseAuth mAuth;
 
     private NetworkChangeReceiver networkReceiver;
@@ -213,7 +215,7 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
         super.onStop();
         getIntent().removeExtra(Const.INTENT_EXTRA_KEY_FROM);
         Intent intent = new Intent(HomeActivity.this, ComeBackBroadcast.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, ALARM_REQUEST, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         long currentTime = System.currentTimeMillis();
         alarmManager.set(AlarmManager.RTC_WAKEUP, currentTime + Const.NOTIFICATION_TIME, pendingIntent);
