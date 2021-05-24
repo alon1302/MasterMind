@@ -33,8 +33,7 @@ public class Themes {
     }
 
     private void loadThemes() {
-        if (!sharedPreferences.contains("" + 0) || !sharedPreferences.getBoolean("" + 0, false))
-            editor.putBoolean("" + 0, true);
+        editor.putBoolean("" + 0, true);
         for (int i = 0; i < 10; i++)
             allThemes.add(i, getTheme(i, sharedPreferences.getBoolean("" + i, false)));
         if (!sharedPreferences.contains(Const.SHARED_PREFERENCES_KEY_INDEX))
@@ -70,7 +69,7 @@ public class Themes {
             default:
                 return null;
             case 0:
-                return new Theme(R.color.transparent, isOpen);
+                return new Theme(R.color.transparent, true);
             case 1:
                 return new Theme(R.drawable.smiley, isOpen);
             case 2:
@@ -90,5 +89,9 @@ public class Themes {
             case 9:
                 return new Theme(R.drawable.plane, isOpen);
         }
+    }
+
+    public void logout(){
+        instance = null;
     }
 }

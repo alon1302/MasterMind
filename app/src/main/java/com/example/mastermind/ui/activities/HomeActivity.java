@@ -27,6 +27,7 @@ import com.example.mastermind.model.listeners.MethodCallBack;
 import com.example.mastermind.model.serviceAndBroadcast.BackMusicService;
 import com.example.mastermind.model.serviceAndBroadcast.ComeBackBroadcast;
 import com.example.mastermind.model.serviceAndBroadcast.NetworkChangeReceiver;
+import com.example.mastermind.model.theme.Themes;
 import com.example.mastermind.model.user.CurrentUser;
 import com.example.mastermind.model.user.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -152,6 +153,7 @@ public class HomeActivity extends AppCompatActivity implements MethodCallBack {
 
 
     public void onClickLogOut(View view) {
+        Themes.getInstance(getApplicationContext()).logout();
         Intent intent = new Intent(this, LoginActivity.class);
         mAuth.signOut();
         CurrentUser.logout();
